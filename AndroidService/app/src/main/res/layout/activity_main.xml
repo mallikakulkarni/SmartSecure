@@ -33,5 +33,5 @@
         android:maxLines="1000"
         android:layout_below="@+id/stopAlarm"
 
-    android:scrollbars = "vertical"/>
+        android:scrollbars = "vertical"/>
 </RelativeLayout>

@@ -52,7 +52,8 @@ public class MainActivity extends AppCompatActivity {
 //                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
 //                PackageManager.DONT_KILL_APP);
         AlarmManager manager = (AlarmManager) MainActivity.this.getSystemService(Context.ALARM_SERVICE);
-        int interval = 30000;
+        // 5 mins
+        int interval = 300000;
 
         manager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
         Toast.makeText(this, "Alarm Set", Toast.LENGTH_SHORT).show();
