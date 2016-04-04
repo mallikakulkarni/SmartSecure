@@ -13,12 +13,10 @@ import android.location.LocationManager;
 import android.net.TrafficStats;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.SystemClock;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.util.Log;
 
-import com.google.gson.Gson;
-
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,11 +27,12 @@ import java.util.concurrent.TimeUnit;
  */
 public class UserDataUtil {
     Context context;
+
     public UserDataUtil(Context context) {
         this.context = context;
     }
 
-    void getStats(UserData user) {
+    void getStats(UserData user, int hourOfDay) {
         String android_id = Settings.Secure.getString(context.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
         String email = getEmail(context);
@@ -49,69 +48,60 @@ public class UserDataUtil {
                 // device got rebooted
             }
         }
+        user.upTime = SystemClock.uptimeMillis();
         // Acquire a reference to the system Location Manager
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         if (context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED && context.checkSelfPermission(Manifest.permission.GET_ACCOUNTS) == PackageManager.PERMISSION_GRANTED) {
-            Map<String, Location> locMap = getLocationMap(user);
-            android.location.Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-            Location currLocation = addLastLocationToMap(user, location, locMap);
+            Map<String, Location> locMap = new HashMap<String, Location>();
+            for (com.mysjsu.mobsecurity.Location l : user.locs) {
+                float lat = l.lastKnownLat;
+                float lon = l.lastKnownLong;
+                String ll = lat + "," + lon;
+                locMap.put(ll, l);
+            }
+            android.location.Location l = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            float lat = round(l.getLatitude());
+            float lon = round(l.getLongitude());
+            String ll = lat + "," + lon;
+            if (locMap.containsKey(ll)) {
+                locMap.get(ll).lastSeenTime = System.currentTimeMillis();
+            } else {
+                com.mysjsu.mobsecurity.Location loc = new com.mysjsu.mobsecurity.Location(lat, lon, System.currentTimeMillis());
+                user.locs.add(loc);
+            }
             WifiManager wifiMgr = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-            WifiInfo wifiInfo = addWifiDetails(user, wifiMgr);
-            UsageStatsManager usageStatsManager = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
-            //TODO After debating use case for this method, add specific data to OutlierDetector
-            getAppUsageDataList(user, usageStatsManager);
-            OutlierDetector outlierDetector = OutlierDetector.getOutlierDetectorInstance(context, user.userId, currLocation, wifiInfo, null);
-        }
-    }
+            WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
+            user.wifis.add(wifiInfo.getSSID().replace("\"", ""));
+            UsageStatsManager lUsageStatsManager = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
+            List<UsageStats> lUsageStatsList = lUsageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, user.statsStartTime, System.currentTimeMillis() + TimeUnit.DAYS.toMillis(1));
 
-    //TODO  Debate Use case for this method
-    private void getAppUsageDataList(UserData user, UsageStatsManager lUsageStatsManager) {
-        List<UsageStats> lUsageStatsList = lUsageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1), System.currentTimeMillis() + TimeUnit.DAYS.toMillis(1));
-        Map<String, App> installedapps = getInstalledApps(false, user);
-        for (UsageStats lUsageStats : lUsageStatsList) {
-            if (installedapps.containsKey(lUsageStats.getPackageName()) && lUsageStats.getTotalTimeInForeground() > 0) {
-                App pinfo = installedapps.get(lUsageStats.getPackageName());
-                pinfo.lastAccessedTimeStamp = lUsageStats.getLastTimeUsed();
-                pinfo.appAccessedDuration = lUsageStats.getTotalTimeInForeground();
+
+            Map<String, App> installedapps = getInstalledApps(false, user);
+            for (UsageStats lUsageStats : lUsageStatsList) {
+                if (installedapps.containsKey(lUsageStats.getPackageName())) {
+                    App pinfo = installedapps.get(lUsageStats.getPackageName());
+                    if (lUsageStats.getTotalTimeInForeground() == 0 && pinfo.appAccessedDuration == 0) {
+                        installedapps.remove(lUsageStats.getPackageName());
+                        continue;
+                    }
+                    pinfo.lastAccessedTimeStamp = Math.max(pinfo.lastAccessedTimeStamp, lUsageStats.getLastTimeUsed());
+                    pinfo.hrs[hourOfDay] = 1;
+                    pinfo.appAccessedDuration += lUsageStats.getTotalTimeInForeground();
+                }
+            }
+            user.apps.clear();
+            for (String app : installedapps.keySet()) {
+                App app1 = installedapps.get(app);
+                if (app1.appAccessedDuration != 0) {
+                    user.apps.add(app1);
+                }
             }
         }
     }
 
-    private WifiInfo addWifiDetails(UserData user, WifiManager wifiMgr) {
-        WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
-        user.wifis.add(wifiInfo.getSSID().replace("\"", ""));
-        return wifiInfo;
-    }
-
-
-    //TODO Write comments explaining this method, Review method with team mates
-    private Location addLastLocationToMap(UserData user, android.location.Location location, Map<String, Location> locMap) {
-        double latitude = location.getLatitude();
-        double longitude = location.getLongitude();
-        String latLongKey = latitude + "," + longitude;
-        Location currLocation;
-        if (locMap.containsKey(latLongKey)) {
-            currLocation = locMap.get(latLongKey);
-            locMap.get(latLongKey).lastSeenTime = System.currentTimeMillis();
-        } else {
-            currLocation = new Location(latitude, longitude, System.currentTimeMillis());
-            user.locs.add(currLocation);
-        }
-        return currLocation;
-    }
-
-
-    //TODO Change the implementation to get the mapping directly from memory
-    @NonNull
-    private Map<String, Location> getLocationMap(UserData user) {
-        Map<String, Location> locMap = new HashMap<String, Location>();
-        for (Location l : user.locs) {
-            double lat = l.lastKnownLat;
-            double lon = l.lastKnownLong;
-            String ll = lat + "," + lon;
-            locMap.put(ll, l);
-        }
-        return locMap;
+    // round to 3 digits to get location accurate upto 100mts (http://gis.stackexchange.com/a/8674)
+    private float round(double d) {
+        return (Math.round(d * 1000.0)) / 1000.0F;
     }
 
     static String getEmail(Context context) {
@@ -143,6 +133,7 @@ public class UserDataUtil {
                 res.put(a.appname, a);
             }
         }
+
         List<PackageInfo> packs = context.getPackageManager().getInstalledPackages(0);
         for (int i = 0; i < packs.size(); i++) {
             PackageInfo p = packs.get(i);
@@ -153,7 +144,6 @@ public class UserDataUtil {
             if (newInfo == null) {
                 newInfo = new App(p.packageName);
                 res.put(p.packageName, newInfo);
-                user.apps.add(newInfo);
             }
             int uid = p.applicationInfo.uid;
             newInfo.totalRxBytes = TrafficStats.getUidRxBytes(uid);
