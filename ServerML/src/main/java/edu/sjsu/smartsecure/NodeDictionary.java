@@ -1,5 +1,7 @@
 package edu.sjsu.smartsecure;
 
+import edu.sjsu.smartsecure.decisionTree.Node;
+
 import java.util.HashMap;
 import java.util.Map;
 

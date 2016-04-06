@@ -10,7 +10,7 @@ import java.net.UnknownHostException;
  * Created by mallika on 4/4/16.
  */
 public class AggregationAndMasterUserTableHandler {
-
+    //TODO Change this
     public String getProfession(String userId) {
         DBCollection masterCollection = MongoFactory.getCollection("MasterUserCollection");
         BasicDBObject dbo = new BasicDBObject("userId", userId);

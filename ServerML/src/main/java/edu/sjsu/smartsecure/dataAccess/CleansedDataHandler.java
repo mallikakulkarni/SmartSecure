@@ -31,6 +31,7 @@ public class CleansedDataHandler {
     public void createRecord() {
         String userId = "123";
         aggregationAndMasterUserTableHandler.getProfession(userId);
+        //TODO Change
         CleansedRecord cleansedRecord = new CleansedRecord(profession, 0, 0, true, true);
         insertRecord(cleansedRecord);
     }
@@ -43,7 +44,7 @@ public class CleansedDataHandler {
         System.out.println("Cleansed record " + record.get_id().toString() + " writtent to db");
     }
 
-    //TODO Apoorva Add other fields here
+    //TODO Apoorva Add new fields
     private BasicDBObject createDbRecordObject(CleansedRecord record) {
         BasicDBObject dbRecord = new BasicDBObject();
         dbRecord.put("Profession", record.getProfession());
