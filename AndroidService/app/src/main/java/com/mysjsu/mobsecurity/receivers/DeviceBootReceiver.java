@@ -1,4 +1,4 @@
-package com.mysjsu.mobsecurity;
+package com.mysjsu.mobsecurity.receivers;
 
 /**
  * Created by Poornima on 3/15/16.
@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 public class DeviceBootReceiver extends BroadcastReceiver {
 
+    public static final int interval = 300000;
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
@@ -23,8 +24,6 @@ public class DeviceBootReceiver extends BroadcastReceiver {
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
 
             AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-
-            int interval = 8000;
 
             manager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
 

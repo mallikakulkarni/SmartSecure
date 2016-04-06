@@ -1,18 +1,21 @@
-package com.mysjsu.mobsecurity;
+package com.mysjsu.mobsecurity.receivers;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.mysjsu.mobsecurity.CreateUserAsyncTask;
+import com.mysjsu.mobsecurity.LoginDataBaseAdapter;
+import com.mysjsu.mobsecurity.UserDBObj;
+import com.mysjsu.mobsecurity.UserData;
+import com.mysjsu.mobsecurity.UserDataUtil;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Calendar;
@@ -54,21 +57,25 @@ public class AlarmReceiver extends BroadcastReceiver {
         }
 
         String email = userDataUtil.getEmail(context);
+        // get Instance  of Database Adapter
+        LoginDataBaseAdapter loginDataBaseAdapter = new LoginDataBaseAdapter(context);
+        loginDataBaseAdapter = loginDataBaseAdapter.open();
+        final UserDBObj userDB = loginDataBaseAdapter.getSinlgeEntry(email);
         if (user == null) {
-            user = new UserData(android_id, email);
+            user = new UserData(android_id, email, userDB.getOccupation(), userDB.getUserName());
         } else {
-            long prevStartTime = user.statsStartTime;
+            long prevStartTime = user.getStatsStartTime();
             long newStartTime = calendar.getTimeInMillis();
             if (prevStartTime != newStartTime) {
                 // Day changed. Write daily object to mongodb
                 Log.i("SmrtSec", "Writing to Mongolab");
                 createUserAsyncTask = new CreateUserAsyncTask();
                 createUserAsyncTask.execute(gson.toJson(user));
-                user = new UserData(android_id, email);
-                user.statsStartTime = newStartTime;
+                user = new UserData(android_id, email, userDB.getOccupation(), userDB.getUserName());
+                user.setStatsStartTime(newStartTime);
             }
         }
-        userDataUtil.getStats(user, hourOfDay);
+        userDataUtil.getStats(user, hourOfDay, userDB.getOccupation(), userDB.getUserName());
         String json = gson.toJson(user);
         FileOutputStream fos = null;
         try {

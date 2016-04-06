@@ -9,22 +9,42 @@ import java.util.Set;
  * Created by Poornima on 3/14/16.
  */
 public class UserData {
+    String userName;
     List<App> apps;
     List<Location> locs;
     String userId;
     String androidId;
+    String occupation;
     Set<String> wifis;
     int incorrectPswdAttemptCount;
     long statsStartTime;
     long upTime;
 
-    public UserData(String androidId, String userId) {
+    public UserData(String androidId, String userId, String occupation, String userName) {
+        this.occupation = occupation;
         this.userId = userId;
+        this.userName = userName;
         this.androidId = androidId;
         apps = new ArrayList<App>();
         locs = new ArrayList<Location>();
         wifis = new HashSet<String>();
         incorrectPswdAttemptCount = 0;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getOccupation() {
+        return occupation;
+    }
+
+    public void setOccupation(String occupation) {
+        this.occupation = occupation;
     }
 
     public List<App> getApps() {
@@ -191,6 +211,7 @@ class Location {
         this.lastKnownLat = lastKnownLat;
         this.lastKnownLong = lastKnownLong;
         this.startTime = startTime;
+        this.lastSeenTime = startTime;
     }
 
     public float getLastKnownLat() {

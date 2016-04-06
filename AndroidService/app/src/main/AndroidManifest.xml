@@ -21,21 +21,38 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".MainActivity"
+            android:name=".SignUPActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".MonitoringActivity"/>
+        <activity android:name=".PromptSecActivity"/>
+        <activity android:name=".PromptSecActivity2"/>
+
+
+        <receiver android:name=".receivers.PeriodicTaskReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".receivers.PeriodicTaskReceiver2">
+            <intent-filter>
+                <action android:name="android.intent.action.AIRPLANE_MODE" />
+            </intent-filter>
+        </receiver>
         <receiver
-            android:name=".DeviceBootReceiver"
+            android:name=".receivers.DeviceBootReceiver"
             android:enabled="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"></action>
             </intent-filter>
         </receiver>
-        <receiver android:name=".AlarmReceiver"></receiver>
+        <receiver android:name=".receivers.AlarmReceiver"></receiver>
 
     </application>
 
