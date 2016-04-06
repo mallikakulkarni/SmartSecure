@@ -32,12 +32,12 @@ public class UserDataUtil {
         this.context = context;
     }
 
-    void getStats(UserData user, int hourOfDay) {
+    public void getStats(UserData user, int hourOfDay, String occ, String userName) {
         String android_id = Settings.Secure.getString(context.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
         String email = getEmail(context);
         if (user == null) {
-            user = new UserData(android_id, email);
+            user = new UserData(android_id, email, occ, userName);
         } else {
             if (user.androidId.equals(android_id)) {
                 if (!user.userId.equals(email)) {
@@ -104,7 +104,7 @@ public class UserDataUtil {
         return (Math.round(d * 1000.0)) / 1000.0F;
     }
 
-    static String getEmail(Context context) {
+    public static String getEmail(Context context) {
         AccountManager accountManager = AccountManager.get(context);
         Account account = getAccount(accountManager);
 

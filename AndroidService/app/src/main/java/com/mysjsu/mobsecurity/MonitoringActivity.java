@@ -14,7 +14,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+import com.mysjsu.mobsecurity.receivers.AlarmReceiver;
+import com.mysjsu.mobsecurity.receivers.DeviceBootReceiver;
+
+public class MonitoringActivity extends AppCompatActivity {
 
     private static final int MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS = 100;
     private PendingIntent pendingIntent;
@@ -26,8 +29,8 @@ public class MainActivity extends AppCompatActivity {
         getPermission();
 
         /* Retrieve a PendingIntent that will perform a broadcast */
-        Intent alarmIntent = new Intent(MainActivity.this, AlarmReceiver.class);
-        pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, alarmIntent, 0);
+        Intent alarmIntent = new Intent(MonitoringActivity.this, AlarmReceiver.class);
+        pendingIntent = PendingIntent.getBroadcast(MonitoringActivity.this, 0, alarmIntent, 0);
 
         findViewById(R.id.startAlarm).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,11 +54,10 @@ public class MainActivity extends AppCompatActivity {
 //        pm.setComponentEnabledSetting(receiver,
 //                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
 //                PackageManager.DONT_KILL_APP);
-        AlarmManager manager = (AlarmManager) MainActivity.this.getSystemService(Context.ALARM_SERVICE);
+        AlarmManager manager = (AlarmManager) MonitoringActivity.this.getSystemService(Context.ALARM_SERVICE);
         // 5 mins
-        int interval = 300000;
 
-        manager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
+        manager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), DeviceBootReceiver.interval, pendingIntent);
         Toast.makeText(this, "Alarm Set", Toast.LENGTH_SHORT).show();
     }
 
@@ -66,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
 //        pm.setComponentEnabledSetting(receiver,
 //                PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
 //                PackageManager.DONT_KILL_APP);
-        AlarmManager manager = (AlarmManager) MainActivity.this.getSystemService(Context.ALARM_SERVICE);
+        AlarmManager manager = (AlarmManager) MonitoringActivity.this.getSystemService(Context.ALARM_SERVICE);
         manager.cancel(pendingIntent);
         Toast.makeText(this, "Alarm Canceled", Toast.LENGTH_SHORT).show();
     }
@@ -82,13 +84,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d("MainActivity", "resultCode " + resultCode);
+        Log.d("MonitoringActivity", "resultCode " + resultCode);
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS:
                 getPermission();
                 break;
         }
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
