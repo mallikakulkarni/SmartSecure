@@ -8,6 +8,7 @@ public class DecisionTree {
     private Node root;
 
     private DecisionTree(Node root) {
+
         this.root = root;
     }
 
@@ -17,4 +18,6 @@ public class DecisionTree {
         }
         return decisionTree;
     }
+
+
 }
