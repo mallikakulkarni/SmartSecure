@@ -7,17 +7,22 @@ public class DecisionTree {
     private static DecisionTree decisionTree = null;
     private Node root;
 
-    private DecisionTree(Node root) {
-
-        this.root = root;
+    private DecisionTree() {
+        root = null;
     }
 
-    public static DecisionTree getDecisionTreeInstance(Node root) {
+    public static DecisionTree getDecisionTreeInstance() {
         if (decisionTree == null) {
-            decisionTree = new DecisionTree(root);
+            decisionTree = new DecisionTree();
         }
         return decisionTree;
     }
 
+    public Node getRoot() {
+        return root;
+    }
 
+    public void setRoot(Node root) {
+        this.root = root;
+    }
 }
