@@ -27,7 +27,6 @@ public class Algorithm {
         conditions.add(root.getNodeId());
         List<String> values = new ArrayList<String>();
         getChildren(root, conditions, columnHeaders, values);
-
     }
 
     private static Node buildDecisionTree(double informationGain, List<String> columnHeaders, long totalRecords) {
@@ -45,11 +44,11 @@ public class Algorithm {
             long safeRecords = decisionTreeHandler.getSafeRecordCountForChild(conditions, values, true);
             if (safeRecords == totalRecords) {
                 Node child = new Node(node.getNodeId()+"safe");
-                child.setResult(true);
+                child.setResult(-1);
                 node.getChildren().add(i, child);
             } else if (safeRecords == 0) {
                 Node child = new Node(node.getNodeId()+"unsafe");
-                child.setResult(false);
+                child.setResult(getIntegerValueOfParentNode(node.getNodeId()));
                 node.getChildren().add(i, child);
             } else {
                 Map<String, Long> resultMap = decisionTreeHandler.getCountsOfSafeAndUnsafeData(conditions, values);
@@ -70,8 +69,8 @@ public class Algorithm {
 
     private static double getInformationGain(Map<String, Long> resultMap) {
         long total = resultMap.get("Total");
-        long safe = resultMap.get("Safe");
-        long unsafe = resultMap.get("Unsafe");
+        long safe = resultMap.get("safe");
+        long unsafe = resultMap.get("unsafe");
         double log2safe = getLogBase2((float) safe / total);
         double log2unsafe = getLogBase2((float) unsafe / total);
         double informationGain = (float) -1 * ((((float) safe/total) * log2safe) + (((float) unsafe/total) * log2unsafe));
@@ -106,8 +105,8 @@ public class Algorithm {
         for (String keyAttribute : attributeMap.keySet()) {
             Map<String, Long> counts = attributeMap.get(keyAttribute);
             long total = counts.get("Total");
-            long yes = counts.get("Safe");
-            long no = counts.get("Unsafe");
+            long yes = counts.get("safe");
+            long no = counts.get("unsafe");
             float multiplier = -1 * (float) total/totalRecordCount;
             float safeFactor = (float) yes/total;
             float unsafeFactor = (float) no/total;
@@ -137,6 +136,35 @@ public class Algorithm {
             }
         }
         return root;
+    }
+
+    private static Integer getIntegerValueOfParentNode(String parentId) {
+        if (parentId.equals("Outlook")) {
+            return 100;
+        } else if (parentId.equals("temperature")) {
+            return 200;
+        } else if (parentId.equals("humidity")) {
+            return 300;
+        } else if (parentId.equals("wind")) {
+            return 400;
+        } else if (parentId.equals("appName")) {
+            return 1;
+        } else if (parentId.equals("network")) {
+            return 2;
+        } else if (parentId.equals("datausage")) {
+            return 3;
+        } else if (parentId.equals("dayOfTheWeek")) {
+            return 4;
+        } else if (parentId.equals("timeOfTheDay")) {
+            return 5;
+        } else if (parentId.equals("demographic")) {
+            return 6;
+        } else if (parentId.equals("frequency")) {
+            return 7;
+        } else if (parentId.equals("frequentLocation")) {
+            return 8;
+        }
+        return 1000;
     }
 
 

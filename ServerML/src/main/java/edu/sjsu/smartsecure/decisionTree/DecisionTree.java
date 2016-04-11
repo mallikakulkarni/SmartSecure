@@ -30,11 +30,11 @@ public class DecisionTree {
         this.root = root;
     }
 
-    public boolean processTestData(JSONObject jsonObject) {
+    public int processTestData(JSONObject jsonObject) {
         return traverseDecisionTreeForResult(root, jsonObject);
     }
 
-    private boolean traverseDecisionTreeForResult(Node node, JSONObject jsonObject) {
+    private int traverseDecisionTreeForResult(Node node, JSONObject jsonObject) {
         String nodeId = node.getNodeId();
         String inputValue = jsonObject.get(nodeId).toString();
         List<String> attributes = node.getAttributes();

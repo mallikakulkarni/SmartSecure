@@ -13,15 +13,26 @@ public class OutlierDetectionService {
         decisionTree = DecisionTree.getDecisionTreeInstance();
     }
 
-    public boolean getSafeUnsafeResult(JSONObject jsonObject) {
-        return decisionTree.processTestData(jsonObject);
+    public JSONObject getSafeUnsafeResult(JSONObject jsonObject) {
+        int result = decisionTree.processTestData(jsonObject);
+        JSONObject resultObject = new JSONObject();
+        resultObject.put("MongoOid", jsonObject.get("MongoOid"));
+        resultObject.put("result", result);
+        return resultObject;
     }
 
     public boolean verifyTestData(JSONObject jsonObject) {
         boolean testResult = (Boolean) jsonObject.get("class");
         jsonObject.remove("class");
-        boolean actResult = decisionTree.processTestData(jsonObject);
-        return testResult == actResult;
+        int actResult = decisionTree.processTestData(jsonObject);
+        if (actResult == -1 && testResult == true) {
+            return true;
+        } else if (actResult != -1 && testResult == true) {
+            return false;
+        } else if (actResult == -1 && testResult == false) {
+            return false;
+        }
+        return true;
     }
 
 }

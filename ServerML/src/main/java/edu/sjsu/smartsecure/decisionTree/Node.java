@@ -10,7 +10,7 @@ public class Node {
     private String nodeId;
     private List<String> attributes;
     private List<Node> children;
-    private Boolean result;
+    private Integer result;
     private Node parent;
 
     public Node(String nodeId) {
@@ -30,11 +30,11 @@ public class Node {
         this.parent = parent;
     }
 
-    public Boolean getResult() {
+    public Integer getResult() {
         return result;
     }
 
-    public void setResult(Boolean result) {
+    public void setResult(Integer result) {
         this.result = result;
     }
 

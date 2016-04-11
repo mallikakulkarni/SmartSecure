@@ -9,7 +9,11 @@ import java.util.*;
  */
 public class DecisionTreeHandler {
     private long totalRecordCount;
+    private DBCollection collection;
 
+    public DecisionTreeHandler() {
+        collection = MongoFactory.getCollection("trainingtestdata");
+    }
 
     private long getTotalRecordCount(DBCollection collection, BasicDBObject query) {
         return collection.count(query);
@@ -20,14 +24,12 @@ public class DecisionTreeHandler {
     }
 
     public long getTotalRecordCount() {
-        DBCollection collection = MongoFactory.getCollection("MallikaTrainingData");
         totalRecordCount = collection.count();
         return totalRecordCount;
     }
 
     public Map<String, Map<String,Long>> getAttributeCountMap(String attribute) {
         Map<String, Map<String, Long>> resultMap = new HashMap<String, Map<String, Long>>();
-        DBCollection collection = MongoFactory.getCollection("MallikaTrainingData");
         List<String> cursor = collection.distinct(attribute);
         BasicDBObject query = null;
         for (String value : cursor) {
@@ -44,8 +46,8 @@ public class DecisionTreeHandler {
             long unsafe = getQueryRecordCount(collection, query);
             Map<String, Long> valueMap = new HashMap<String, Long>();
             valueMap.put("Total", total);
-            valueMap.put("Safe", safe);
-            valueMap.put("Unsafe", unsafe);
+            valueMap.put("safe", safe);
+            valueMap.put("unsafe", unsafe);
             resultMap.put(value, valueMap);
         }
         return resultMap;
@@ -54,27 +56,26 @@ public class DecisionTreeHandler {
 
 
     public List<String> getForks(String attribute) {
-        return MongoFactory.getCollection("MallikaTrainingData").distinct(attribute);
+        return collection.distinct(attribute);
     }
 
     public Map<String, Long> getCountsOfSafeAndUnsafeData() {
-        DBCollection collection = MongoFactory.getCollection("MallikaTrainingData");
         Map<String, Long> recordMap = new HashMap<String, Long>();
         List<BasicDBObject> conditionList = new ArrayList<BasicDBObject>();
         BasicDBObject query = new BasicDBObject();
         recordMap.put("Total", getTotalRecordCount(collection, query));
         conditionList.add(new BasicDBObject("class", true));
         query = new BasicDBObject("$and", conditionList);
-        recordMap.put("Safe", getQueryRecordCount(collection, query));
+        recordMap.put("safe", getQueryRecordCount(collection, query));
         conditionList.remove(conditionList.size()-1);
         conditionList.add(new BasicDBObject("class", false));
         query = new BasicDBObject("$and", conditionList);
-        recordMap.put("Unsafe", getQueryRecordCount(collection, query));
+        recordMap.put("unsafe", getQueryRecordCount(collection, query));
         return recordMap;
     }
 
+
     public Map<String, Long> getCountsOfSafeAndUnsafeData(List<String> conditions, List<String> values) {
-        DBCollection collection = MongoFactory.getCollection("MallikaTrainingData");
         Map<String, Long> recordMap = new HashMap<String, Long>();
         List<BasicDBObject> conditionList = new ArrayList<BasicDBObject>();
         for (int i = 0; i < conditions.size(); i++) {
@@ -84,17 +85,16 @@ public class DecisionTreeHandler {
         recordMap.put("Total", getTotalRecordCount(collection, query));
         conditionList.add(new BasicDBObject("class", true));
         query = new BasicDBObject("$and", conditionList);
-        recordMap.put("Safe", getQueryRecordCount(collection, query));
+        recordMap.put("safe", getQueryRecordCount(collection, query));
         conditionList.remove(conditionList.size()-1);
         conditionList.add(new BasicDBObject("class", false));
         query = new BasicDBObject("$and", conditionList);
-        recordMap.put("Unsafe", getQueryRecordCount(collection, query));
+        recordMap.put("unsafe", getQueryRecordCount(collection, query));
         return recordMap;
     }
 
     public long getTotalRecordCountForChild(List<String> conditions, List<String> values) {
-        DBCollection collection = MongoFactory.getCollection("MallikaTrainingData");
-        BasicDBObject query = new BasicDBObject();
+        BasicDBObject query;
         List<BasicDBObject> conditionList = new ArrayList<BasicDBObject>();
         for (int i = 0; i < conditions.size(); i++) {
             query = new BasicDBObject(conditions.get(i), values.get(i));
@@ -105,7 +105,6 @@ public class DecisionTreeHandler {
     }
 
     public long getSafeRecordCountForChild(List<String> conditions, List<String> values, boolean isSafe) {
-        DBCollection collection = MongoFactory.getCollection("MallikaTrainingData");
         BasicDBObject query = new BasicDBObject();
         List<BasicDBObject> conditionList = new ArrayList<BasicDBObject>();
         for (int i = 0; i < conditions.size(); i++) {

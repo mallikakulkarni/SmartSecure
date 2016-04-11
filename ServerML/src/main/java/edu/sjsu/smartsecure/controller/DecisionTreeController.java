@@ -5,6 +5,7 @@ import edu.sjsu.smartsecure.decisionTree.DecisionTree;
 import javafx.application.Application;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.util.ArrayList;
@@ -13,6 +14,8 @@ import java.util.List;
 /**
  * Created by mallika on 4/9/16.
  */
+
+@ComponentScan
 public class DecisionTreeController {
 
     public static void main(String[] args) {
