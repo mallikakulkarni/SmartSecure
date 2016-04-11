@@ -13,12 +13,12 @@ import android.util.Log;
 
 public class LoginDataBaseAdapter {
     static final String DATABASE_NAME = "mobsec.db";
-    static final int DATABASE_VERSION = 1;
+    static final int DATABASE_VERSION = 3;
     public static final int NAME_COLUMN = 1;
     // TODO: Create public field for each column in your table.
     // SQL Statement to create a new database.
     static final String DATABASE_CREATE = "create table " + "LOGIN" +
-            "( " + "ID" + " integer primary key autoincrement," + "USERNAME  text,PASSWORD text, CONTACT text, OCCUPATION text, EMAIL text); ";
+            "( " + "ID" + " integer primary key autoincrement," + "USERNAME  text,PASSWORD text, CONTACT text, GENDER text, EMAIL text); ";
     // Variable to hold the database instance
     public SQLiteDatabase db;
     // Context of the application using the database.
@@ -50,7 +50,7 @@ public class LoginDataBaseAdapter {
         newValues.put("USERNAME", u.userName);
         newValues.put("PASSWORD", u.password);
         newValues.put("EMAIL", u.email);
-        newValues.put("OCCUPATION", u.occupation);
+        newValues.put("GENDER", u.gender);
         newValues.put("CONTACT", u.emergContact);
 
         // Insert the row into your table
@@ -76,9 +76,9 @@ public class LoginDataBaseAdapter {
         cursor.moveToFirst();
         String password = cursor.getString(cursor.getColumnIndex("PASSWORD"));
         String contact = cursor.getString(cursor.getColumnIndex("CONTACT"));
-        String occ = cursor.getString(cursor.getColumnIndex("OCCUPATION"));
+        String gender = cursor.getString(cursor.getColumnIndex("GENDER"));
         String userName = cursor.getString(cursor.getColumnIndex("USERNAME"));
-        UserDBObj u = new UserDBObj(userName, password, contact, occ, email);
+        UserDBObj u = new UserDBObj(userName, password, contact, gender, email);
         cursor.close();
         return u;
     }
@@ -92,7 +92,7 @@ public class LoginDataBaseAdapter {
             updatedValues.put("PASSWORD", u.password);
         }
 //        updatedValues.put("EMAIL", u.email);
-        updatedValues.put("OCCUPATION", u.occupation);
+        updatedValues.put("GENDER", u.gender);
         updatedValues.put("CONTACT", u.emergContact);
         String where = "EMAIL = ?";
         db.update("LOGIN", updatedValues, where, new String[]{u.email});

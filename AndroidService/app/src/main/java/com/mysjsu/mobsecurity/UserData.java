@@ -14,20 +14,20 @@ public class UserData {
     List<Location> locs;
     String userId;
     String androidId;
-    String occupation;
-    Set<String> wifis;
+    String gender;
+    Set<Wifi> wifis;
     int incorrectPswdAttemptCount;
     long statsStartTime;
     long upTime;
 
-    public UserData(String androidId, String userId, String occupation, String userName) {
-        this.occupation = occupation;
+    public UserData(String androidId, String userId, String gender, String userName) {
+        this.gender = gender;
         this.userId = userId;
         this.userName = userName;
         this.androidId = androidId;
         apps = new ArrayList<App>();
         locs = new ArrayList<Location>();
-        wifis = new HashSet<String>();
+        wifis = new HashSet<Wifi>();
         incorrectPswdAttemptCount = 0;
     }
 
@@ -39,12 +39,12 @@ public class UserData {
         this.userName = userName;
     }
 
-    public String getOccupation() {
-        return occupation;
+    public String getGender() {
+        return gender;
     }
 
-    public void setOccupation(String occupation) {
-        this.occupation = occupation;
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
     public List<App> getApps() {
@@ -79,11 +79,11 @@ public class UserData {
         this.androidId = androidId;
     }
 
-    public Set<String> getWifis() {
+    public Set<Wifi> getWifis() {
         return wifis;
     }
 
-    public void setWifis(Set<String> wifis) {
+    public void setWifis(Set<Wifi> wifis) {
         this.wifis = wifis;
     }
 

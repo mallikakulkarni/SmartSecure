@@ -11,6 +11,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.net.TrafficStats;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.SystemClock;
@@ -70,8 +72,22 @@ public class UserDataUtil {
                 user.locs.add(loc);
             }
             WifiManager wifiMgr = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+            WifiConfiguration activeConfig = null;
+
+            try {
+                for (WifiConfiguration conn : wifiMgr.getConfiguredNetworks()) {
+                    if (conn.status == WifiConfiguration.Status.CURRENT) {
+                        activeConfig = conn;
+                        break;
+                    }
+                }
+            } catch (NullPointerException e) {
+
+            }
             WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
-            user.wifis.add(wifiInfo.getSSID().replace("\"", ""));
+            String currentSSID = wifiInfo.getSSID().replace("\"", "");
+
+            user.wifis.add(new Wifi(currentSSID, getSecurity(activeConfig)));
             UsageStatsManager lUsageStatsManager = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
             List<UsageStats> lUsageStatsList = lUsageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, user.statsStartTime, System.currentTimeMillis() + TimeUnit.DAYS.toMillis(1));
 
@@ -99,7 +115,20 @@ public class UserDataUtil {
         }
     }
 
+    static boolean getSecurity(WifiConfiguration config) {
+        if (config == null) {
+            return false;
+        }
+        if (config.allowedKeyManagement.get(WifiConfiguration.KeyMgmt.WPA_PSK)) {
+            return true;
+        }
+        if (config.allowedKeyManagement.get(WifiConfiguration.KeyMgmt.WPA_EAP) || config.allowedKeyManagement.get(WifiConfiguration.KeyMgmt.IEEE8021X)) {
+            return true;
+        }
+        return (config.wepKeys[0] != null) ? true : false;
+    }
     // round to 3 digits to get location accurate upto 100mts (http://gis.stackexchange.com/a/8674)
+
     private float round(double d) {
         return (Math.round(d * 1000.0)) / 1000.0F;
     }
