@@ -49,7 +49,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         try {
             FileInputStream fis = context.openFileInput(fileName);
             InputStreamReader ir = new InputStreamReader(fis);
-            user = gson.fromJson(ir, UserData.class);
+           // user = gson.fromJson(ir, UserData.class);
             ir.close();
             fis.close();
         } catch (FileNotFoundException e) {
