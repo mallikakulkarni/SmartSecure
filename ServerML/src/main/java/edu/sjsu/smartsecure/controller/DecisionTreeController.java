@@ -4,9 +4,14 @@ import edu.sjsu.smartsecure.decisionTree.Algorithm;
 import edu.sjsu.smartsecure.decisionTree.DecisionTree;
 import javafx.application.Application;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +19,8 @@ import java.util.List;
 /**
  * Created by mallika on 4/9/16.
  */
-
-@ComponentScan
+@SpringBootApplication
 public class DecisionTreeController {
-
     public static void main(String[] args) {
         ApplicationContext context = new ClassPathXmlApplicationContext("spring-config.xml");
         List<String> columnHeaders = new ArrayList<String>();

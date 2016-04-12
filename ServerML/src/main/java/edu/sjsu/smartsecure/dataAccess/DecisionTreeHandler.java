@@ -12,7 +12,7 @@ public class DecisionTreeHandler {
     private DBCollection collection;
 
     public DecisionTreeHandler() {
-        collection = MongoFactory.getCollection("trainingtestdata");
+        collection = MongoFactory.getCollection("MallikaTrainingData");
     }
 
     private long getTotalRecordCount(DBCollection collection, BasicDBObject query) {

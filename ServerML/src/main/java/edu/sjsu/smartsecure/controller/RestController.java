@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  */
 
 @RequestMapping("/smartsecure")
-@Controller
+@org.springframework.web.bind.annotation.RestController
 public class RestController {
     @RequestMapping(value="/EvalDataPost", method = RequestMethod.POST)
     public JSONObject getEvaluationResponse(@RequestBody JSONObject jsonObject) {
@@ -26,13 +26,6 @@ public class RestController {
         OutlierDetectionService outlierDetectionService = new OutlierDetectionService();
         JSONObject resultObject = outlierDetectionService.getSafeUnsafeResult(jsonObject);
         return resultObject;
-    }
-
-    @RequestMapping(value="/GetTree", method = RequestMethod.GET)
-    public String getDecisionTreeVisualization(Model model) {
-        DecisionTree decisionTree = DecisionTree.getDecisionTreeInstance();
-        model.addAttribute("DecisionTree", decisionTree);
-        return "Tree";
     }
 
     @RequestMapping(value="/Feedback", method = RequestMethod.POST)
