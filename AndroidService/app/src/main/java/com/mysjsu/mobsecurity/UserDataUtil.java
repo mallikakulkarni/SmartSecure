@@ -11,14 +11,12 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.net.TrafficStats;
-import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.SystemClock;
 import android.provider.Settings;
 
-import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +51,7 @@ public class UserDataUtil {
         user.upTime = SystemClock.uptimeMillis();
         // Acquire a reference to the system Location Manager
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        if (context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED && context.checkSelfPermission(Manifest.permission.GET_ACCOUNTS) == PackageManager.PERMISSION_GRANTED) {
+        if (context.getPackageManager().checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION, context.getPackageName()) == PackageManager.PERMISSION_GRANTED && context.getPackageManager().checkPermission(Manifest.permission.GET_ACCOUNTS, context.getPackageName()) == PackageManager.PERMISSION_GRANTED) {
             Map<String, Location> locMap = new HashMap<String, Location>();
             for (com.mysjsu.mobsecurity.Location l : user.locs) {
                 float lat = l.lastKnownLat;
@@ -129,7 +127,7 @@ public class UserDataUtil {
     }
     // round to 3 digits to get location accurate upto 100mts (http://gis.stackexchange.com/a/8674)
 
-    private float round(double d) {
+    public static float round(double d) {
         return (Math.round(d * 1000.0)) / 1000.0F;
     }
 

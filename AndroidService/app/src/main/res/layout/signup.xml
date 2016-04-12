@@ -51,8 +51,8 @@
                 android:id="@+id/editTextEmergencyContact"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number"
-                android:hint="Emergency Contact">
+                android:hint="Emergency Contact"
+                android:inputType="number">
 
             </EditText>
 
@@ -60,17 +60,96 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-                <RadioButton android:id="@+id/radio_male"
+
+                <RadioButton
+                    android:id="@+id/radio_male"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Male"
-                    android:onClick="onRadioButtonClicked"/>
-                <RadioButton android:id="@+id/radio_female"
+                    android:onClick="onRadioButtonClicked"
+                    android:text="Male" />
+
+                <RadioButton
+                    android:id="@+id/radio_female"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Female"
-                    android:onClick="onRadioButtonClicked"/>
+                    android:onClick="onRadioButtonClicked"
+                    android:text="Female" />
             </RadioGroup>
+
+            <EditText
+                android:id="@+id/address1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Home Address"
+                android:inputType="textPostalAddress" />
+
+            <TextView
+                android:id="@+id/latLon1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:hint="Home Lat/Lon"
+                android:onClick="handleOnClick"></TextView>
+
+            <EditText
+                android:id="@+id/address2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Office Address"
+                android:inputType="textPostalAddress" />
+
+            <TextView
+                android:id="@+id/latLon2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:hint="Office Lat/Lon"
+                android:onClick="handleOnClick"></TextView>
+
+            <EditText
+                android:id="@+id/address3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Preferred Address 1"
+                android:inputType="textPostalAddress" />
+
+            <TextView
+                android:id="@+id/latLon3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:hint="Preferred Address 1 Lat/Lon"
+                android:onClick="handleOnClick"></TextView>
+
+            <EditText
+                android:id="@+id/address4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Preferred Address 2"
+                android:inputType="textPostalAddress" />
+
+            <TextView
+                android:id="@+id/latLon4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:hint="Preferred Address 2 Lat/Lon"
+                android:onClick="handleOnClick"></TextView>
+
+            <EditText
+                android:id="@+id/address5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Preferred Address 3"
+                android:inputType="textPostalAddress" />
+
+            <TextView
+                android:id="@+id/latLon5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:hint="Preferred Address 3 Lat/Lon"
+                android:onClick="handleOnClick"></TextView>
 
 
             <EditText

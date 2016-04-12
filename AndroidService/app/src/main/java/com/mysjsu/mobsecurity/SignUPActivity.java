@@ -10,6 +10,9 @@ import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
@@ -24,10 +27,15 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.util.List;
+
 public class SignUPActivity extends AppCompatActivity {
     EditText editTextUserName, editTextPassword, editTextConfirmPassword, editTextEmergencyContact, editTextOldPass;
+    EditText[] addressList;
     private static final int MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS = 100;
     TextView email;
+    TextView[] latLon;
     Button btnCreateAccount;
     RadioButton femaleRadio, maleRadio;
 
@@ -80,6 +88,19 @@ public class SignUPActivity extends AppCompatActivity {
         email.setText(emailid);
 
         editTextEmergencyContact = (EditText) findViewById(R.id.editTextEmergencyContact);
+        addressList = new EditText[5];
+
+        addressList[0] = (EditText) findViewById(R.id.address1);
+        addressList[1] = (EditText) findViewById(R.id.address2);
+        addressList[2] = (EditText) findViewById(R.id.address3);
+        addressList[3] = (EditText) findViewById(R.id.address4);
+        addressList[4] = (EditText) findViewById(R.id.address5);
+        latLon = new TextView[5];
+        latLon[0] = (TextView) findViewById(R.id.latLon1);
+        latLon[1] = (TextView) findViewById(R.id.latLon2);
+        latLon[2] = (TextView) findViewById(R.id.latLon3);
+        latLon[3] = (TextView) findViewById(R.id.latLon4);
+        latLon[4] = (TextView) findViewById(R.id.latLon5);
         maleRadio = (RadioButton) findViewById(R.id.radio_male);
         femaleRadio = (RadioButton) findViewById(R.id.radio_female);
         editTextPassword = (EditText) findViewById(R.id.editTextPassword);
@@ -100,6 +121,10 @@ public class SignUPActivity extends AppCompatActivity {
             } else
                 femaleRadio.setChecked(true);
             editTextOldPass.setVisibility(View.VISIBLE);
+            for (int i = 0; i < 5; i++) {
+                addressList[i].setText(user.address[i]);
+                latLon[i].setText(user.latLon[i]);
+            }
             btnCreateAccount.setText("Update Account");
         } else {
             editTextOldPass.setVisibility(View.INVISIBLE);
@@ -113,6 +138,18 @@ public class SignUPActivity extends AppCompatActivity {
                         String password = editTextPassword.getText().toString();
                         String oldPassword = editTextOldPass.getText().toString();
                         String confirmPassword = editTextConfirmPassword.getText().toString();
+                        String[] homeAddress = new String[5];
+                        String[] latLonStr = new String[5];
+                        for (int i = 0; i < 5; i++) {
+                            homeAddress[i] = addressList[i].getText().toString();
+                            if (homeAddress[i] != null && !homeAddress[i].isEmpty()) {
+                                GeoPoint gp = getLocationFromAddress(homeAddress[i]);
+                                if (gp != null) {
+                                    latLonStr[i] = gp.toString();
+                                    latLon[i].setText(latLonStr[i]);
+                                }
+                            }
+                        }
                         editTextOldPass.setText("");
                         editTextPassword.setText("");
                         editTextConfirmPassword.setText("");
@@ -141,14 +178,14 @@ public class SignUPActivity extends AppCompatActivity {
                         }
                         if (!update) {
                             // Save the Data in Database
-                            loginDataBaseAdapter.insertEntry(new UserDBObj(userName, password, emergenCon, gender, emailid));
+                            loginDataBaseAdapter.insertEntry(new UserDBObj(userName, password, emergenCon, gender, emailid, homeAddress, latLonStr));
                             Toast.makeText(getApplicationContext(), "Account Successfully Created ", Toast.LENGTH_LONG).show();
                         } else {
                             if (resetPass) {
-                                loginDataBaseAdapter.updateEntry(new UserDBObj(userName, password, emergenCon, gender, emailid), true);
+                                loginDataBaseAdapter.updateEntry(new UserDBObj(userName, password, emergenCon, gender, emailid, homeAddress, latLonStr), true);
                                 Toast.makeText(getApplicationContext(), "Password Successfully Updated ", Toast.LENGTH_LONG).show();
                             } else {
-                                loginDataBaseAdapter.updateEntry(new UserDBObj(userName, user.password, emergenCon, gender, emailid), false);
+                                loginDataBaseAdapter.updateEntry(new UserDBObj(userName, user.password, emergenCon, gender, emailid, homeAddress, latLonStr), false);
                                 Toast.makeText(getApplicationContext(), "Account Successfully Updated ", Toast.LENGTH_LONG).show();
                             }
                         }
@@ -208,7 +245,7 @@ public class SignUPActivity extends AppCompatActivity {
         if (!hasPermission()) {
             requestPermission();
         }
-        if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED || checkSelfPermission(Manifest.permission.GET_ACCOUNTS) != PackageManager.PERMISSION_GRANTED) {
+        if (getPackageManager().checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION, getPackageName()) != PackageManager.PERMISSION_GRANTED || getPackageManager().checkPermission(Manifest.permission.GET_ACCOUNTS, getPackageName()) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.GET_ACCOUNTS}, MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS);
         }
     }
@@ -263,4 +300,50 @@ public class SignUPActivity extends AppCompatActivity {
         return mode == AppOpsManager.MODE_ALLOWED;
     }
 
+
+    class GeoPoint {
+        float lat;
+        float lon;
+
+        public GeoPoint(float lat, float lon) {
+            this.lat = lat;
+            this.lon = lon;
+        }
+
+        @Override
+        public String toString() {
+            return lat + "," + lon;
+        }
+    }
+
+    public GeoPoint getLocationFromAddress(String strAddress) {
+
+        Geocoder coder = new Geocoder(this);
+        List<Address> address;
+        GeoPoint p1 = null;
+
+        try {
+            address = coder.getFromLocationName(strAddress, 5);
+            if (address == null) {
+                return null;
+            }
+            Address location = address.get(0);
+
+            p1 = new GeoPoint(UserDataUtil.round(location.getLatitude()),
+                    UserDataUtil.round(location.getLongitude()));
+
+            return p1;
+        } catch (IOException e) {
+            return p1;
+        }
+    }
+
+    public void handleOnClick(View view) {
+        TextView v = (TextView) view;
+        String ll = v.getText().toString();
+        if (ll != null && !ll.isEmpty()) {
+            Intent searchAddress = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=" + ll + "(" + ll + ")&z=11"));
+            startActivity(searchAddress);
+        }
+    }
 }
