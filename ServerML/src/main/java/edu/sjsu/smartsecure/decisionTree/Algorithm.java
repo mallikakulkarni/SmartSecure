@@ -46,15 +46,18 @@ public class Algorithm {
                 Node child = new Node(node.getNodeId()+"safe");
                 child.setResult(-1);
                 node.getChildren().add(i, child);
+                child.setCorrespondingAttribute(attributes.get(i));
             } else if (safeRecords == 0) {
                 Node child = new Node(node.getNodeId()+"unsafe");
                 child.setResult(getIntegerValueOfParentNode(node.getNodeId()));
                 node.getChildren().add(i, child);
+                child.setCorrespondingAttribute(attributes.get(i));
             } else {
                 Map<String, Long> resultMap = decisionTreeHandler.getCountsOfSafeAndUnsafeData(conditions, values);
                 double informationGain = getInformationGain(resultMap);
                 Node child = buildDecisionTree(informationGain, columnHeaders, totalRecords);
                 node.getChildren().add(i, child);
+                child.setCorrespondingAttribute(attributes.get(i));
                 List<String> newColumnHeaders = new ArrayList<String>(columnHeaders);
                 columnHeaders.remove(child.getNodeId());
                 List<String> newConditions = new ArrayList<String>(conditions);

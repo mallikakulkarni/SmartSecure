@@ -20,4 +20,9 @@ public class ViewController {
         model.addAttribute("Root", decisionTree.getRoot().getNodeId());
         return "Tree";
     }
+
+    @RequestMapping(value="/menuFragment", method = RequestMethod.GET)
+    public String getMenuFragment() {
+        return "menuFragment";
+    }
 }

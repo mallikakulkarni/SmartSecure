@@ -12,6 +12,7 @@ public class Node {
     private List<Node> children;
     private Integer result;
     private Node parent;
+    private String correspondingAttribute;
 
     public Node(String nodeId) {
         this.nodeId = nodeId;
@@ -60,5 +61,13 @@ public class Node {
 
     public void setChildren(List<Node> children) {
         this.children = children;
+    }
+
+    public String getCorrespondingAttribute() {
+        return correspondingAttribute;
+    }
+
+    public void setCorrespondingAttribute(String correspondingAttribute) {
+        this.correspondingAttribute = correspondingAttribute;
     }
 }
