@@ -40,7 +40,7 @@ public class UserDBObj {
     public void setOccupation(String occupation) {
         this.gender = occupation;
     }
-
+    String _id;
     String userName;
     String password;
     String emergContact;
@@ -49,7 +49,9 @@ public class UserDBObj {
     String[] address;
     String[] latLon;
 
-    public UserDBObj(String un, String pass, String cont, String occ, String em, String[] address, String[] latLon) {
+
+    public UserDBObj(String _id,String un, String pass, String cont, String occ, String em, String[] address, String[] latLon) {
+        this._id = _id;
         this.userName = un;
         this.password = pass;
         this.emergContact = cont;

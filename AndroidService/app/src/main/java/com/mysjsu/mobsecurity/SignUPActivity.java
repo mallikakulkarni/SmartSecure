@@ -27,6 +27,8 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -140,6 +142,9 @@ public class SignUPActivity extends AppCompatActivity {
                         String confirmPassword = editTextConfirmPassword.getText().toString();
                         String[] homeAddress = new String[5];
                         String[] latLonStr = new String[5];
+                        String androidId = Settings.Secure.getString(getContentResolver(),
+                                Settings.Secure.ANDROID_ID);
+
                         for (int i = 0; i < 5; i++) {
                             homeAddress[i] = addressList[i].getText().toString();
                             if (homeAddress[i] != null && !homeAddress[i].isEmpty()) {
@@ -176,16 +181,25 @@ public class SignUPActivity extends AppCompatActivity {
                                 resetPass = true;
                             }
                         }
+                        Gson gson = new Gson();
+                        CreateMainUserAsyncTask createMainUserAsyncTask = new CreateMainUserAsyncTask();
+
                         if (!update) {
                             // Save the Data in Database
-                            loginDataBaseAdapter.insertEntry(new UserDBObj(userName, password, emergenCon, gender, emailid, homeAddress, latLonStr));
+                            UserDBObj mainUserDbObject = new UserDBObj(androidId, userName, password, emergenCon, gender, emailid, homeAddress, latLonStr);
+                            loginDataBaseAdapter.insertEntry(mainUserDbObject);
+                            createMainUserAsyncTask.execute(gson.toJson(mainUserDbObject));
                             Toast.makeText(getApplicationContext(), "Account Successfully Created ", Toast.LENGTH_LONG).show();
                         } else {
                             if (resetPass) {
-                                loginDataBaseAdapter.updateEntry(new UserDBObj(userName, password, emergenCon, gender, emailid, homeAddress, latLonStr), true);
+                                UserDBObj mainUserDbObject = new UserDBObj(androidId,userName, password, emergenCon, gender, emailid, homeAddress, latLonStr);
+                                createMainUserAsyncTask.execute(gson.toJson(mainUserDbObject));
+                                loginDataBaseAdapter.updateEntry(mainUserDbObject, true);
                                 Toast.makeText(getApplicationContext(), "Password Successfully Updated ", Toast.LENGTH_LONG).show();
                             } else {
-                                loginDataBaseAdapter.updateEntry(new UserDBObj(userName, user.password, emergenCon, gender, emailid, homeAddress, latLonStr), false);
+                                UserDBObj mainUserDbObject = new UserDBObj(androidId,userName, user.password, emergenCon, gender, emailid, homeAddress, latLonStr);
+                                createMainUserAsyncTask.execute(gson.toJson(mainUserDbObject));
+                                loginDataBaseAdapter.updateEntry(mainUserDbObject, false);
                                 Toast.makeText(getApplicationContext(), "Account Successfully Updated ", Toast.LENGTH_LONG).show();
                             }
                         }
