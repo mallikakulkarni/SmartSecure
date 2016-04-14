@@ -9,11 +9,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.provider.Settings;
 import android.util.Log;
 
 public class LoginDataBaseAdapter {
     static final String DATABASE_NAME = "mobsec.db";
-    static final int DATABASE_VERSION = 4;
+    static final int DATABASE_VERSION = 7;
     public static final int NAME_COLUMN = 1;
     // TODO: Create public field for each column in your table.
     // SQL Statement to create a new database.
@@ -86,11 +87,13 @@ public class LoginDataBaseAdapter {
         String userName = cursor.getString(cursor.getColumnIndex("USERNAME"));
         String[] address = new String[5];
         String[] latlon = new String[5];
+        String androidId = Settings.Secure.getString(context.getContentResolver(),
+                Settings.Secure.ANDROID_ID);
         for (int i = 1; i <= 5; i++) {
             address[i - 1] = cursor.getString(cursor.getColumnIndex("ADDRESS" + i));
             latlon[i - 1] = cursor.getString(cursor.getColumnIndex("LATLON" + i));
         }
-        UserDBObj u = new UserDBObj(userName, password, contact, gender, email, address, latlon);
+        UserDBObj u = new UserDBObj(androidId,userName, password, contact, gender, email, address, latlon);
         cursor.close();
         return u;
     }
