@@ -6,8 +6,8 @@
                     <span th:text="${Child.getCorrespondingAttribute()}"></span>
                 </li>
                 <li th:if="${Child.getResult() != null}">
-                    <span th:if="${Child.getResult() == -1}" th:text="${Child.getCorrespondingAttribute() + ' - Safe'}"></span>
-                    <span th:if="${Child.getResult() != -1}" th:text="${Child.getCorrespondingAttribute() + ' - Unsafe'}"></span>
+                    <span th:if="${Child.getResult() == -1}" th:text="${Child.getColumn() + ' ' + Child.getCorrespondingAttribute() + ' - Safe'}"></span>
+                    <span th:if="${Child.getResult() != -1}" th:text="${Child.getColumn() + ' ' + Child.getCorrespondingAttribute() + ' - Unsafe'}"></span>
                 </li>
                 <section layout:include="@{./menuFragment} :: menu" th:with="Nodes=${Child.getChildren()}"></section>
             </ul>

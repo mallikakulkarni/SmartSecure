@@ -1,18 +1,10 @@
 package edu.sjsu.smartsecure.controller;
 
 import edu.sjsu.smartsecure.decisionTree.Algorithm;
-import edu.sjsu.smartsecure.decisionTree.DecisionTree;
-import javafx.application.Application;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-
 import java.util.ArrayList;
 import java.util.List;
 

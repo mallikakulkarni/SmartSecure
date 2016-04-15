@@ -6,7 +6,6 @@ import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
 import edu.sjsu.smartsecure.domain.CleansedRecord;
 import org.bson.types.ObjectId;
-import sun.util.cldr.CLDRLocaleDataMetaInfo;
 
 import java.awt.*;
 import java.util.logging.Logger;

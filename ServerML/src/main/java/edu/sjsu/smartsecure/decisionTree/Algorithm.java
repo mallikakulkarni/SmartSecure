@@ -53,11 +53,13 @@ public class Algorithm {
                 child.setResult(-1);
                 node.getChildren().add(i, child);
                 child.setCorrespondingAttribute(attributes.get(i));
+                child.setColumn(node.getNodeId());
             } else if (safeRecords == 0) {
                 Node child = new Node(node.getNodeId()+"unsafe");
                 child.setResult(getIntegerValueOfParentNode(node.getNodeId()));
                 node.getChildren().add(i, child);
                 child.setCorrespondingAttribute(attributes.get(i));
+                child.setColumn(node.getNodeId());
             } else {
                 Map<String, Long> resultMap = decisionTreeHandler.getCountsOfSafeAndUnsafeData(conditions, values);
                 double informationGain = getInformationGain(resultMap);

@@ -13,6 +13,7 @@ public class Node {
     private Integer result;
     private Node parent;
     private String correspondingAttribute;
+    private String column;
 
     public Node(String nodeId) {
         this.nodeId = nodeId;
@@ -69,5 +70,13 @@ public class Node {
 
     public void setCorrespondingAttribute(String correspondingAttribute) {
         this.correspondingAttribute = correspondingAttribute;
+    }
+
+    public String getColumn() {
+        return column;
+    }
+
+    public void setColumn(String column) {
+        this.column = column;
     }
 }
