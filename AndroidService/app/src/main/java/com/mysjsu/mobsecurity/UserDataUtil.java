@@ -16,10 +16,13 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.SystemClock;
 import android.provider.Settings;
+import android.util.Log;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -50,23 +53,34 @@ public class UserDataUtil {
         }
         user.upTime = SystemClock.uptimeMillis();
         // Acquire a reference to the system Location Manager
-        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        if (context.getPackageManager().checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION, context.getPackageName()) == PackageManager.PERMISSION_GRANTED && context.getPackageManager().checkPermission(Manifest.permission.GET_ACCOUNTS, context.getPackageName()) == PackageManager.PERMISSION_GRANTED) {
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context
+                .LOCATION_SERVICE);
+        if (context.getPackageManager().checkPermission(Manifest.permission
+                .ACCESS_COARSE_LOCATION, context.getPackageName()) == PackageManager
+                .PERMISSION_GRANTED && context.getPackageManager().checkPermission(Manifest
+                .permission.GET_ACCOUNTS, context.getPackageName()) == PackageManager
+                .PERMISSION_GRANTED) {
             Map<String, Location> locMap = new HashMap<String, Location>();
             for (com.mysjsu.mobsecurity.Location l : user.locs) {
+                l.isCurrent = false;
                 float lat = l.lastKnownLat;
                 float lon = l.lastKnownLong;
                 String ll = lat + "," + lon;
                 locMap.put(ll, l);
             }
-            android.location.Location l = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            android.location.Location l = locationManager.getLastKnownLocation(LocationManager
+                    .NETWORK_PROVIDER);
             float lat = round(l.getLatitude());
             float lon = round(l.getLongitude());
             String ll = lat + "," + lon;
             if (locMap.containsKey(ll)) {
+                locMap.get(ll).isCurrent = true;
                 locMap.get(ll).lastSeenTime = System.currentTimeMillis();
+
             } else {
-                com.mysjsu.mobsecurity.Location loc = new com.mysjsu.mobsecurity.Location(lat, lon, System.currentTimeMillis());
+                com.mysjsu.mobsecurity.Location loc = new com.mysjsu.mobsecurity.Location(lat,
+                        lon, System.currentTimeMillis());
+                loc.isCurrent = true;
                 user.locs.add(loc);
             }
             WifiManager wifiMgr = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
@@ -84,22 +98,40 @@ public class UserDataUtil {
             }
             WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
             String currentSSID = wifiInfo.getSSID().replace("\"", "");
+            if (currentSSID.equals("0x")) {
+                currentSSID = "mobile";
+            }
 
-            user.wifis.add(new Wifi(currentSSID, getSecurity(activeConfig)));
-            UsageStatsManager lUsageStatsManager = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
-            List<UsageStats> lUsageStatsList = lUsageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, user.statsStartTime, System.currentTimeMillis() + TimeUnit.DAYS.toMillis(1));
+            for (Wifi wifi : user.wifis) {
+                if (wifi.wifi.equals(currentSSID))
+                    wifi.isCurrent = true;
+                else
+                    wifi.isCurrent = false;
+            }
+            user.wifis.add(new Wifi(currentSSID, getSecurity(activeConfig), true));
+
+            UsageStatsManager lUsageStatsManager = (UsageStatsManager) context.getSystemService
+                    (Context.USAGE_STATS_SERVICE);
+            List<UsageStats> lUsageStatsList = lUsageStatsManager.queryUsageStats
+                    (UsageStatsManager.INTERVAL_DAILY,
+                            user.statsStartTime, user.statsStartTime + TimeUnit.DAYS.toMillis(1));
 
 
             Map<String, App> installedapps = getInstalledApps(false, user);
             for (UsageStats lUsageStats : lUsageStatsList) {
                 if (installedapps.containsKey(lUsageStats.getPackageName())) {
                     App pinfo = installedapps.get(lUsageStats.getPackageName());
-                    if (lUsageStats.getTotalTimeInForeground() == 0 && pinfo.appAccessedDuration == 0) {
+                    if ((lUsageStats.getTotalTimeInForeground() == 0 && pinfo.appAccessedDuration
+                            == 0)) {
                         installedapps.remove(lUsageStats.getPackageName());
                         continue;
                     }
-                    pinfo.lastAccessedTimeStamp = Math.max(pinfo.lastAccessedTimeStamp, lUsageStats.getLastTimeUsed());
+                    pinfo.lastAccessedTimeStamp = Math.max(pinfo.lastAccessedTimeStamp,
+                            lUsageStats.getLastTimeUsed());
                     pinfo.hrs[hourOfDay] = 1;
+                    if (lUsageStats.getPackageName().startsWith("com.whatsapp"))
+                        Log.d("SmartSec", lUsageStats.getPackageName() + " - " + lUsageStats
+                                .getTotalTimeInForeground());
                     pinfo.appAccessedDuration += lUsageStats.getTotalTimeInForeground();
                 }
             }
@@ -120,7 +152,8 @@ public class UserDataUtil {
         if (config.allowedKeyManagement.get(WifiConfiguration.KeyMgmt.WPA_PSK)) {
             return true;
         }
-        if (config.allowedKeyManagement.get(WifiConfiguration.KeyMgmt.WPA_EAP) || config.allowedKeyManagement.get(WifiConfiguration.KeyMgmt.IEEE8021X)) {
+        if (config.allowedKeyManagement.get(WifiConfiguration.KeyMgmt.WPA_EAP) || config
+                .allowedKeyManagement.get(WifiConfiguration.KeyMgmt.IEEE8021X)) {
             return true;
         }
         return (config.wepKeys[0] != null) ? true : false;
@@ -157,6 +190,7 @@ public class UserDataUtil {
         Map<String, App> res = new HashMap<String, App>();
         if (user != null) {
             for (App a : user.apps) {
+                a.appAccessedDuration = 0;
                 res.put(a.appname, a);
             }
         }
@@ -176,6 +210,95 @@ public class UserDataUtil {
             newInfo.totalRxBytes = TrafficStats.getUidRxBytes(uid);
             newInfo.totalTxBytes = TrafficStats.getUidTxBytes(uid);
         }
+        res.remove("com.mysjsu.mobsecurity");
         return res;
+    }
+
+    public UserData getChangedUserData(UserData prevUserData, UserData curUserData) {
+
+        if (prevUserData == null) {
+            return null;
+        }
+        HashMap<String, App> prevAppMap = new HashMap<String, App>();
+        HashMap<String, App> curAppMap = new HashMap<String, App>();
+        Set<String> allApps = new HashSet<String>();
+        //    public UserData(String androidId, String userId, String gender, String userName) {
+        boolean changed = false;
+        UserData diffUserData = new UserData(curUserData.androidId, curUserData.userId,
+                curUserData.gender, curUserData.userName);
+        for (App app : prevUserData.apps) {
+            prevAppMap.put(app.appname, app);
+            allApps.add(app.appname);
+        }
+        for (App app : curUserData.apps) {
+            curAppMap.put(app.appname, app);
+            allApps.add(app.appname);
+        }
+        for (String appName : allApps) {
+            App prevApp = prevAppMap.get(appName);
+            App currApp = curAppMap.get(appName);
+            if (prevApp == null && currApp != null) {
+                // new app used
+                diffUserData.apps.add(currApp);
+                changed = true;
+            } else if (prevApp != null && currApp != null) {
+                // check if app's stats changed
+                if (!prevApp.equals(currApp)) {
+                    App diffApp = new App(currApp);
+                    diffApp.appAccessedDuration = currApp.appAccessedDuration - prevApp
+                            .appAccessedDuration;
+                    diffApp.totalTxBytes = currApp.totalTxBytes - prevApp.totalTxBytes;
+                    diffApp.totalRxBytes = currApp.totalRxBytes - prevApp.totalRxBytes;
+                    diffUserData.apps.add(diffApp);
+                    changed = true;
+                }
+            }
+        }
+
+        Location curLoc = null;
+        for (Location l : curUserData.locs) {
+            if (l.isCurrent) {
+                curLoc = l;
+            }
+        }
+        if (curLoc != null)
+            diffUserData.locs.add(curLoc);
+        Location prevLoc = null;
+        for (Location l : prevUserData.locs) {
+            if (l.isCurrent) {
+                prevLoc = l;
+            }
+        }
+//        if (curLoc != null && !curLoc.equals(prevLoc)) {
+//            changed = true;
+//        }
+
+        Wifi curWifi = null;
+        for (Wifi l : curUserData.wifis) {
+            Log.d("WIFIS", l.wifi + " - " + l.isCurrent);
+            if (l.isCurrent) {
+                curWifi = l;
+            }
+        }
+        if (curWifi != null)
+            diffUserData.wifis.add(curWifi);
+        else {
+            Log.d("SmartSec", "Wifi IS NULL");
+        }
+        Wifi prevWifi = null;
+        for (Wifi l : prevUserData.wifis) {
+            if (l.isCurrent) {
+                prevWifi = l;
+            }
+        }
+//        if (curWifi != null && !curWifi.equals(prevWifi)) {
+//            changed = true;
+//        }
+        if (changed) {
+            return diffUserData;
+        }
+        return null;
+
+
     }
 }

@@ -22,6 +22,7 @@ public class PromptSecKey {
         loginDataBaseAdapter = new LoginDataBaseAdapter(context);
         loginDataBaseAdapter = loginDataBaseAdapter.open();
         user = loginDataBaseAdapter.getSinlgeEntry(emailId);
+        loginDataBaseAdapter.close();
         this.context = context;
         this.callback = callback;
     }

@@ -8,10 +8,12 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.mysjsu.mobsecurity.CreateUserAsyncTask;
+import com.mysjsu.mobsecurity.CreateUserTestDataAsyncTask;
 import com.mysjsu.mobsecurity.LoginDataBaseAdapter;
 import com.mysjsu.mobsecurity.UserDBObj;
 import com.mysjsu.mobsecurity.UserData;
 import com.mysjsu.mobsecurity.UserDataUtil;
+import com.mysjsu.mobsecurity.UserTestData;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -45,11 +47,11 @@ public class AlarmReceiver extends BroadcastReceiver {
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
-
+        UserData previousUserData = null;
         try {
             FileInputStream fis = context.openFileInput(fileName);
             InputStreamReader ir = new InputStreamReader(fis);
-           // user = gson.fromJson(ir, UserData.class);
+            user = gson.fromJson(ir, UserData.class);
             ir.close();
             fis.close();
         } catch (FileNotFoundException e) {
@@ -71,11 +73,23 @@ public class AlarmReceiver extends BroadcastReceiver {
                 Log.i("SmrtSec", "Writing to Mongolab");
                 createUserAsyncTask = new CreateUserAsyncTask();
                 createUserAsyncTask.execute(gson.toJson(user));
-                user = new UserData(android_id, email, userDB.getOccupation(), userDB.getUserName());
+                user = new UserData(android_id, email, userDB.getOccupation(), userDB.getUserName
+                        ());
                 user.setStatsStartTime(newStartTime);
+            } else {
+                previousUserData = new UserData(user);
             }
         }
         userDataUtil.getStats(user, hourOfDay, userDB.getOccupation(), userDB.getUserName());
+        UserData diff = userDataUtil.getChangedUserData(previousUserData, user);
+        if (diff != null) {
+            // The data changed in last 30 secs.
+            // send to mongolab and to api
+            UserTestData utd = new UserTestData(diff);
+            Log.i("SmrtSec", "Data Changed. Writing to Mongolab");
+            CreateUserTestDataAsyncTask createUserTestAsyncTask = new CreateUserTestDataAsyncTask();
+            createUserTestAsyncTask.execute(gson.toJson(utd));
+        }
         String json = gson.toJson(user);
         FileOutputStream fos = null;
         try {
@@ -85,6 +99,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         } catch (FileNotFoundException e) {
         } catch (IOException e) {
         }
+        loginDataBaseAdapter.close();
 
         Log.i("JSON", json);
     }

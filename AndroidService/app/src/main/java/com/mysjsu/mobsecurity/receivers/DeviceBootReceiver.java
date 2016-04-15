@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 public class DeviceBootReceiver extends BroadcastReceiver {
 
-    public static final int interval = 300000;
+    public static final int interval = 30000;
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {

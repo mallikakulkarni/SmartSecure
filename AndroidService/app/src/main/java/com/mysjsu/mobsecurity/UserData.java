@@ -31,6 +31,36 @@ public class UserData {
         incorrectPswdAttemptCount = 0;
     }
 
+    public UserData(UserData user) {
+
+        this.androidId = user.androidId;
+        this.gender = user.gender;
+        this.userId = user.userId;
+        this.userName = user.userName;
+        this.incorrectPswdAttemptCount = user.incorrectPswdAttemptCount;
+        apps = new ArrayList<App>();
+        for (App app : user.apps) {
+
+            apps.add(new App(app));
+        }
+
+
+        locs = new ArrayList<Location>();
+        for (Location loc : user.locs) {
+            locs.add(new Location(loc));
+
+        }
+        wifis = new HashSet<Wifi>();
+        for (Wifi wifi : user.wifis) {
+            wifis.add(new Wifi(wifi));
+
+        }
+
+        this.statsStartTime = user.statsStartTime;
+        this.upTime = user.upTime;
+
+    }
+
     public String getUserName() {
         return userName;
     }
@@ -128,6 +158,28 @@ class App {
         appname = name;
     }
 
+    public App(App app) {
+        this.lastAccessedTimeStamp = app.lastAccessedTimeStamp;
+        this.appAccessedDuration = app.appAccessedDuration;
+        this.appCrashCount = app.appCrashCount;
+        this.appname = app.appname;
+        this.totalRxBytes = app.totalRxBytes;
+        this.totalTxBytes = app.totalTxBytes;
+
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        App newApp = (App) o;
+        if (lastAccessedTimeStamp == newApp.lastAccessedTimeStamp &&
+                appAccessedDuration == newApp.appAccessedDuration /*&&
+                totalRxBytes == newApp.totalRxBytes &&
+                totalTxBytes == newApp.totalRxBytes*/) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -206,12 +258,24 @@ class Location {
     float lastKnownLong;
     long startTime;
     long lastSeenTime;
+    boolean isCurrent;
 
     public Location(float lastKnownLat, float lastKnownLong, long startTime) {
         this.lastKnownLat = lastKnownLat;
         this.lastKnownLong = lastKnownLong;
         this.startTime = startTime;
         this.lastSeenTime = startTime;
+    }
+
+    public Location(Location locs) {
+
+        this.lastKnownLat = locs.lastKnownLat;
+        this.lastKnownLong = locs.lastKnownLong;
+        this.startTime = locs.startTime;
+        this.lastSeenTime = locs.lastSeenTime;
+        this.isCurrent = locs.isCurrent;
+
+
     }
 
     public float getLastKnownLat() {
@@ -244,5 +308,14 @@ class Location {
 
     public void setLastSeenTime(long lastSeenTime) {
         this.lastSeenTime = lastSeenTime;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        Location l = (Location) o;
+        if (l.lastKnownLat == lastKnownLat && l.lastKnownLong == lastKnownLong) {
+            return true;
+        }
+        return false;
     }
 }
