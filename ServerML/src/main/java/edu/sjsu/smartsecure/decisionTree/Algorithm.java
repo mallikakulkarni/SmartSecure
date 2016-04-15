@@ -1,6 +1,5 @@
 package edu.sjsu.smartsecure.decisionTree;
 
-import edu.sjsu.smartsecure.NodeDictionary;
 import edu.sjsu.smartsecure.dataAccess.DecisionTreeHandler;
 
 import java.util.ArrayList;
@@ -30,7 +29,14 @@ public class Algorithm {
     }
 
     private static Node buildDecisionTree(double informationGain, List<String> columnHeaders, long totalRecords) {
-        String childId = getNode(informationGain, columnHeaders, totalRecords);
+        String childId = getNode(informationGain, columnHeaders, totalRecords, null, null);
+        Node child = new Node(childId);
+        child.setAttributes(decisionTreeHandler.getForks(childId));
+        return child;
+    }
+
+    private static Node buildDecisionTreeChild(double informationGain, List<String> columnHeaders, long totalRecords, List<String> conditions, List<String> values) {
+        String childId = getNode(informationGain, columnHeaders, totalRecords, conditions, values);
         Node child = new Node(childId);
         child.setAttributes(decisionTreeHandler.getForks(childId));
         return child;
@@ -55,7 +61,7 @@ public class Algorithm {
             } else {
                 Map<String, Long> resultMap = decisionTreeHandler.getCountsOfSafeAndUnsafeData(conditions, values);
                 double informationGain = getInformationGain(resultMap);
-                Node child = buildDecisionTree(informationGain, columnHeaders, totalRecords);
+                Node child = buildDecisionTreeChild(informationGain, columnHeaders, totalRecords, conditions, values);
                 node.getChildren().add(i, child);
                 child.setCorrespondingAttribute(attributes.get(i));
                 List<String> newColumnHeaders = new ArrayList<String>(columnHeaders);
@@ -80,10 +86,10 @@ public class Algorithm {
         return informationGain;
     }
 
-    private static String getNode(double informationGain, List<String> attributes, Long totalRecordCount) {
+    private static String getNode(double informationGain, List<String> attributes, Long totalRecordCount, List<String> conditions, List<String> values) {
         Map<String, Double> entropyMap = new HashMap<String, Double>();
         for (String attribute : attributes) {
-            double entropy = calculateEntropy(attribute, totalRecordCount);
+            double entropy = calculateEntropy(attribute, totalRecordCount, conditions, values);
             double gain = informationGain - entropy;
             entropyMap.put(attribute, gain);
         }
@@ -94,16 +100,16 @@ public class Algorithm {
         long totalRecordCount = decisionTreeHandler.getTotalRecordCount();
         Map<String, Double> entropyMap = new HashMap<String, Double>();
         for (String attribute : attributes) {
-            double entropy = calculateEntropy(attribute, totalRecordCount);
+            double entropy = calculateEntropy(attribute, totalRecordCount, null, null);
             double gain = informationGain - entropy;
             entropyMap.put(attribute, gain);
         }
         return getHighestgain(entropyMap);
     }
 
-    private static double calculateEntropy(String attribute, long totalRecordCount) {
+    private static double calculateEntropy(String attribute, long totalRecordCount, List<String> conditions, List<String> values) {
         Map<String, Double> entropyMap = new HashMap<String, Double>();
-        Map<String, Map<String,Long>> attributeMap = decisionTreeHandler.getAttributeCountMap(attribute);
+        Map<String, Map<String,Long>> attributeMap = decisionTreeHandler.getAttributeCountMap(attribute, conditions, values);
         double infoOutlook = 0;
         for (String keyAttribute : attributeMap.keySet()) {
             Map<String, Long> counts = attributeMap.get(keyAttribute);

@@ -22,6 +22,10 @@ public class TestAlgorithm {
         columnHeaders.add("demographic");
         columnHeaders.add("frequency");
         columnHeaders.add("frequentLocation");
+//        columnHeaders.add("Outlook");
+//        columnHeaders.add("wind");
+//        columnHeaders.add("humidity");
+//        columnHeaders.add("temperature");
         Algorithm.createDecisionTree(columnHeaders);
     }
 

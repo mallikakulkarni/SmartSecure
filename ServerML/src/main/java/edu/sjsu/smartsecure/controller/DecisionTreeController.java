@@ -24,10 +24,14 @@ public class DecisionTreeController {
     public static void main(String[] args) {
         ApplicationContext context = new ClassPathXmlApplicationContext("spring-config.xml");
         List<String> columnHeaders = new ArrayList<String>();
-        columnHeaders.add("Outlook");
-        columnHeaders.add("humidity");
-        columnHeaders.add("temperature");
-        columnHeaders.add("wind");
+        columnHeaders.add("appName");
+        columnHeaders.add("network");
+        columnHeaders.add("datausage");
+        columnHeaders.add("dayOfTheWeek");
+        columnHeaders.add("timeOfTheDay");
+        columnHeaders.add("demographic");
+        columnHeaders.add("frequency");
+        columnHeaders.add("frequentLocation");
         Algorithm.createDecisionTree(columnHeaders);
         SpringApplication.run(DecisionTreeController.class);
     }

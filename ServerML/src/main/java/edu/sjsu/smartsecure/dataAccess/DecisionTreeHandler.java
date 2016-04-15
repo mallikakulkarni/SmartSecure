@@ -12,7 +12,7 @@ public class DecisionTreeHandler {
     private DBCollection collection;
 
     public DecisionTreeHandler() {
-        collection = MongoFactory.getCollection("MallikaTrainingData");
+        collection = MongoFactory.getCollection("trainingtestdata");
     }
 
     private long getTotalRecordCount(DBCollection collection, BasicDBObject query) {
@@ -28,15 +28,28 @@ public class DecisionTreeHandler {
         return totalRecordCount;
     }
 
-    public Map<String, Map<String,Long>> getAttributeCountMap(String attribute) {
+    public Map<String, Map<String,Long>> getAttributeCountMap(String attribute, List<String> conditions, List<String> values) {
         Map<String, Map<String, Long>> resultMap = new HashMap<String, Map<String, Long>>();
         List<String> cursor = collection.distinct(attribute);
         BasicDBObject query = null;
+        List<BasicDBObject> parentConditions = new ArrayList<BasicDBObject>();
+        if (conditions != null && values != null) {
+            for (int i = 0; i < conditions.size(); i++) {
+                BasicDBObject condition = new BasicDBObject(conditions.get(i), values.get(i));
+                parentConditions.add(condition);
+            }
+        }
         for (String value : cursor) {
-            query = new BasicDBObject(attribute, value);
-            long total = getTotalRecordCount(collection, query);
             List<BasicDBObject> conditionList = new ArrayList<BasicDBObject>();
-            conditionList.add(query);
+            if (parentConditions != null) {
+                conditionList.addAll(parentConditions);
+            }
+            conditionList.add(new BasicDBObject(attribute, value));
+            query = new BasicDBObject("$and", conditionList);
+            long total = getTotalRecordCount(collection, query);
+            if (total == 0) {
+                continue;
+            }
             conditionList.add(new BasicDBObject("class", true));
             query = new BasicDBObject("$and", conditionList);
             long safe = getQueryRecordCount(collection, query);
