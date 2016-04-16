@@ -153,6 +153,9 @@ public class SignUPActivity extends AppCompatActivity {
                                     latLonStr[i] = gp.toString();
                                     latLon[i].setText(latLonStr[i]);
                                 }
+                                else {
+                                    latLonStr[i]="0,0";
+                                }
                             }
                         }
                         editTextOldPass.setText("");
@@ -338,7 +341,8 @@ public class SignUPActivity extends AppCompatActivity {
 
         try {
             address = coder.getFromLocationName(strAddress, 5);
-            if (address == null) {
+            if (address == null || address.size()<= 0) {
+                Toast.makeText(getApplicationContext(), "Couldn't geo-code address:" + strAddress, Toast.LENGTH_LONG).show();
                 return null;
             }
             Address location = address.get(0);
