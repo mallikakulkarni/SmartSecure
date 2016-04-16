@@ -86,9 +86,12 @@ public class AlarmReceiver extends BroadcastReceiver {
             // The data changed in last 30 secs.
             // send to mongolab and to api
             UserTestData utd = new UserTestData(diff);
-            Log.i("SmrtSec", "Data Changed. Writing to Mongolab");
-            CreateUserTestDataAsyncTask createUserTestAsyncTask = new CreateUserTestDataAsyncTask();
-            createUserTestAsyncTask.execute(gson.toJson(utd));
+            if (!utd.getApps().isEmpty()) {
+                Log.i("SmrtSec", "Data Changed. Writing to Mongolab");
+                CreateUserTestDataAsyncTask createUserTestAsyncTask = new
+                        CreateUserTestDataAsyncTask();
+                createUserTestAsyncTask.execute(gson.toJson(utd));
+            }
         }
         String json = gson.toJson(user);
         FileOutputStream fos = null;
