@@ -1,6 +1,7 @@
 package edu.sjsu.smartsecure.controller;
 
 import edu.sjsu.smartsecure.decisionTree.Algorithm;
+import edu.sjsu.smartsecure.service.EvalDataCleanseService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -14,6 +15,12 @@ import java.util.List;
 @SpringBootApplication
 public class DecisionTreeController {
     public static void main(String[] args) {
+        try {
+            EvalDataCleanseService evalDataCleanseService = new EvalDataCleanseService();
+            evalDataCleanseService.TrainData();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
         ApplicationContext context = new ClassPathXmlApplicationContext("spring-config.xml");
         List<String> columnHeaders = new ArrayList<String>();
         columnHeaders.add("appName");
