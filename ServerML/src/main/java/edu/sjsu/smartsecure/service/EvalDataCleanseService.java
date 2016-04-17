@@ -2,6 +2,7 @@ package edu.sjsu.smartsecure.service;
 
 import org.bson.types.ObjectId;
 import org.json.JSONObject;
+import org.json.JSONArray;
 import com.mongodb.*;
 import java.util.*;
 
@@ -38,15 +39,6 @@ public class EvalDataCleanseService {
     private static String getUser(DBObject obj) throws Exception{
         try {
             return (String)obj.get("userId");
-        } catch (Exception uhe) {
-            return null;
-        }
-    }
-
-    private static String getId(DBObject obj) throws Exception{
-        try {
-            ObjectId id = (ObjectId)obj.get("_id");
-            return id.toString();
         } catch (Exception uhe) {
             return null;
         }
@@ -257,6 +249,18 @@ public class EvalDataCleanseService {
         }
     }
 
+    public void cleanTrainData() throws Exception{
+        try{
+            DBCollection trainingCollection = getCollection(getConnection(uri), newCleansedCollection);
+            DBCursor cursor = trainingCollection.find();
+            while (cursor.hasNext()) {
+                trainingCollection.remove(cursor.next());
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
     public void TrainData() throws Exception{
         try{
             DB db = getConnection(uri);
@@ -270,9 +274,6 @@ public class EvalDataCleanseService {
             while(fields.hasNext()){
                 DBObject curr = fields.next();
                 String user = getUser(curr);
-
-                String uniqueId = getId(curr);
-
                 String demo = getDemographics(user, masterCollection);
 
                 BasicDBList appList = (BasicDBList)curr.get("appTestList");
@@ -288,7 +289,6 @@ public class EvalDataCleanseService {
                     String network = getNetwork(appObject);
 
                     BasicDBObject newObject = new BasicDBObject();
-                    newObject.put("uniqueId", uniqueId);
                     newObject.put("appName", appname);
                     newObject.put("network", network);
                     newObject.put("datausage", dataUsage);
@@ -301,7 +301,7 @@ public class EvalDataCleanseService {
                     String result = calculateResult(newObject);
                     newObject.put("class", result);
 
-                    trainingCollection.update(newObject, newObject, true, false);
+                    trainingCollection.insert(newObject);
 
                 }
             }
@@ -310,8 +310,63 @@ public class EvalDataCleanseService {
         }
     }
 
-    public JSONObject cleanData(JSONObject jsonObject) {
-        return jsonObject;
+    public JSONObject cleanRealTimeData(JSONObject jsonObject) {
+
+        JSONObject realTimeRecord = null;
+        try{
+            realTimeRecord = new JSONObject();
+            JSONArray realTimeArray = new JSONArray();
+
+            DB db = getConnection(uri);
+            DBCollection masterCollection = getCollection(db, mastertableCollection);
+            DBCollection trainingCollection = getCollection(db, newCleansedCollection);
+
+            DBObject curr = (DBObject)jsonObject;
+            String user = getUser(curr);
+            String demo = getDemographics(user, masterCollection);
+
+            BasicDBList appList = (BasicDBList)curr.get("appTestList");
+            for( Iterator< Object > it = appList.iterator(); it.hasNext(); )
+            {
+                DBObject appObject     = (DBObject)it.next();
+                String appname = getAppName(appObject);
+                String dayofweek = getDayofWeek(appObject);
+                String timeOfDay = getTimeOfDay(appObject);
+                String dataUsage = getDataUsage(appObject);
+                String freqLoc = getFrequentLoc(user, masterCollection, appObject);
+                String frequency = getFrequency(appObject);
+                String network = getNetwork(appObject);
+
+                BasicDBObject newObject = new BasicDBObject();
+                JSONObject realTimeApp = new JSONObject();
+                newObject.put("appName", appname);
+                realTimeApp.put("appName", appname);
+                newObject.put("network", network);
+                realTimeApp.put("network", network);
+                newObject.put("datausage", dataUsage);
+                realTimeApp.put("datausage", dataUsage);
+                newObject.put("dayOfTheWeek", dayofweek);
+                realTimeApp.put("dayOfTheWeek", dayofweek);
+                newObject.put("timeOfTheDay", timeOfDay);
+                realTimeApp.put("timeOfTheDay", timeOfDay);
+                newObject.put("demographic", demo);
+                realTimeApp.put("demographic", demo);
+                newObject.put("frequency", frequency);
+                realTimeApp.put("frequency", frequency);
+                newObject.put("frequentLocation", freqLoc);
+                realTimeApp.put("frequentLocation", freqLoc);
+
+                String result = calculateResult(newObject);
+                newObject.put("class", result);
+
+                trainingCollection.insert(newObject);
+                realTimeArray.put(realTimeApp);
+            }
+            realTimeRecord.put("realtimedata",realTimeArray);
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+        return realTimeRecord;
     }
 
 

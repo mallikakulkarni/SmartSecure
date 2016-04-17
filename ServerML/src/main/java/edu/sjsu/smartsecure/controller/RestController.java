@@ -22,7 +22,7 @@ public class RestController {
     @RequestMapping(value="/EvalDataPost", method = RequestMethod.POST)
     public JSONObject getEvaluationResponse(@RequestBody JSONObject jsonObject) {
         EvalDataCleanseService evalDataCleanseService = new EvalDataCleanseService();
-        jsonObject = evalDataCleanseService.cleanData(jsonObject);
+        jsonObject = evalDataCleanseService.cleanRealTimeData(jsonObject);
         OutlierDetectionService outlierDetectionService = new OutlierDetectionService();
         JSONObject resultObject = outlierDetectionService.getSafeUnsafeResult(jsonObject);
         return resultObject;
