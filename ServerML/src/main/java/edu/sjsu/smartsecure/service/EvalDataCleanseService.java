@@ -1,6 +1,5 @@
 package edu.sjsu.smartsecure.service;
 
-import org.bson.types.ObjectId;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import com.mongodb.*;
@@ -12,9 +11,10 @@ import java.util.*;
 public class EvalDataCleanseService {
 
     private String uri = "mongodb://smartsecureteam:SJSU2016@ds015909.mlab.com:15909/smartsecure";
-    private String collectionName = "smartsecuretest";
     private String mastertableCollection = "MasterUserTable";
     private String newCleansedCollection = "TrainingData";
+    private static HashMap<String, Integer> AppFrequency;
+    private static long lastMapUpdate = 0;
 
     private static DB getConnection(String uri) throws Exception{
         try{
@@ -204,7 +204,27 @@ public class EvalDataCleanseService {
 
     private static String getFrequency(DBObject obj) throws Exception{
         try {
-            String freq = "10";
+            String appName = (String)obj.get("appname");
+            String freq = "low";
+            long updateTime = (System.currentTimeMillis() - lastMapUpdate)/(1000*60*60);
+            if(updateTime > 24) //the hashmap is cleared every 24hrs to determine the app frequency
+            {
+                AppFrequency.clear();
+                lastMapUpdate = System.currentTimeMillis();
+            }
+            Integer frequency = AppFrequency.get(appName);
+            if(frequency == null)
+            {
+                AppFrequency.put(appName, new Integer(0));
+            }else {
+                int val = frequency.intValue();
+                if(val <= 5 ){freq = "low";}
+                else if(val > 5 && val<= 10){freq = "medium";}
+                else if(val >10){freq = "high";}
+                val+=1;
+                AppFrequency.remove(appName);
+                AppFrequency.put(appName, new Integer(val));
+            }
             return freq;
         } catch (Exception uhe) {
             return null;
@@ -263,6 +283,7 @@ public class EvalDataCleanseService {
 
     public void TrainData() throws Exception{
         try{
+            String collectionName = "smartsecuretest";
             DB db = getConnection(uri);
             DBCollection collection = getCollection(db, collectionName);
             DBCollection masterCollection = getCollection(db, mastertableCollection);

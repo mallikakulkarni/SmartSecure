@@ -16,7 +16,7 @@ import java.util.List;
 public class DecisionTreeController {
 
     public static void main(String[] args) {
-        
+
         //TODO: can move the training data part to a separate thread to train data every 24hrs
         try {
             EvalDataCleanseService evalDataCleanseService = new EvalDataCleanseService();
