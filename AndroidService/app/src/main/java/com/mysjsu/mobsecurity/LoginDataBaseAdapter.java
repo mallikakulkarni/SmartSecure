@@ -14,7 +14,7 @@ import android.util.Log;
 
 public class LoginDataBaseAdapter {
     static final String DATABASE_NAME = "mobsec.db";
-    static final int DATABASE_VERSION = 7;
+    static final int DATABASE_VERSION = 8;
     public static final int NAME_COLUMN = 1;
     // TODO: Create public field for each column in your table.
     // SQL Statement to create a new database.
@@ -57,7 +57,7 @@ public class LoginDataBaseAdapter {
         newValues.put("CONTACT", u.emergContact);
         for (int i = 1; i <= 5; i++) {
             newValues.put("ADDRESS" + i, u.address[i - 1]);
-            newValues.put("LATLON" + i, u.latLon[i - 1]);
+            newValues.put("LATLON" + i, u.latLon[i - 1].toString());
         }
 
         // Insert the row into your table
@@ -111,7 +111,7 @@ public class LoginDataBaseAdapter {
         updatedValues.put("CONTACT", u.emergContact);
         for (int i = 1; i <= 5; i++) {
             updatedValues.put("ADDRESS" + i, u.address[i - 1]);
-            updatedValues.put("LATLON" + i, u.latLon[i - 1]);
+            updatedValues.put("LATLON" + i, u.latLon[i - 1].toString());
         }
         String where = "EMAIL = ?";
         db.update("LOGIN", updatedValues, where, new String[]{u.email});

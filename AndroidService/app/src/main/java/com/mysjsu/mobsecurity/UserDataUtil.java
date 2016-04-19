@@ -31,6 +31,13 @@ import java.util.concurrent.TimeUnit;
 public class UserDataUtil {
     Context context;
 
+    static final Set<String> WHITELIST = new HashSet<String>();
+
+    static {
+        WHITELIST.add("com.android.chrome");
+        WHITELIST.add("com.google.android.youtube");
+    }
+
     public UserDataUtil(Context context) {
         this.context = context;
     }
@@ -129,9 +136,6 @@ public class UserDataUtil {
                     pinfo.lastAccessedTimeStamp = Math.max(pinfo.lastAccessedTimeStamp,
                             lUsageStats.getLastTimeUsed());
                     pinfo.hrs[hourOfDay] = 1;
-                    if (lUsageStats.getPackageName().startsWith("com.whatsapp"))
-                        Log.d("SmartSec", lUsageStats.getPackageName() + " - " + lUsageStats
-                                .getTotalTimeInForeground());
                     pinfo.appAccessedDuration += lUsageStats.getTotalTimeInForeground();
                 }
             }
@@ -198,7 +202,8 @@ public class UserDataUtil {
         List<PackageInfo> packs = context.getPackageManager().getInstalledPackages(0);
         for (int i = 0; i < packs.size(); i++) {
             PackageInfo p = packs.get(i);
-            if ((p.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0) {
+            if (!WHITELIST.contains(p.packageName) && (p.applicationInfo.flags & ApplicationInfo
+                    .FLAG_INSTALLED) != 0) {
                 continue;
             }
             App newInfo = res.get(p.packageName);
@@ -275,7 +280,6 @@ public class UserDataUtil {
 
         Wifi curWifi = null;
         for (Wifi l : curUserData.wifis) {
-            Log.d("WIFIS", l.wifi + " - " + l.isCurrent);
             if (l.isCurrent) {
                 curWifi = l;
             }

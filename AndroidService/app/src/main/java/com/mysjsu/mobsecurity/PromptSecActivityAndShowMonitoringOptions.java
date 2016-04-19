@@ -9,7 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
-public class PromptSecActivity2 extends Activity {
+public class PromptSecActivityAndShowMonitoringOptions extends Activity {
     private static final String TAG = "PromptSecActivity";
 
     @Override
@@ -20,11 +20,11 @@ public class PromptSecActivity2 extends Activity {
             @Override
             public void call(boolean res) {
                 if (res) {
-                    Toast.makeText(PromptSecActivity2.this, "Authenticated!", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(PromptSecActivity2.this, MonitoringActivity.class);
+                    Toast.makeText(PromptSecActivityAndShowMonitoringOptions.this, "Authenticated!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(PromptSecActivityAndShowMonitoringOptions.this, MonitoringActivity.class);
                     startActivity(intent);
                 } else {
-                    Toast.makeText(PromptSecActivity2.this, "Incorrect Password", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PromptSecActivityAndShowMonitoringOptions.this, "Incorrect Password", Toast.LENGTH_SHORT).show();
                     act.finish();
                     act.onBackPressed();
                 }

@@ -30,17 +30,17 @@
         </activity>
         <activity android:name=".MonitoringActivity"/>
         <activity android:name=".PromptSecActivity"/>
-        <activity android:name=".PromptSecActivity2"/>
+        <activity android:name=".PromptSecActivityAndShowMonitoringOptions"/>
 
 
-        <receiver android:name=".receivers.PeriodicTaskReceiver">
+        <receiver android:name=".receivers.PeriodicTaskReceiverAppInstall">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_ADDED" />
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".receivers.PeriodicTaskReceiver2">
+        <receiver android:name=".receivers.PeriodicTaskReceiverAirPlane">
             <intent-filter>
                 <action android:name="android.intent.action.AIRPLANE_MODE" />
             </intent-filter>

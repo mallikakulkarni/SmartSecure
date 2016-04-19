@@ -125,7 +125,7 @@ public class SignUPActivity extends AppCompatActivity {
             editTextOldPass.setVisibility(View.VISIBLE);
             for (int i = 0; i < 5; i++) {
                 addressList[i].setText(user.address[i]);
-                latLon[i].setText(user.latLon[i]);
+                latLon[i].setText(user.latLon[i].toString());
             }
             btnCreateAccount.setText("Update Account");
         } else {
@@ -229,7 +229,7 @@ public class SignUPActivity extends AppCompatActivity {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
             case R.id.action_profile:
-                Intent intent = new Intent(this, PromptSecActivity2.class);
+                Intent intent = new Intent(this, PromptSecActivityAndShowMonitoringOptions.class);
                 startActivity(intent);
                 return true;
 //            case R.id.start_service:

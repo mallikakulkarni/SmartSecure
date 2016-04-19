@@ -9,6 +9,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.mysjsu.mobsecurity.CreateUserAsyncTask;
 import com.mysjsu.mobsecurity.CreateUserTestDataAsyncTask;
+import com.mysjsu.mobsecurity.GetFeedbackAsyncTask;
 import com.mysjsu.mobsecurity.LoginDataBaseAdapter;
 import com.mysjsu.mobsecurity.UserDBObj;
 import com.mysjsu.mobsecurity.UserData;
@@ -70,9 +71,9 @@ public class AlarmReceiver extends BroadcastReceiver {
             long newStartTime = calendar.getTimeInMillis();
             if (prevStartTime != newStartTime) {
                 // Day changed. Write daily object to mongodb
-                Log.i("SmrtSec", "Writing to Mongolab");
-                createUserAsyncTask = new CreateUserAsyncTask();
-                createUserAsyncTask.execute(gson.toJson(user));
+//                Log.i("SmrtSec", "Writing to Mongolab");
+////                createUserAsyncTask = new CreateUserAsyncTask();
+////                createUserAsyncTask.execute(gson.toJson(user));
                 user = new UserData(android_id, email, userDB.getOccupation(), userDB.getUserName
                         ());
                 user.setStatsStartTime(newStartTime);
@@ -91,6 +92,9 @@ public class AlarmReceiver extends BroadcastReceiver {
                 CreateUserTestDataAsyncTask createUserTestAsyncTask = new
                         CreateUserTestDataAsyncTask();
                 createUserTestAsyncTask.execute(gson.toJson(utd));
+                GetFeedbackAsyncTask getFeedbackAsyncTask = new
+                        GetFeedbackAsyncTask(context);
+                getFeedbackAsyncTask.execute(gson.toJson(utd));
             }
         }
         String json = gson.toJson(user);

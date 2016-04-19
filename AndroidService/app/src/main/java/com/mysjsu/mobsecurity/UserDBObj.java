@@ -3,6 +3,24 @@ package com.mysjsu.mobsecurity;
 /**
  * Created by Poornima on 12/6/15.
  */
+class UserLocation {
+    float lat = 0;
+    float lon = 0;
+
+    public UserLocation(String ll) {
+        if (ll != null && !ll.isEmpty()) {
+            String[] parts = ll.split(",");
+            lat = Float.parseFloat(parts[0]);
+            lon = Float.parseFloat(parts[1]);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return lat + "," + lon;
+    }
+}
+
 public class UserDBObj {
 
     public void setEmail(String email) {
@@ -40,6 +58,7 @@ public class UserDBObj {
     public void setOccupation(String occupation) {
         this.gender = occupation;
     }
+
     String _id;
     String userName;
     String password;
@@ -47,10 +66,11 @@ public class UserDBObj {
     String gender;
     String email;
     String[] address;
-    String[] latLon;
+    UserLocation[] latLon;
 
 
-    public UserDBObj(String _id,String un, String pass, String cont, String occ, String em, String[] address, String[] latLon) {
+    public UserDBObj(String _id, String un, String pass, String cont, String occ, String em,
+                     String[] address, String[] latLonStr) {
         this._id = _id;
         this.userName = un;
         this.password = pass;
@@ -58,6 +78,9 @@ public class UserDBObj {
         this.gender = occ;
         this.email = em;
         this.address = address;
-        this.latLon = latLon;
+        this.latLon = new UserLocation[latLonStr.length];
+        for (int i = 0; i < latLonStr.length; i++) {
+            this.latLon[i] = new UserLocation(latLonStr[i]);
+        }
     }
 }
