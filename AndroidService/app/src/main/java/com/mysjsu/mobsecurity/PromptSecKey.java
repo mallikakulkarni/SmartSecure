@@ -16,6 +16,7 @@ public class PromptSecKey {
     UserDBObj user;
     Context context;
     PromptSecCallback callback;
+    String message="";
 
     public PromptSecKey(String emailId, Context context, PromptSecCallback callback) {
         this.emailId = emailId;
@@ -25,6 +26,10 @@ public class PromptSecKey {
         loginDataBaseAdapter.close();
         this.context = context;
         this.callback = callback;
+    }
+    public PromptSecKey(String emailId, Context context, PromptSecCallback callback,String message) {
+       this(emailId,context,callback);
+        this.message=message;
     }
 
     public void authenticate() {

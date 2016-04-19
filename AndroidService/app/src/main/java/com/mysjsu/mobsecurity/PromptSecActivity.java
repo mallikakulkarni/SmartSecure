@@ -7,6 +7,7 @@ package com.mysjsu.mobsecurity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class PromptSecActivity extends Activity {
@@ -20,15 +21,25 @@ public class PromptSecActivity extends Activity {
             @Override
             public void call(boolean res) {
                 if (res) {
-                    Toast.makeText(PromptSecActivity.this, "Authenticated!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PromptSecActivity.this, "Authenticated!", Toast.LENGTH_SHORT)
+                            .show();
                     act.finish();
                     act.onBackPressed();
                 } else {
-                    Toast.makeText(PromptSecActivity.this, "Incorrect Password", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PromptSecActivity.this, "Incorrect Password", Toast
+                            .LENGTH_SHORT).show();
                 }
             }
         };
         Intent intnt = getIntent();
+        String msg = intnt.getStringExtra("msg");
+        TextView msgT = (TextView) findViewById(R.id.msg);
+
+        if (msg != null && !msg.isEmpty()) {
+            msgT.setText(msg);
+        } else {
+            msgT.setText("");
+        }
         UserDataUtil userDataUtil = new UserDataUtil(this);
         // Get user name and email from extras passed from GoogleLoginActivity and update UI
         final String emailid = userDataUtil.getEmail(this);
