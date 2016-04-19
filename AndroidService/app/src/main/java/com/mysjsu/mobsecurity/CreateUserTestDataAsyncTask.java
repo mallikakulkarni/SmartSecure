@@ -12,7 +12,7 @@ public class CreateUserTestDataAsyncTask extends AsyncTask<String, Void, Boolean
     @Override
     protected Boolean doInBackground(String... arg0) {
         try {
-            Log.i("message:", "reaching CreateEventAsync Task");
+            Log.i("message:", "reaching CreateUserTestDataAsyncTask Task");
 
             String userJson = arg0[0];
             UserTestDataQueryBuilder qb = new UserTestDataQueryBuilder();

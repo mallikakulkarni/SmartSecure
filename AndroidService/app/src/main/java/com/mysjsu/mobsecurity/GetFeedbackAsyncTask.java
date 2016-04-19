@@ -44,7 +44,7 @@ public class GetFeedbackAsyncTask extends AsyncTask<String, Void, Boolean> {
     @Override
     protected Boolean doInBackground(String... arg0) {
         try {
-            Log.i("message:", "reaching CreateEventAsync Task");
+            Log.i("message:", "reaching GetFeedbackAsyncTask Task");
 
             String userJson = arg0[0];
             // UserTestDataQueryBuilder qb = new UserTestDataQueryBuilder();
@@ -67,21 +67,23 @@ public class GetFeedbackAsyncTask extends AsyncTask<String, Void, Boolean> {
             int responseCode = conn.getResponseCode();
 
             if (responseCode < 205) {
-                if (responseCode < 10) {
-                    BufferedReader br = new BufferedReader(new InputStreamReader((conn
-                            .getInputStream())));
-                    StringBuilder responseStrBuilder = new StringBuilder();
+                BufferedReader br = new BufferedReader(new InputStreamReader((conn
+                        .getInputStream())));
+                StringBuilder responseStrBuilder = new StringBuilder();
 
-                    String inputStr;
-                    while ((inputStr = br.readLine()) != null)
-                        responseStrBuilder.append(inputStr);
-                    br.close();
-                    JSONObject resultObj=new JSONObject(responseStrBuilder.toString());
-                    int resCode = resultObj.getInt("result");
-                    String msg = msgs.get(resCode);
-                    if (msg != null) {
-                        getSecuritykey(msg);
-                    }
+                String inputStr;
+                while ((inputStr = br.readLine()) != null) {
+                    responseStrBuilder.append(inputStr);
+                }
+                br.close();
+                Log.d("DECTREE_REQ", userJson);
+                Log.d("DECTREE_RESP", responseStrBuilder.toString());
+                JSONObject resultObj = new JSONObject(responseStrBuilder.toString());
+                int resCode = resultObj.getInt("result");
+                Log.i("DECTREE_RESP", "Response:" + resCode);
+                String msg = msgs.get(resCode);
+                if (msg != null) {
+                    getSecuritykey(msg);
                 }
                 Log.i("message:", "response : success, code is" + responseCode + " message is " +
                         conn.getResponseMessage());

@@ -203,7 +203,7 @@ public class UserDataUtil {
         for (int i = 0; i < packs.size(); i++) {
             PackageInfo p = packs.get(i);
             if (!WHITELIST.contains(p.packageName) && (p.applicationInfo.flags & ApplicationInfo
-                    .FLAG_INSTALLED) != 0) {
+                    .FLAG_SYSTEM) != 0) {
                 continue;
             }
             App newInfo = res.get(p.packageName);
