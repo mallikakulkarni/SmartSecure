@@ -20,9 +20,9 @@ import java.util.regex.Pattern;
 /**
  * Created by Poornima on 12/5/15.
  */
-public class PeriodicTaskReceiver extends BroadcastReceiver {
+public class PeriodicTaskReceiverAppInstall extends BroadcastReceiver {
 
-    private static final String TAG = "PeriodicTaskReceiver";
+    private static final String TAG = "AppInstall";
     private static final String INTENT_ACTION = "com.apps.finalproj.mobsec.PERIODIC_TASK_HEART_BEAT";
     public static final String BACKGROUND_SERVICE_BATTERY_CONTROL = "battery_service";
 
@@ -91,7 +91,7 @@ public class PeriodicTaskReceiver extends BroadcastReceiver {
 //        SharedPreferences sharedPreferences = PreferenceManager
 //                .getDefaultSharedPreferences(context);
 //        boolean isBatteryOk = sharedPreferences.getBoolean(BACKGROUND_SERVICE_BATTERY_CONTROL, true);
-//        Intent alarmIntent = new Intent(context, PeriodicTaskReceiver.class);
+//        Intent alarmIntent = new Intent(context, PeriodicTaskReceiverAppInstall.class);
 //        boolean isAlarmUp = PendingIntent.getBroadcast(context, 0, alarmIntent, PendingIntent.FLAG_NO_CREATE) != null;
 //        if (isBatteryOk && !isAlarmUp) {
 //            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -103,7 +103,7 @@ public class PeriodicTaskReceiver extends BroadcastReceiver {
 //
 //    public void stopPeriodicTaskHeartBeat(Context context) {
 //        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-//        Intent alarmIntent = new Intent(context, PeriodicTaskReceiver.class);
+//        Intent alarmIntent = new Intent(context, PeriodicTaskReceiverAppInstall.class);
 //        alarmIntent.setAction(INTENT_ACTION);
 //        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
 //        alarmManager.cancel(pendingIntent);
