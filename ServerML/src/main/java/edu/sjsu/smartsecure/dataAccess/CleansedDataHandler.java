@@ -6,53 +6,42 @@ import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
 import edu.sjsu.smartsecure.domain.CleansedRecord;
 import org.bson.types.ObjectId;
-
-import java.awt.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
  * Created by mallika on 4/4/16.
  */
 public class CleansedDataHandler {
-    private String profession;
-    private boolean safeRecord;
-    private AggregationAndMasterUserTableHandler aggregationAndMasterUserTableHandler;
+    private DBCollection collection;
 
     public CleansedDataHandler() {
-        aggregationAndMasterUserTableHandler = new AggregationAndMasterUserTableHandler();
+        collection = MongoFactory.getCollection("TrainingData");
     }
 
-    /*
-        TODO - Apoorva Write query here ot get all records aggregated on user id, date etc.
-        TODO - Replace hard coded numeric figures with the actual variables recd from method
-    */
-
-    public void createRecord() {
-        String userId = "123";
-        aggregationAndMasterUserTableHandler.getProfession(userId);
-        //TODO Change
-        CleansedRecord cleansedRecord = new CleansedRecord(profession, 0, 0, true, true);
-        insertRecord(cleansedRecord);
+    public void insertIntoNewCleansedCollection(List<Integer> result, JSONObject jsonObject) {
+        JSONArray jsonArray = (JSONArray)  jsonObject.get("realtimedata");
+        int count = 0;
+        Iterator<?> iterator = jsonArray.iterator();
+        while (iterator.hasNext()) {
+            JSONObject appDetails = (JSONObject) iterator.next();
+            boolean res = processResult(result.get(count));
+            count++;
+            appDetails.put("class", res);
+            DBObject dbObject = new BasicDBObject();
+            Iterator<?> keysIterator = appDetails.keys();
+            while (keysIterator.hasNext()) {
+                String key = (String) keysIterator.next();
+                dbObject.put(key, appDetails.get(key));
+            }
+            collection.insert(dbObject);
+        }
     }
 
-    private void insertRecord(CleansedRecord record) {
-        DBCollection collection = MongoFactory.getCollection("TrainingData");
-        record.set_id(new ObjectId());
-        BasicDBObject dbRecord = createDbRecordObject(record);
-        WriteResult res = collection.insert(dbRecord);
-        System.out.println("Cleansed record " + record.get_id().toString() + " writtent to db");
+    private boolean processResult(int result) {
+        return result == -1 ? true : false;
     }
-
-    //TODO Apoorva Add new fields
-    private BasicDBObject createDbRecordObject(CleansedRecord record) {
-        BasicDBObject dbRecord = new BasicDBObject();
-        dbRecord.put("Profession", record.getProfession());
-        dbRecord.put("MBRx", record.getMegaBytesRx());
-        dbRecord.put("MBTx", record.getMegaBytesTx());
-        dbRecord.put("SecSoftware", record.isSecurityAppPresent());
-        dbRecord.put("Safe", record.isSafe());
-        return dbRecord;
-    }
-
 
 }

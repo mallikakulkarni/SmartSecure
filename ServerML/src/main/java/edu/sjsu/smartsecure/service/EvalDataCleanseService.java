@@ -16,7 +16,7 @@ public class EvalDataCleanseService {
     private static HashMap<String, Integer> AppFrequency;
     private static long lastMapUpdate = 0;
 
-    private static DB getConnection(String uri) throws Exception{
+    public DB getConnection(String uri) throws Exception{
         try{
             MongoClientURI mongoURI = new MongoClientURI(uri);
             MongoClient mongoClient = new MongoClient(mongoURI);
@@ -28,7 +28,7 @@ public class EvalDataCleanseService {
         }
     }
 
-    private static DBCollection getCollection(DB db, String collection) throws Exception{
+    public DBCollection getCollection(DB db, String collection) throws Exception{
         try {
             return db.getCollection(collection);
         } catch (Exception uhe) {
@@ -36,15 +36,23 @@ public class EvalDataCleanseService {
         }
     }
 
-    private static String getUser(DBObject obj) throws Exception{
+    public String getUser(JSONObject jsonObject) throws Exception{
         try {
-            return (String)obj.get("userId");
+            return (String)jsonObject.get("userId");
         } catch (Exception uhe) {
             return null;
         }
     }
 
-    private static String getDemographics(String user, DBCollection masterCollection) throws Exception{
+    public String getUser(DBObject dbObject) throws Exception{
+        try {
+            return (String)dbObject.get("userId");
+        } catch (Exception uhe) {
+            return null;
+        }
+    }
+
+    public String getDemographics(String user, DBCollection masterCollection) throws Exception{
         try {
             String demo = null;
             DBCursor curs = masterCollection.find();
@@ -63,7 +71,7 @@ public class EvalDataCleanseService {
         }
     }
 
-    private static String getAppName(DBObject obj) throws Exception{
+    public String getAppName(JSONObject obj) throws Exception{
         try {
             return (String)obj.get("appname");
         } catch (Exception uhe) {
@@ -71,7 +79,7 @@ public class EvalDataCleanseService {
         }
     }
 
-    private static String getNetwork(DBObject obj) throws Exception{
+    public String getNetwork(JSONObject obj) throws Exception{
         try {
             return (String)obj.get("network");
         } catch (Exception uhe) {
@@ -79,11 +87,12 @@ public class EvalDataCleanseService {
         }
     }
 
-    private static String getDataUsage(DBObject obj) throws Exception{
+    public String getDataUsage(JSONObject obj) throws Exception{
         try {
-            Double Rxbytes = (Double)obj.get("totalRxBytes");
-            Double Txbytes = (Double)obj.get("totalTxBytes");
-            Double dataVal = (Rxbytes + Txbytes)/(1024*1024);
+            System.out.println(obj.get("totalRxBytes").getClass());
+            Integer rxBytes =  (Integer) obj.get("totalRxBytes");
+            Integer txBytes = (Integer) obj.get("totalTxBytes");
+            Integer dataVal = (rxBytes + txBytes)/(1024*1024);
             String usage = null;
             if(dataVal > 10)
             {
@@ -103,7 +112,7 @@ public class EvalDataCleanseService {
         }
     }
 
-    private static String getDayofWeek(DBObject obj) throws Exception{
+    public String getDayofWeek(JSONObject obj) throws Exception{
         try {
             Long lastime = (Long)obj.get("lastAccessedTimeStamp");
             Date dateVal = new Date(lastime.longValue());
@@ -124,7 +133,7 @@ public class EvalDataCleanseService {
         }
     }
 
-    private static String getTimeOfDay(DBObject obj) throws Exception{
+    public String getTimeOfDay(JSONObject obj) throws Exception{
         try {
             Long lastime = (Long)obj.get("lastAccessedTimeStamp");
             Date dateVal = new Date(lastime.longValue());
@@ -145,7 +154,7 @@ public class EvalDataCleanseService {
         }
     }
 
-    private static double calculateDistance(Double lastKnownLat, Double lastKnownLon, Double knownLat, Double knownLon) throws Exception {
+    private double calculateDistance(Double lastKnownLat, Double lastKnownLon, Double knownLat, Double knownLon) throws Exception {
         try{
             double distance;
             final int R = 6371;
@@ -166,7 +175,7 @@ public class EvalDataCleanseService {
         }
     }
 
-    private static String getFrequentLoc(String user, DBCollection masterCollection, DBObject obj) throws Exception{
+    public String getFrequentLoc(String user, DBCollection masterCollection, JSONObject obj) throws Exception{
         try {
             String freqLoc = "No";
             BasicDBList latlon = null;
@@ -202,7 +211,7 @@ public class EvalDataCleanseService {
         }
     }
 
-    private static String getFrequency(DBObject obj) throws Exception{
+    private static String getFrequency(JSONObject obj) throws Exception{
         try {
             String appName = (String)obj.get("appname");
             String freq = "low";
@@ -231,7 +240,7 @@ public class EvalDataCleanseService {
         }
     }
 
-    private static String calculateResult(BasicDBObject obj) throws Exception{
+    private static String calculateResult(DBObject obj) throws Exception{
         try {
             String result = "true";
             String network = (String)obj.get("network");
@@ -281,49 +290,31 @@ public class EvalDataCleanseService {
         }
     }
 
-    public void TrainData() throws Exception{
+    public void trainData() throws Exception{
         try{
             String collectionName = "smartsecuretest";
             DB db = getConnection(uri);
             DBCollection collection = getCollection(db, collectionName);
             DBCollection masterCollection = getCollection(db, mastertableCollection);
             DBCollection trainingCollection = getCollection(db, newCleansedCollection);
-
-
             DBCursor curs = collection.find();
             Iterator<DBObject> fields = curs.iterator();
             while(fields.hasNext()){
                 DBObject curr = fields.next();
                 String user = getUser(curr);
                 String demo = getDemographics(user, masterCollection);
-
                 BasicDBList appList = (BasicDBList)curr.get("appTestList");
-                for( Iterator< Object > it = appList.iterator(); it.hasNext(); )
-                {
-                    DBObject appObject     = (DBObject)it.next();
-                    String appname = getAppName(appObject);
-                    String dayofweek = getDayofWeek(appObject);
-                    String timeOfDay = getTimeOfDay(appObject);
-                    String dataUsage = getDataUsage(appObject);
-                    String freqLoc = getFrequentLoc(user, masterCollection, appObject);
-                    String frequency = getFrequency(appObject);
-                    String network = getNetwork(appObject);
-
+                Iterator<?> iterator = appList.iterator();
+                while (iterator.hasNext()) {
+                    DBObject appObject     = (DBObject) iterator.next();
                     BasicDBObject newObject = new BasicDBObject();
-                    newObject.put("appName", appname);
-                    newObject.put("network", network);
-                    newObject.put("datausage", dataUsage);
-                    newObject.put("dayOfTheWeek", dayofweek);
-                    newObject.put("timeOfTheDay", timeOfDay);
-                    newObject.put("demographic", demo);
-                    newObject.put("frequency", frequency);
-                    newObject.put("frequentLocation", freqLoc);
-
+                    Set<String> keys = appObject.keySet();
+                    for (String key : keys) {
+                        newObject.put(key, appObject.get(key));
+                    }
                     String result = calculateResult(newObject);
                     newObject.put("class", result);
-
                     trainingCollection.insert(newObject);
-
                 }
             }
         }catch(Exception e) {
@@ -341,53 +332,37 @@ public class EvalDataCleanseService {
             DB db = getConnection(uri);
             DBCollection masterCollection = getCollection(db, mastertableCollection);
             DBCollection trainingCollection = getCollection(db, newCleansedCollection);
-
-            DBObject curr = (DBObject)jsonObject;
-            String user = getUser(curr);
+//            DBObject curr = new BasicDBObject();
+//            Iterator<?> keys = jsonObject.keys();
+//            while (keys.hasNext()) {
+//                String key = (String) keys.next();
+//                curr.put(key, jsonObject.get(key));
+//            }
+            String user = getUser(jsonObject);
             String demo = getDemographics(user, masterCollection);
-
-            BasicDBList appList = (BasicDBList)curr.get("appTestList");
-            for( Iterator< Object > it = appList.iterator(); it.hasNext(); )
-            {
-                DBObject appObject     = (DBObject)it.next();
-                String appname = getAppName(appObject);
-                String dayofweek = getDayofWeek(appObject);
-                String timeOfDay = getTimeOfDay(appObject);
-                String dataUsage = getDataUsage(appObject);
-                String freqLoc = getFrequentLoc(user, masterCollection, appObject);
-                String frequency = getFrequency(appObject);
-                String network = getNetwork(appObject);
-
+            JSONArray appList = (JSONArray) jsonObject.get("appTestList");
+            Iterator<?> iterator = appList.iterator();
+            while (iterator.hasNext()) {
+                JSONObject appObject = (JSONObject) iterator.next();
                 BasicDBObject newObject = new BasicDBObject();
                 JSONObject realTimeApp = new JSONObject();
-                newObject.put("appName", appname);
-                realTimeApp.put("appName", appname);
-                newObject.put("network", network);
-                realTimeApp.put("network", network);
-                newObject.put("datausage", dataUsage);
-                realTimeApp.put("datausage", dataUsage);
-                newObject.put("dayOfTheWeek", dayofweek);
-                realTimeApp.put("dayOfTheWeek", dayofweek);
-                newObject.put("timeOfTheDay", timeOfDay);
-                realTimeApp.put("timeOfTheDay", timeOfDay);
-                newObject.put("demographic", demo);
-                realTimeApp.put("demographic", demo);
-                newObject.put("frequency", frequency);
-                realTimeApp.put("frequency", frequency);
-                newObject.put("frequentLocation", freqLoc);
-                realTimeApp.put("frequentLocation", freqLoc);
-
-                String result = calculateResult(newObject);
-                newObject.put("class", result);
-
-                trainingCollection.insert(newObject);
+                Iterator<?> keys = appObject.keys();
+                while (keys.hasNext()) {
+                    String key = (String) keys.next();
+                    newObject.put(key, appObject.get(key));
+                    realTimeApp.put(key, appObject.get(key));
+                }
+//                String result = calculateResult(newObject);
+//                newObject.put("class", result);
+//                trainingCollection.insert(newObject);
                 realTimeArray.put(realTimeApp);
             }
             realTimeRecord.put("realtimedata",realTimeArray);
+            return realTimeRecord;
         }catch(Exception e) {
             e.printStackTrace();
         }
-        return realTimeRecord;
+        return null;
     }
 
 

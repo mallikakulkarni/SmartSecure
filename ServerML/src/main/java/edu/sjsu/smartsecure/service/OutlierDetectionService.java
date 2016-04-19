@@ -1,7 +1,10 @@
 package edu.sjsu.smartsecure.service;
 
+import edu.sjsu.smartsecure.dataAccess.CleansedDataHandler;
 import edu.sjsu.smartsecure.decisionTree.DecisionTree;
 import org.json.JSONObject;
+
+import java.util.List;
 
 /**
  * Created by mallika on 4/8/16.
@@ -14,23 +17,28 @@ public class OutlierDetectionService {
     }
 
     public JSONObject getSafeUnsafeResult(JSONObject jsonObject) {
-        int result = decisionTree.processTestData(jsonObject);
+        List<Integer> result = decisionTree.processTestData(jsonObject);
+        CleansedDataHandler cleansedDataHandler = new CleansedDataHandler();
+        cleansedDataHandler.insertIntoNewCleansedCollection(result, jsonObject);
         JSONObject resultObject = new JSONObject();
-        resultObject.put("MongoOid", jsonObject.get("MongoOid"));
-        resultObject.put("result", result);
+        for (int i = 0; i < result.size(); i++) {
+            resultObject.put(""+i, result.get(i));
+        }
         return resultObject;
     }
 
     public boolean verifyTestData(JSONObject jsonObject) {
         boolean testResult = (Boolean) jsonObject.get("class");
         jsonObject.remove("class");
-        int actResult = decisionTree.processTestData(jsonObject);
-        if (actResult == -1 && testResult == true) {
-            return true;
-        } else if (actResult != -1 && testResult == true) {
-            return false;
-        } else if (actResult == -1 && testResult == false) {
-            return false;
+        List<Integer> list = decisionTree.processTestData(jsonObject);
+        for (int actResult : list) {
+            if (actResult == -1 && testResult == true) {
+                return true;
+            } else if (actResult != -1 && testResult == true) {
+                return false;
+            } else if (actResult == -1 && testResult == false) {
+                return false;
+            }
         }
         return true;
     }

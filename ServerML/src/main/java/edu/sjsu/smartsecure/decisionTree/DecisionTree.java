@@ -1,7 +1,10 @@
 package edu.sjsu.smartsecure.decisionTree;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -30,8 +33,16 @@ public class DecisionTree {
         this.root = root;
     }
 
-    public int processTestData(JSONObject jsonObject) {
-        return traverseDecisionTreeForResult(root, jsonObject);
+    public List<Integer> processTestData(JSONObject jObject) {
+        JSONArray jsonArray = (JSONArray) jObject.get("realtimedata");
+        Iterator<?> iterator = jsonArray.iterator();
+        List<Integer> list = new ArrayList<Integer>();
+        while (iterator.hasNext()) {
+            JSONObject jsonObject = (JSONObject) iterator.next();
+            int result = traverseDecisionTreeForResult(root, jsonObject);
+            list.add(result);
+        }
+        return list;
     }
 
     private int traverseDecisionTreeForResult(Node node, JSONObject jsonObject) {
@@ -40,7 +51,8 @@ public class DecisionTree {
         List<String> attributes = node.getAttributes();
         int i;
         for (i = 0; i < attributes.size(); i++) {
-            if (attributes.get(i).equals(inputValue)) {
+            System.out.println(attributes.get(i));
+            if (attributes.get(i) == null || attributes.get(i).equals(inputValue)) {
                 break;
             }
         }

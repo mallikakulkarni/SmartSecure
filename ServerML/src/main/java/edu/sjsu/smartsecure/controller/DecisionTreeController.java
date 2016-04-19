@@ -20,8 +20,8 @@ public class DecisionTreeController {
         //TODO: can move the training data part to a separate thread to train data every 24hrs
         try {
             EvalDataCleanseService evalDataCleanseService = new EvalDataCleanseService();
-            evalDataCleanseService.cleanTrainData();
-            evalDataCleanseService.TrainData();
+//            evalDataCleanseService.cleanTrainData();
+//            evalDataCleanseService.trainData();
         }catch(Exception e){
             e.printStackTrace();
         }

@@ -5,6 +5,7 @@ import edu.sjsu.smartsecure.service.EvalDataCleanseService;
 import edu.sjsu.smartsecure.service.FeedBackService;
 import edu.sjsu.smartsecure.service.OutlierDetectionService;
 import org.json.JSONObject;
+import org.json.JSONString;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,12 +21,19 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @org.springframework.web.bind.annotation.RestController
 public class RestController {
     @RequestMapping(value="/EvalDataPost", method = RequestMethod.POST)
-    public JSONObject getEvaluationResponse(@RequestBody JSONObject jsonObject) {
-        EvalDataCleanseService evalDataCleanseService = new EvalDataCleanseService();
-        jsonObject = evalDataCleanseService.cleanRealTimeData(jsonObject);
-        OutlierDetectionService outlierDetectionService = new OutlierDetectionService();
-        JSONObject resultObject = outlierDetectionService.getSafeUnsafeResult(jsonObject);
-        return resultObject;
+    public String getEvaluationResponse(@RequestBody String input) {
+        try {
+            JSONObject jsonObject = new JSONObject(input);
+            EvalDataCleanseService evalDataCleanseService = new EvalDataCleanseService();
+            jsonObject = evalDataCleanseService.cleanRealTimeData(jsonObject);
+            OutlierDetectionService outlierDetectionService = new OutlierDetectionService();
+            JSONObject resultObject = outlierDetectionService.getSafeUnsafeResult(jsonObject);
+            return resultObject.toString();
+        } catch (Exception e) {
+            JSONObject js = new JSONObject();
+            js.put("id" , 10000);
+            return js.toString();
+        }
     }
 
     @RequestMapping(value="/Feedback", method = RequestMethod.POST)
