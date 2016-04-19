@@ -4,7 +4,6 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
-import edu.sjsu.smartsecure.domain.CleansedRecord;
 import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.json.JSONObject;
