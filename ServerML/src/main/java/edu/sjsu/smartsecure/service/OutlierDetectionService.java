@@ -3,6 +3,8 @@ package edu.sjsu.smartsecure.service;
 import edu.sjsu.smartsecure.dataAccess.CleansedDataHandler;
 import edu.sjsu.smartsecure.decisionTree.DecisionTree;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -15,8 +17,9 @@ public class OutlierDetectionService {
     public OutlierDetectionService() {
         decisionTree = DecisionTree.getDecisionTreeInstance();
     }
-
+    static Logger decisionTreeLog = LoggerFactory.getLogger("decisionTree");
     public JSONObject getSafeUnsafeResult(JSONObject jsonObject) {
+        decisionTreeLog.debug("Processing input through decision tree");
         List<Integer> result = decisionTree.processTestData(jsonObject);
         CleansedDataHandler cleansedDataHandler = new CleansedDataHandler();
         cleansedDataHandler.insertIntoNewCleansedCollection(result, jsonObject);
@@ -24,6 +27,7 @@ public class OutlierDetectionService {
         for (int i = 0; i < result.size(); i++) {
             resultObject.put(""+i, result.get(i));
         }
+        decisionTreeLog.debug("Result Object "+resultObject.toString());
         return resultObject;
     }
 

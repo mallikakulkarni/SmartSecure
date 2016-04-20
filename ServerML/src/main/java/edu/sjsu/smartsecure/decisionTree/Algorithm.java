@@ -1,6 +1,8 @@
 package edu.sjsu.smartsecure.decisionTree;
 
 import edu.sjsu.smartsecure.dataAccess.DecisionTreeHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,14 +15,21 @@ import java.util.Map;
 public class Algorithm {
     private static DecisionTreeHandler decisionTreeHandler;
     private static DecisionTree decisionTree;
+    static Logger decisionTreeLog = LoggerFactory.getLogger("decisionTree");
 
     public static void createDecisionTree(List<String> columnHeaders) {
         decisionTree = DecisionTree.getDecisionTreeInstance();
+        decisionTreeLog.debug("Getting Decision Tree Instance");
         decisionTreeHandler = new DecisionTreeHandler();
         Map<String, Long> resultMap = decisionTreeHandler.getCountsOfSafeAndUnsafeData();
+        decisionTreeLog.debug("Root Node");
+        decisionTreeLog.debug("Total Records " + resultMap.get("Total"));
+        decisionTreeLog.debug("Safe Records " + resultMap.get("safe"));
+        decisionTreeLog.debug("UnSafe Records " + resultMap.get("unsafe"));
         double informationGain = getInformationGain(resultMap);
         Node root = buildDecisionTree(informationGain, columnHeaders, resultMap.get("Total"));
         decisionTree.setRoot(root);
+        decisionTreeLog.debug("Set root to " + decisionTree.getRoot().getNodeId());
         columnHeaders.remove(root.getNodeId());
         List<String> conditions = new ArrayList<String>();
         conditions.add(root.getNodeId());
@@ -43,6 +52,7 @@ public class Algorithm {
     }
 
     private static void getChildren(Node node, List<String> conditions, List<String> columnHeaders, List<String> values) {
+        decisionTreeLog.debug("Calculating children of "+node.getNodeId());
         List<String> attributes = node.getAttributes();
         for (int i = 0; i < attributes.size(); i++) {
             values.add(attributes.get(i));
@@ -54,17 +64,27 @@ public class Algorithm {
                 node.getChildren().add(i, child);
                 child.setCorrespondingAttribute(attributes.get(i));
                 child.setColumn(node.getNodeId());
+                decisionTreeLog.debug("All safe records, Adding safe path to " + attributes.get(i));
+                decisionTreeLog.debug("Adding result " +child.getResult());
             } else if (safeRecords == 0) {
                 Node child = new Node(node.getNodeId()+"unsafe");
                 child.setResult(getIntegerValueOfParentNode(node.getNodeId()));
                 node.getChildren().add(i, child);
                 child.setCorrespondingAttribute(attributes.get(i));
                 child.setColumn(node.getNodeId());
+                decisionTreeLog.debug("All unsafe records, Adding unsafe path to " + attributes.get(i));
+                decisionTreeLog.debug("Adding result " +child.getResult());
             } else {
                 Map<String, Long> resultMap = decisionTreeHandler.getCountsOfSafeAndUnsafeData(conditions, values);
+                decisionTreeLog.debug("Attribute " + attributes.get(i));
+                decisionTreeLog.debug("Total Records " + resultMap.get("Total"));
+                decisionTreeLog.debug("Safe Records " + resultMap.get("safe"));
+                decisionTreeLog.debug("UnSafe Records " + resultMap.get("unsafe"));
                 double informationGain = getInformationGain(resultMap);
+                decisionTreeLog.debug("Information Gain " + informationGain);
                 Node child = buildDecisionTreeChild(informationGain, columnHeaders, totalRecords, conditions, values);
                 node.getChildren().add(i, child);
+                decisionTreeLog.debug("Added child " + child.getNodeId() + "to Node" +node.getNodeId());
                 child.setCorrespondingAttribute(attributes.get(i));
                 List<String> newColumnHeaders = new ArrayList<String>(columnHeaders);
                 columnHeaders.remove(child.getNodeId());
@@ -85,6 +105,7 @@ public class Algorithm {
         double log2safe = getLogBase2((float) safe / total);
         double log2unsafe = getLogBase2((float) unsafe / total);
         double informationGain = (float) -1 * ((((float) safe/total) * log2safe) + (((float) unsafe/total) * log2unsafe));
+        decisionTreeLog.debug("Information Gain " + informationGain);
         return informationGain;
     }
 
@@ -93,6 +114,7 @@ public class Algorithm {
         for (String attribute : attributes) {
             double entropy = calculateEntropy(attribute, totalRecordCount, conditions, values);
             double gain = informationGain - entropy;
+            decisionTreeLog.debug(attribute + " entropy " + entropy + ", gain" + gain);
             entropyMap.put(attribute, gain);
         }
         return getHighestgain(entropyMap);
@@ -146,6 +168,7 @@ public class Algorithm {
                 root = attribute;
             }
         }
+        decisionTreeLog.debug("Node " +root);
         return root;
     }
 

@@ -1,0 +1,22 @@
+17:10:18.851 [main] DEBUG decisionTree - Getting Decision Tree Instance
+17:10:21.301 [main] DEBUG decisionTree - Root Node
+17:10:21.301 [main] DEBUG decisionTree - Total Records244
+17:10:21.301 [main] DEBUG decisionTree - Safe Records0
+17:10:21.301 [main] DEBUG decisionTree - UnSafe Records0
+17:10:21.301 [main] DEBUG decisionTree - Information Gain NaN
+17:10:28.013 [main] DEBUG decisionTree - appName entropy 0.0, gainNaN
+17:10:28.899 [main] DEBUG decisionTree - network entropy 0.0, gainNaN
+17:10:30.059 [main] DEBUG decisionTree - datausage entropy 0.0, gainNaN
+17:10:31.504 [main] DEBUG decisionTree - dayOfTheWeek entropy 0.0, gainNaN
+17:10:32.983 [main] DEBUG decisionTree - timeOfTheDay entropy 0.0, gainNaN
+17:10:33.889 [main] DEBUG decisionTree - demographic entropy 0.0, gainNaN
+17:10:36.456 [main] DEBUG decisionTree - frequency entropy 0.0, gainNaN
+17:10:37.359 [main] DEBUG decisionTree - frequentLocation entropy 0.0, gainNaN
+17:10:37.360 [main] DEBUG decisionTree - Node frequentLocation
+17:10:37.988 [main] DEBUG decisionTree - Decision Tree created
+17:13:17.495 [main] DEBUG decisionTree - Getting Decision Tree Instance
+17:18:30.125 [main] DEBUG decisionTree - Root Node
+17:18:30.125 [main] DEBUG decisionTree - Total Records244
+17:18:30.125 [main] DEBUG decisionTree - Safe Records0
+17:18:30.125 [main] DEBUG decisionTree - UnSafe Records0
+17:18:30.126 [main] DEBUG decisionTree - Information Gain NaN

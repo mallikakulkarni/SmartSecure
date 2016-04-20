@@ -401,6 +401,7 @@ public class EvalDataCleanseService {
 //                trainingCollection.insert(newObject);
                 realTimeArray.put(realTimeApp);
             }
+            
             realTimeRecord.put("realtimedata",realTimeArray);
             return realTimeRecord;
         }catch(Exception e) {

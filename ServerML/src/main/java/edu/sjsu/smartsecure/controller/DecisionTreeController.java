@@ -1,7 +1,10 @@
 package edu.sjsu.smartsecure.controller;
 
 import edu.sjsu.smartsecure.decisionTree.Algorithm;
+import edu.sjsu.smartsecure.decisionTree.DecisionTree;
 import edu.sjsu.smartsecure.service.EvalDataCleanseService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -15,8 +18,9 @@ import java.util.List;
 @SpringBootApplication
 public class DecisionTreeController {
 
+    static Logger general = LoggerFactory.getLogger(DecisionTreeController.class);
+    static Logger decisionTreeLog = LoggerFactory.getLogger("decisionTree");
     public static void main(String[] args) {
-
         //TODO: can move the training data part to a separate thread to train data every 24hrs
         try {
             EvalDataCleanseService evalDataCleanseService = new EvalDataCleanseService();
@@ -27,6 +31,7 @@ public class DecisionTreeController {
         }
 
         ApplicationContext context = new ClassPathXmlApplicationContext("spring-config.xml");
+        //BasicConfigurator.configure();
         List<String> columnHeaders = new ArrayList<String>();
         columnHeaders.add("appName");
         columnHeaders.add("network");
@@ -37,6 +42,7 @@ public class DecisionTreeController {
         columnHeaders.add("frequency");
         columnHeaders.add("frequentLocation");
         Algorithm.createDecisionTree(columnHeaders);
+        decisionTreeLog.debug("Decision Tree created");
         SpringApplication.run(DecisionTreeController.class);
     }
 }
