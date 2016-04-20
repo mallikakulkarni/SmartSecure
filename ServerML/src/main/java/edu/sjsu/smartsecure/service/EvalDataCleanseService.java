@@ -5,6 +5,8 @@ import org.json.JSONArray;
 import com.mongodb.*;
 import java.util.*;
 import com.mongodb.util.JSON;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by mallika on 4/10/16.
@@ -16,6 +18,7 @@ public class EvalDataCleanseService {
     private String newCleansedCollection = "TrainingData";
     private static HashMap<String, HashMap<String, Integer>> UserAppFreq;
     private static long lastMapUpdate = 0;
+    static Logger decisionTreeLog = LoggerFactory.getLogger("decisionTree");
 
     private static DB getConnection(String uri) throws Exception{
         try{
@@ -357,31 +360,50 @@ public class EvalDataCleanseService {
     }
 
     public JSONObject cleanRealTimeData(JSONObject jsonObject) {
-
+        decisionTreeLog.debug("Cleaning real time data " +jsonObject.toString());
         JSONObject realTimeRecord = null;
         try{
             realTimeRecord = new JSONObject();
             JSONArray realTimeArray = new JSONArray();
-
+            decisionTreeLog.debug("Db Connection " +uri);
             DB db = getConnection(uri);
             DBCollection masterCollection = getCollection(db, mastertableCollection);
             DBCollection trainingCollection = getCollection(db, newCleansedCollection);
 
             DBObject curr = (DBObject)JSON.parse(jsonObject.toString());
+            decisionTreeLog.debug("Getting user");
             String user = getUser(curr);
+            decisionTreeLog.debug("User = "+user);
+            decisionTreeLog.debug("Getting demographic");
             String demo = getDemographics(user, masterCollection);
+            decisionTreeLog.debug("Gender = "+demo);
 
             BasicDBList appList = (BasicDBList)curr.get("appTestList");
             for( Iterator< Object > it = appList.iterator(); it.hasNext(); )
             {
                 DBObject appObject     = (DBObject)it.next();
+                decisionTreeLog.debug("appObject = "+appObject.toString());
+                decisionTreeLog.debug("Getting AppName");
                 String appname = getAppName(appObject);
+                decisionTreeLog.debug("AppName = "+appname);
+                decisionTreeLog.debug("Getting Day Of week");
                 String dayofweek = getDayofWeek(appObject);
+                decisionTreeLog.debug("Day Of the week = "+dayofweek);
+                decisionTreeLog.debug("Getting Time Of Day");
                 String timeOfDay = getTimeOfDay(appObject);
+                decisionTreeLog.debug("Time Of The Day = "+timeOfDay);
+                decisionTreeLog.debug("Getting Data usage");
                 String dataUsage = getDataUsage(appObject);
+                decisionTreeLog.debug("Data Usage = "+dataUsage);
+                decisionTreeLog.debug("Getting Frequent Location Boolean");
                 String freqLoc = getFrequentLoc(user, masterCollection, appObject);
+                decisionTreeLog.debug("Frequent Location = "+freqLoc);
+                decisionTreeLog.debug("Getting Frequency bucket");
                 String frequency = getFrequency(user, appObject);
+                decisionTreeLog.debug("Frequency bucket = "+frequency);
+                decisionTreeLog.debug("Getting Network");
                 String network = getNetwork(appObject);
+                decisionTreeLog.debug("Network = "+network);
 
                 BasicDBObject newObject = new BasicDBObject();
                 JSONObject realTimeApp = new JSONObject();
@@ -402,14 +424,15 @@ public class EvalDataCleanseService {
                 newObject.put("frequentLocation", freqLoc);
                 realTimeApp.put("frequentLocation", freqLoc);
 
-                boolean result = calculateResult(newObject);
-                newObject.put("class", result);
-
-                trainingCollection.insert(newObject);
+//                boolean result = calculateResult(newObject);
+//                newObject.put("class", result);
+//
+//                trainingCollection.insert(newObject);
                 realTimeArray.put(realTimeApp);
             }
             
             realTimeRecord.put("realtimedata",realTimeArray);
+            decisionTreeLog.debug("Real Time Record " +realTimeRecord);
         }catch(Exception e) {
             e.printStackTrace();
         }
