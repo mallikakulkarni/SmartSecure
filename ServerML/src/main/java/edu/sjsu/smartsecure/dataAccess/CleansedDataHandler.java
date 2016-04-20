@@ -38,9 +38,10 @@ public class CleansedDataHandler {
             while (keysIterator.hasNext()) {
                 String key = (String) keysIterator.next();
                 dbObject.put(key, appDetails.get(key));
-                collection.insert(dbObject);
             }
-
+            decisionTreeLog.debug("dbObject " + dbObject.toString());
+            collection.insert(dbObject);
+            decisionTreeLog.debug("Inserted");
         }
     }
 
