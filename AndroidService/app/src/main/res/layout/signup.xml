@@ -33,7 +33,8 @@
                 android:id="@+id/userEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Email">
+                android:hint="Email id"
+                android:visibility="invisible">
 
                 <requestFocus />
             </TextView>
@@ -42,7 +43,7 @@
                 android:id="@+id/editTextUserName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="User Name">
+                android:hint="User name">
 
                 <requestFocus />
             </EditText>
@@ -88,7 +89,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clickable="true"
-                android:hint="Home Lat/Lon"
                 android:onClick="handleOnClick"></TextView>
 
             <EditText
@@ -103,7 +103,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clickable="true"
-                android:hint="Office Lat/Lon"
                 android:onClick="handleOnClick"></TextView>
 
             <EditText
@@ -118,7 +117,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clickable="true"
-                android:hint="Preferred Address 1 Lat/Lon"
+
                 android:onClick="handleOnClick"></TextView>
 
             <EditText
@@ -133,7 +132,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clickable="true"
-                android:hint="Preferred Address 2 Lat/Lon"
                 android:onClick="handleOnClick"></TextView>
 
             <EditText
@@ -148,7 +146,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clickable="true"
-                android:hint="Preferred Address 3 Lat/Lon"
                 android:onClick="handleOnClick"></TextView>
 
 

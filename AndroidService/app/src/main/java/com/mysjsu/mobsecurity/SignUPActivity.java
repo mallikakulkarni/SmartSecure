@@ -40,6 +40,8 @@ public class SignUPActivity extends AppCompatActivity {
     TextView[] latLon;
     Button btnCreateAccount;
     RadioButton femaleRadio, maleRadio;
+    String userName, emergenCon,password,oldPassword,confirmPassword, androidId;
+    String[] homeAddress, latLonStr;
 
     private static final String TAG = "SignUPActivity";
     UsageStatsManager mUsageStatsManager;
@@ -135,15 +137,52 @@ public class SignUPActivity extends AppCompatActivity {
         btnCreateAccount.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View v) {
-                        String userName = editTextUserName.getText().toString();
-                        String emergenCon = editTextEmergencyContact.getText().toString();
-                        String password = editTextPassword.getText().toString();
-                        String oldPassword = editTextOldPass.getText().toString();
-                        String confirmPassword = editTextConfirmPassword.getText().toString();
-                        String[] homeAddress = new String[5];
-                        String[] latLonStr = new String[5];
-                        String androidId = Settings.Secure.getString(getContentResolver(),
-                                Settings.Secure.ANDROID_ID);
+                        if (editTextUserName.getText().toString().trim().equals("")
+                                || editTextEmergencyContact.getText().toString().trim().equals("")
+                                || addressList[0].getText().toString().trim().equals("")
+                                || addressList[1].getText().toString().equals("")) {
+
+
+                            if (editTextUserName.getText().toString().trim().equals("")) {
+                                editTextUserName.setError("User Name is required!");
+                                editTextUserName.requestFocus();
+                            } else if (editTextEmergencyContact.getText().toString().trim().equals("")) {
+                                editTextEmergencyContact.setError("Emergency contact is required!");
+                                editTextEmergencyContact.requestFocus();
+                            } else if (addressList[0].getText().toString().trim().equals("")) {
+                                addressList[0].setError("Home address is required!");
+                                addressList[0].requestFocus();
+                            } else {
+                                addressList[1].setError("Office Address is required!");
+                                addressList[1].requestFocus();
+                            }
+                        }
+                        else{
+
+                            userName = editTextUserName.getText().toString();
+                            emergenCon = editTextEmergencyContact.getText().toString();
+                            password = editTextPassword.getText().toString();
+                            oldPassword = editTextOldPass.getText().toString();
+                            confirmPassword = editTextConfirmPassword.getText().toString();
+                            homeAddress = new String[5];
+                            latLonStr = new String[5];
+                            androidId = Settings.Secure.getString(getContentResolver(),
+                                    Settings.Secure.ANDROID_ID);
+                        }
+                        
+
+
+//
+//
+//                        String userName = editTextUserName.getText().toString();
+//                        String emergenCon = editTextEmergencyContact.getText().toString();
+//                        String password = editTextPassword.getText().toString();
+//                        String oldPassword = editTextOldPass.getText().toString();
+//                        String confirmPassword = editTextConfirmPassword.getText().toString();
+//                        String[] homeAddress = new String[5];
+//                        String[] latLonStr = new String[5];
+//                        String androidId = Settings.Secure.getString(getContentResolver(),
+//                                Settings.Secure.ANDROID_ID);
 
                         for (int i = 0; i < 5; i++) {
                             homeAddress[i] = addressList[i].getText().toString();
