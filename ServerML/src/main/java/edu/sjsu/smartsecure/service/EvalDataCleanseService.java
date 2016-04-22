@@ -103,7 +103,7 @@ public class EvalDataCleanseService {
             }
             return usage;
         } catch (Exception uhe) {
-            return null;
+            return "low";
         }
     }
 

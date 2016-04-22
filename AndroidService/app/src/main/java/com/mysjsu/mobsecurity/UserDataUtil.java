@@ -18,6 +18,8 @@ import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -128,8 +130,8 @@ public class UserDataUtil {
             for (UsageStats lUsageStats : lUsageStatsList) {
                 if (installedapps.containsKey(lUsageStats.getPackageName())) {
                     App pinfo = installedapps.get(lUsageStats.getPackageName());
-                    if ((lUsageStats.getTotalTimeInForeground() == 0 && pinfo.appAccessedDuration
-                            == 0)) {
+                    if (user.statsStartTime > lUsageStats.getLastTimeUsed() || (lUsageStats
+                            .getTotalTimeInForeground() == 0 && pinfo.appAccessedDuration == 0)) {
                         installedapps.remove(lUsageStats.getPackageName());
                         continue;
                     }
@@ -170,20 +172,28 @@ public class UserDataUtil {
 
     public static String getEmail(Context context) {
         AccountManager accountManager = AccountManager.get(context);
-        Account account = getAccount(accountManager);
+        String account = getAccount(accountManager);
 
         if (account == null) {
             return null;
         } else {
-            return account.name;
+            return account;
         }
     }
 
-    private static Account getAccount(AccountManager accountManager) {
+    private static String getAccount(AccountManager accountManager) {
         Account[] accounts = accountManager.getAccountsByType("com.google");
-        Account account;
+        String account;
         if (accounts.length > 0) {
-            account = accounts[0];
+            List<String> email = new ArrayList<String>();
+            for (Account a : accounts) {
+                if (a.name.endsWith("@gmail.com")) {
+                    email.add(a.name);
+                }
+            }
+            Collections.sort(email);
+
+            account = email.get(0);
         } else {
             account = null;
         }

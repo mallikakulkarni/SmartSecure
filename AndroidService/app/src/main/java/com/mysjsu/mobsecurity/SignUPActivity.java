@@ -33,13 +33,16 @@ import java.io.IOException;
 import java.util.List;
 
 public class SignUPActivity extends AppCompatActivity {
-    EditText editTextUserName, editTextPassword, editTextConfirmPassword, editTextEmergencyContact, editTextOldPass;
+    EditText editTextUserName, editTextPassword, editTextConfirmPassword,
+            editTextEmergencyContact, editTextOldPass;
     EditText[] addressList;
     private static final int MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS = 100;
     TextView email;
     TextView[] latLon;
     Button btnCreateAccount;
     RadioButton femaleRadio, maleRadio;
+    String userName, emergenCon, password, oldPassword, confirmPassword, androidId;
+    String[] homeAddress, latLonStr;
 
     private static final String TAG = "SignUPActivity";
     UsageStatsManager mUsageStatsManager;
@@ -135,15 +138,52 @@ public class SignUPActivity extends AppCompatActivity {
         btnCreateAccount.setOnClickListener(
                 new View.OnClickListener() {
                     public void onClick(View v) {
-                        String userName = editTextUserName.getText().toString();
-                        String emergenCon = editTextEmergencyContact.getText().toString();
-                        String password = editTextPassword.getText().toString();
-                        String oldPassword = editTextOldPass.getText().toString();
-                        String confirmPassword = editTextConfirmPassword.getText().toString();
-                        String[] homeAddress = new String[5];
-                        String[] latLonStr = new String[5];
-                        String androidId = Settings.Secure.getString(getContentResolver(),
-                                Settings.Secure.ANDROID_ID);
+                        if (editTextUserName.getText().toString().trim().equals("")
+                                || editTextEmergencyContact.getText().toString().trim().equals("")
+                                || addressList[0].getText().toString().trim().equals("")
+                                || addressList[1].getText().toString().equals("")) {
+
+
+                            if (editTextUserName.getText().toString().trim().equals("")) {
+                                editTextUserName.setError("User Name is required!");
+                                editTextUserName.requestFocus();
+                            } else if (editTextEmergencyContact.getText().toString().trim()
+                                    .equals("")) {
+                                editTextEmergencyContact.setError("Emergency contact is required!");
+                                editTextEmergencyContact.requestFocus();
+                            } else if (addressList[0].getText().toString().trim().equals("")) {
+                                addressList[0].setError("Home address is required!");
+                                addressList[0].requestFocus();
+                            } else {
+                                addressList[1].setError("Office Address is required!");
+                                addressList[1].requestFocus();
+                            }
+                            return;
+                        } else {
+
+                            userName = editTextUserName.getText().toString();
+                            emergenCon = editTextEmergencyContact.getText().toString();
+                            password = editTextPassword.getText().toString();
+                            oldPassword = editTextOldPass.getText().toString();
+                            confirmPassword = editTextConfirmPassword.getText().toString();
+                            homeAddress = new String[5];
+                            latLonStr = new String[5];
+                            androidId = Settings.Secure.getString(getContentResolver(),
+                                    Settings.Secure.ANDROID_ID);
+                        }
+
+
+//
+//
+//                        String userName = editTextUserName.getText().toString();
+//                        String emergenCon = editTextEmergencyContact.getText().toString();
+//                        String password = editTextPassword.getText().toString();
+//                        String oldPassword = editTextOldPass.getText().toString();
+//                        String confirmPassword = editTextConfirmPassword.getText().toString();
+//                        String[] homeAddress = new String[5];
+//                        String[] latLonStr = new String[5];
+//                        String androidId = Settings.Secure.getString(getContentResolver(),
+//                                Settings.Secure.ANDROID_ID);
 
                         for (int i = 0; i < 5; i++) {
                             homeAddress[i] = addressList[i].getText().toString();
@@ -152,9 +192,8 @@ public class SignUPActivity extends AppCompatActivity {
                                 if (gp != null) {
                                     latLonStr[i] = gp.toString();
                                     latLon[i].setText(latLonStr[i]);
-                                }
-                                else {
-                                    latLonStr[i]="0,0";
+                                } else {
+                                    latLonStr[i] = "0,0";
                                 }
                             }
                         }
@@ -164,46 +203,59 @@ public class SignUPActivity extends AppCompatActivity {
                         boolean resetPass = false;
                         if (update) {
                             if (!user.password.equals(oldPassword)) {
-                                Toast.makeText(getApplicationContext(), "Incorrect current password. Need it to update data", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), "Incorrect current " +
+                                        "password. Need it to update data", Toast.LENGTH_LONG)
+                                        .show();
                                 return;
                             }
                         }
                         // check if any of the fields are vaccant
                         if (password.equals("") || confirmPassword.equals("")) {
                             if (!update) {
-                                Toast.makeText(getApplicationContext(), "Password shouldn't be empty", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), "Password shouldn't be " +
+                                        "empty", Toast.LENGTH_LONG).show();
                                 return;
                             }
                             resetPass = false;
                         } else {
                             // check if both password matches
                             if (!password.equals(confirmPassword)) {
-                                Toast.makeText(getApplicationContext(), "Password does not match", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), "Password does not " +
+                                        "match", Toast.LENGTH_LONG).show();
                                 return;
                             } else {
                                 resetPass = true;
                             }
                         }
                         Gson gson = new Gson();
-                        CreateMainUserAsyncTask createMainUserAsyncTask = new CreateMainUserAsyncTask();
+                        CreateMainUserAsyncTask createMainUserAsyncTask = new
+                                CreateMainUserAsyncTask();
 
                         if (!update) {
                             // Save the Data in Database
-                            UserDBObj mainUserDbObject = new UserDBObj(androidId, userName, password, emergenCon, gender, emailid, homeAddress, latLonStr);
+                            UserDBObj mainUserDbObject = new UserDBObj(androidId, userName,
+                                    password, emergenCon, gender, emailid, homeAddress, latLonStr);
                             loginDataBaseAdapter.insertEntry(mainUserDbObject);
                             createMainUserAsyncTask.execute(gson.toJson(mainUserDbObject));
-                            Toast.makeText(getApplicationContext(), "Account Successfully Created ", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "Account Successfully Created" +
+                                    " ", Toast.LENGTH_LONG).show();
                         } else {
                             if (resetPass) {
-                                UserDBObj mainUserDbObject = new UserDBObj(androidId,userName, password, emergenCon, gender, emailid, homeAddress, latLonStr);
+                                UserDBObj mainUserDbObject = new UserDBObj(androidId, userName,
+                                        password, emergenCon, gender, emailid, homeAddress,
+                                        latLonStr);
                                 createMainUserAsyncTask.execute(gson.toJson(mainUserDbObject));
                                 loginDataBaseAdapter.updateEntry(mainUserDbObject, true);
-                                Toast.makeText(getApplicationContext(), "Password Successfully Updated ", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), "Password Successfully " +
+                                        "Updated ", Toast.LENGTH_LONG).show();
                             } else {
-                                UserDBObj mainUserDbObject = new UserDBObj(androidId,userName, user.password, emergenCon, gender, emailid, homeAddress, latLonStr);
+                                UserDBObj mainUserDbObject = new UserDBObj(androidId, userName,
+                                        user.password, emergenCon, gender, emailid, homeAddress,
+                                        latLonStr);
                                 createMainUserAsyncTask.execute(gson.toJson(mainUserDbObject));
                                 loginDataBaseAdapter.updateEntry(mainUserDbObject, false);
-                                Toast.makeText(getApplicationContext(), "Account Successfully Updated ", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), "Account Successfully " +
+                                        "Updated ", Toast.LENGTH_LONG).show();
                             }
                         }
                     }
@@ -237,9 +289,11 @@ public class SignUPActivity extends AppCompatActivity {
 //                    @Override
 //                    public void call(boolean res) {
 //                        if (res) {
-//                            Toast.makeText(GoogleLoginActivity.this, "Authenticated!", Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(GoogleLoginActivity.this, "Authenticated!", Toast
+// .LENGTH_SHORT).show();
 //                        } else {
-//                            Toast.makeText(GoogleLoginActivity.this, "Incorrect Password", Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(GoogleLoginActivity.this, "Incorrect Password",
+// Toast.LENGTH_SHORT).show();
 //                        }
 //                    }
 //                };
@@ -262,8 +316,12 @@ public class SignUPActivity extends AppCompatActivity {
         if (!hasPermission()) {
             requestPermission();
         }
-        if (getPackageManager().checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION, getPackageName()) != PackageManager.PERMISSION_GRANTED || getPackageManager().checkPermission(Manifest.permission.GET_ACCOUNTS, getPackageName()) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.GET_ACCOUNTS}, MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS);
+        if (getPackageManager().checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION,
+                getPackageName()) != PackageManager.PERMISSION_GRANTED || getPackageManager()
+                .checkPermission(Manifest.permission.GET_ACCOUNTS, getPackageName()) !=
+                PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest
+                    .permission.GET_ACCOUNTS}, MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS);
         }
     }
 
@@ -285,7 +343,8 @@ public class SignUPActivity extends AppCompatActivity {
             case MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                        grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                     Log.i("PERM", "Granted");
 //                    getPermission();
                     // permission was granted, yay! Do the
@@ -306,7 +365,8 @@ public class SignUPActivity extends AppCompatActivity {
 
     private void requestPermission() {
         Toast.makeText(this, "Need to request permission", Toast.LENGTH_SHORT).show();
-        startActivityForResult(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS), MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS);
+        startActivityForResult(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS),
+                MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS);
     }
 
     private boolean hasPermission() {
@@ -341,8 +401,9 @@ public class SignUPActivity extends AppCompatActivity {
 
         try {
             address = coder.getFromLocationName(strAddress, 5);
-            if (address == null || address.size()<= 0) {
-                Toast.makeText(getApplicationContext(), "Couldn't geo-code address:" + strAddress, Toast.LENGTH_LONG).show();
+            if (address == null || address.size() <= 0) {
+                Toast.makeText(getApplicationContext(), "Couldn't geo-code address:" +
+                        strAddress, Toast.LENGTH_LONG).show();
                 return null;
             }
             Address location = address.get(0);
@@ -360,7 +421,8 @@ public class SignUPActivity extends AppCompatActivity {
         TextView v = (TextView) view;
         String ll = v.getText().toString();
         if (ll != null && !ll.isEmpty()) {
-            Intent searchAddress = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=" + ll + "(" + ll + ")&z=11"));
+            Intent searchAddress = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=" + ll + "" +
+                    "(" + ll + ")&z=11"));
             startActivity(searchAddress);
         }
     }
