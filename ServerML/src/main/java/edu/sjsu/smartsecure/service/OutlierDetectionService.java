@@ -6,7 +6,10 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by mallika on 4/8/16.
@@ -18,33 +21,33 @@ public class OutlierDetectionService {
         decisionTree = DecisionTree.getDecisionTreeInstance();
     }
     static Logger decisionTreeLog = LoggerFactory.getLogger("decisionTree");
-    public JSONObject getSafeUnsafeResult(JSONObject jsonObject) {
+    public List<String> getSafeUnsafeResult(JSONObject jsonObject) {
         decisionTreeLog.debug("Processing input through decision tree");
-        List<Integer> result = decisionTree.processTestData(jsonObject);
+        List<String> result = decisionTree.processTestData(jsonObject);
         CleansedDataHandler cleansedDataHandler = new CleansedDataHandler();
         cleansedDataHandler.insertIntoNewCleansedCollection(result, jsonObject);
-        JSONObject resultObject = new JSONObject();
+        List<String> list = new ArrayList<String>();
         for (int i = 0; i < result.size(); i++) {
-            resultObject.put(""+i, result.get(i));
+            list.add(result.get(i));
         }
-        decisionTreeLog.debug("Result Object "+resultObject.toString());
-        return resultObject;
+        truncateResultList(list);
+        decisionTreeLog.debug("Result Object "+list.toString());
+        return list;
     }
 
-    public boolean verifyTestData(JSONObject jsonObject) {
-        boolean testResult = (Boolean) jsonObject.get("class");
-        jsonObject.remove("class");
-        List<Integer> list = decisionTree.processTestData(jsonObject);
-        for (int actResult : list) {
-            if (actResult == -1 && testResult == true) {
-                return true;
-            } else if (actResult != -1 && testResult == true) {
-                return false;
-            } else if (actResult == -1 && testResult == false) {
-                return false;
+    public List<String> truncateResultList(List<String> resultList) {
+        int i = 0;
+        Set<String> dictionary = new HashSet<String>();
+        while (i < resultList.size()) {
+            String result = resultList.get(i);
+            if (result.equals("Safe") || dictionary.contains(result)) {
+                resultList.remove(i);
+            } else {
+                dictionary.add(result);
+                i++;
             }
         }
-        return true;
+        return resultList;
     }
 
 }

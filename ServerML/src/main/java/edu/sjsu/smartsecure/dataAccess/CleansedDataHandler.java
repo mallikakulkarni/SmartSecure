@@ -23,7 +23,9 @@ public class CleansedDataHandler {
         collection = MongoFactory.getCollection("TrainingData");
     }
     final static org.slf4j.Logger decisionTreeLog = LoggerFactory.getLogger("decisionTree");
-    public void insertIntoNewCleansedCollection(List<Integer> result, JSONObject jsonObject) {
+
+
+    public void insertIntoNewCleansedCollection(List<String> result, JSONObject jsonObject) {
         JSONArray jsonArray = (JSONArray)  jsonObject.get("realtimedata");
         int count = 0;
         Iterator<?> iterator = jsonArray.iterator();
@@ -45,8 +47,8 @@ public class CleansedDataHandler {
         }
     }
 
-    private boolean processResult(int result) {
-        return result == -1 ? true : false;
+    private boolean processResult(String result) {
+        return result == "Safe" ? true : false;
     }
 
 }
