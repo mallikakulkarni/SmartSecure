@@ -29,7 +29,6 @@ public class PromptSecKey {
         loginDataBaseAdapter = new LoginDataBaseAdapter(context);
         loginDataBaseAdapter = loginDataBaseAdapter.open();
         user = loginDataBaseAdapter.getSinlgeEntry(emailId);
-        loginDataBaseAdapter.close();
         this.context = context;
         this.callback = callback;
     }
@@ -51,10 +50,6 @@ public class PromptSecKey {
 
         final EditText userInput = (EditText) promptsView
                 .findViewById(R.id.secKey);
-        class R {
-            String p = null;
-        }
-        final R r = new R();
         // set dialog message
         alertDialogBuilder
                 .setCancelable(false)
@@ -66,8 +61,8 @@ public class PromptSecKey {
                                     callback.call(false);
                                     return;
                                 }
-                                r.p = userInput.getText().toString();
-                                isPasswordCorrect = r.p.equals(user.password);
+                                String p = userInput.getText().toString();
+                                isPasswordCorrect = p.equals(user.password);
                                 attempts++;
                                 if (attempts < 3) {
                                     if (!isPasswordCorrect) {
@@ -75,9 +70,12 @@ public class PromptSecKey {
                                                 .LENGTH_SHORT)
                                                 .show();
                                         alertDialog.dismiss();
+                                        user.inCorrPass++;
+                                        loginDataBaseAdapter.updateIncorrPassEntry(user);
                                         authenticate();
                                     } else {
                                         alertDialog.dismiss();
+                                        loginDataBaseAdapter.close();
                                         callback.call(true);
                                     }
 
@@ -89,9 +87,13 @@ public class PromptSecKey {
                                                 .LENGTH_SHORT)
                                                 .show();
                                         alertDialog.dismiss();
+                                        user.inCorrPass++;
+                                        loginDataBaseAdapter.updateIncorrPassEntry(user);
+                                        loginDataBaseAdapter.close();
                                         // TODO send mail alert
                                     } else {
                                         alertDialog.dismiss();
+                                        loginDataBaseAdapter.close();
                                         callback.call(true);
                                     }
 
@@ -103,5 +105,6 @@ public class PromptSecKey {
         alertDialog = alertDialogBuilder.create();
         // show it
         alertDialog.show();
+
     }
 }

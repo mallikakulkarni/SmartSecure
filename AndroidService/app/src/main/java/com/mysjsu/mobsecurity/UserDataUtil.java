@@ -269,6 +269,14 @@ public class UserDataUtil {
                 }
             }
         }
+        diffUserData.incorrectPswdAttemptCount = curUserData.incorrectPswdAttemptCount -
+                prevUserData.incorrectPswdAttemptCount;
+        if (diffUserData.incorrectPswdAttemptCount < 0) {
+            diffUserData.incorrectPswdAttemptCount = 0;
+        }
+        if (diffUserData.incorrectPswdAttemptCount > 0) {
+            changed = true;
+        }
 
         Location curLoc = null;
         for (Location l : curUserData.locs) {

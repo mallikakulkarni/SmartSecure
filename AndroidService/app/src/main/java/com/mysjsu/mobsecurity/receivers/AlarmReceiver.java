@@ -44,7 +44,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         calendar.setTimeInMillis(System.currentTimeMillis());
         int hourOfDay = calendar.get(Calendar.HOUR);
         // TODO making it write every hour. Uncomment to write every day
-//        calendar.set(Calendar.HOUR, 0);
+//      calendar.set(Calendar.HOUR, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
@@ -77,11 +77,13 @@ public class AlarmReceiver extends BroadcastReceiver {
                 user = new UserData(android_id, email, userDB.getOccupation(), userDB.getUserName
                         ());
                 user.setStatsStartTime(newStartTime);
+
             } else {
                 previousUserData = new UserData(user);
             }
         }
         userDataUtil.getStats(user, hourOfDay, userDB.getOccupation(), userDB.getUserName());
+        user.setIncorrectPswdAttemptCount(userDB.getInCorrPass());
         UserData diff = userDataUtil.getChangedUserData(previousUserData, user);
         if (diff != null) {
             // The data changed in last 30 secs.
