@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -45,6 +46,13 @@ public class PromptSecKey {
         LayoutInflater li = LayoutInflater.from(context);
         View promptsView = li.inflate(R.layout.prompts, null);
 
+        TextView msgT = (TextView) promptsView.findViewById(R.id.msgnew);
+
+        if (message != null && !message.isEmpty()) {
+            msgT.setText(message);
+        } else {
+            msgT.setText("");
+        }
         // set prompts.xml to alertdialog builder
         alertDialogBuilder.setView(promptsView);
 
