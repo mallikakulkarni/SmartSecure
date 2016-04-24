@@ -1,21 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration trace="true">
 
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern>
-        </layout>
-    </appender>
-
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>/Users/mallika/dev/SmartSecure/ServerML/GeneralLog</file>
+        <file>${LOG_DIR}/logs/GeneralLog</file>
         <layout class="ch.qos.logback.classic.PatternLayout">
             <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern>
         </layout>
     </appender>
 
     <appender name="DT-FILE" class="ch.qos.logback.core.FileAppender">
-        <file>/Users/mallika/dev/SmartSecure/ServerML/DecisionTree.log</file>
+        <file>${LOG_DIR}/logs/DecisionTree.log</file>
         <layout class="ch.qos.logback.classic.PatternLayout">
             <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern>
         </layout>
@@ -25,9 +19,10 @@
         <appender-ref ref="DT-FILE"/>
     </logger>
 
+    <logger name="org.mongodb.driver.protocol" level="ERROR" additivity="false" />
 
-    <root level="trace">
-        <appender-ref ref="STDOUT" />
+
+    <root level="DEBUG">
         <appender-ref ref="FILE" />
     </root>
 
