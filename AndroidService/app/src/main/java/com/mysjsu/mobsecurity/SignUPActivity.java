@@ -30,6 +30,8 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 public class SignUPActivity extends AppCompatActivity {
@@ -50,6 +52,31 @@ public class SignUPActivity extends AppCompatActivity {
     private String gender = "male";
 
     LoginDataBaseAdapter loginDataBaseAdapter;
+
+    public static final String md5(final String s) {
+        final String MD5 = "MD5";
+        try {
+            // Create MD5 Hash
+            MessageDigest digest = java.security.MessageDigest
+                    .getInstance(MD5);
+            digest.update(s.getBytes());
+            byte messageDigest[] = digest.digest();
+
+            // Create Hex String
+            StringBuilder hexString = new StringBuilder();
+            for (byte aMessageDigest : messageDigest) {
+                String h = Integer.toHexString(0xFF & aMessageDigest);
+                while (h.length() < 2)
+                    h = "0" + h;
+                hexString.append(h);
+            }
+            return hexString.toString();
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
 
     public void onRadioButtonClicked(View view) {
         // Is the button now checked?
@@ -236,6 +263,8 @@ public class SignUPActivity extends AppCompatActivity {
                             UserDBObj mainUserDbObject = new UserDBObj(androidId, userName,
                                     password, emergenCon, gender, emailid, homeAddress, latLonStr);
                             loginDataBaseAdapter.insertEntry(mainUserDbObject);
+                            
+                            mainUserDbObject.password=md5(mainUserDbObject.password);
                             createMainUserAsyncTask.execute(gson.toJson(mainUserDbObject));
                             Toast.makeText(getApplicationContext(), "Account Successfully Created" +
                                     " ", Toast.LENGTH_LONG).show();
@@ -244,16 +273,21 @@ public class SignUPActivity extends AppCompatActivity {
                                 UserDBObj mainUserDbObject = new UserDBObj(androidId, userName,
                                         password, emergenCon, gender, emailid, homeAddress,
                                         latLonStr);
-                                createMainUserAsyncTask.execute(gson.toJson(mainUserDbObject));
                                 loginDataBaseAdapter.updateEntry(mainUserDbObject, true);
+
+                                mainUserDbObject.password=md5(mainUserDbObject.password);
+                                createMainUserAsyncTask.execute(gson.toJson(mainUserDbObject));
+
                                 Toast.makeText(getApplicationContext(), "Password Successfully " +
                                         "Updated ", Toast.LENGTH_LONG).show();
                             } else {
                                 UserDBObj mainUserDbObject = new UserDBObj(androidId, userName,
                                         user.password, emergenCon, gender, emailid, homeAddress,
                                         latLonStr);
-                                createMainUserAsyncTask.execute(gson.toJson(mainUserDbObject));
                                 loginDataBaseAdapter.updateEntry(mainUserDbObject, false);
+
+                                mainUserDbObject.password=md5(mainUserDbObject.password);
+                                createMainUserAsyncTask.execute(gson.toJson(mainUserDbObject));
                                 Toast.makeText(getApplicationContext(), "Account Successfully " +
                                         "Updated ", Toast.LENGTH_LONG).show();
                             }

@@ -28,19 +28,6 @@ public class GetFeedbackAsyncTask extends AsyncTask<String, Void, Boolean> {
 
     static Map<Integer, String> msgs = new HashMap<Integer, String>();
 
-    static {
-        msgs.put(1, "Unknown app used");
-        msgs.put(2, "Unsafe Network");
-        msgs.put(3, "Exceeded data usage");
-        msgs.put(4, "dayOfTheWeek");
-        msgs.put(5, "timeOfTheDay");
-        msgs.put(6, "demographic");
-        msgs.put(7, "frequency");
-        msgs.put(8, "frequentLocation");
-
-
-    }
-
     @Override
     protected Boolean doInBackground(String... arg0) {
         try {
@@ -78,12 +65,17 @@ public class GetFeedbackAsyncTask extends AsyncTask<String, Void, Boolean> {
                 br.close();
                 Log.d("DECTREE_REQ", userJson);
                 Log.d("DECTREE_RESP", responseStrBuilder.toString());
-                JSONObject resultObj = new JSONObject(responseStrBuilder.toString());
-                int resCode = resultObj.getInt("result");
-                Log.i("DECTREE_RESP", "Response:" + resCode);
-                String msg = msgs.get(resCode);
-                if (msg != null) {
-                    getSecuritykey(msg);
+                String resultMessage;
+                resultMessage=responseStrBuilder.toString();
+
+                if (resultMessage != null){
+                    if(resultMessage.contains("Alert")){
+                        getSecuritykey(resultMessage);
+                    }
+                    else if(resultMessage.contains("Warning")){
+                        Toast.makeText(new Activity(), resultMessage, Toast.LENGTH_SHORT).show();
+
+                    }
                 }
                 Log.i("message:", "response : success, code is" + responseCode + " message is " +
                         conn.getResponseMessage());

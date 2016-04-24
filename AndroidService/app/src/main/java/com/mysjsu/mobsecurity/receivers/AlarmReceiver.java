@@ -7,7 +7,6 @@ import android.provider.Settings;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.mysjsu.mobsecurity.CreateUserAsyncTask;
 import com.mysjsu.mobsecurity.CreateUserTestDataAsyncTask;
 import com.mysjsu.mobsecurity.GetFeedbackAsyncTask;
 import com.mysjsu.mobsecurity.LoginDataBaseAdapter;
@@ -31,7 +30,6 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     UserData user = null;
     String fileName = "mobSec.json";
-    CreateUserAsyncTask createUserAsyncTask;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -70,10 +68,6 @@ public class AlarmReceiver extends BroadcastReceiver {
             long prevStartTime = user.getStatsStartTime();
             long newStartTime = calendar.getTimeInMillis();
             if (prevStartTime != newStartTime) {
-                // Day changed. Write daily object to mongodb
-//                Log.i("SmrtSec", "Writing to Mongolab");
-////                createUserAsyncTask = new CreateUserAsyncTask();
-////                createUserAsyncTask.execute(gson.toJson(user));
                 user = new UserData(android_id, email, userDB.getOccupation(), userDB.getUserName
                         ());
                 user.setStatsStartTime(newStartTime);
