@@ -28,9 +28,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".MonitoringActivity"/>
-        <activity android:name=".PromptSecActivity"/>
-        <activity android:name=".PromptSecActivityAndShowMonitoringOptions"/>
+
+        <activity
+            android:name=".PromptSecActivity"
+            android:theme="@android:style/Theme.Holo.Dialog"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            />
+
+        <activity
+            android:name=".PromptSecActivityAndShowMonitoringOptions"
+            android:theme="@android:style/Theme.Holo.Dialog"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            />
 
 
         <receiver android:name=".receivers.PeriodicTaskReceiverAppInstall">
