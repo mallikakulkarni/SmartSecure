@@ -15,6 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:background="@drawable/rounded_corner_button"
         android:layout_marginBottom="20dp"
         android:text="Start Monitoring" />
 
@@ -24,6 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/startAlarm"
         android:layout_marginBottom="20dp"
+        android:background="@drawable/rounded_corner_button"
         android:text="Stop Monitoring" />
     <TextView
         android:layout_width="wrap_content"
