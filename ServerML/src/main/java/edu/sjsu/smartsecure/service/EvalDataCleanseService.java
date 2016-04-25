@@ -15,7 +15,8 @@ public class EvalDataCleanseService {
 
     private String uri = "mongodb://smartsecureteam:SJSU2016@ds015909.mlab.com:15909/smartsecure";
     private String mastertableCollection = "MasterUserTable";
-    private String newCleansedCollection = "TrainingData";
+   // private String newCleansedCollection = "TrainingData";
+   private String newCleansedCollection = "trainingtestdata";
     private static HashMap<String, HashMap<String, Integer>> UserAppFreq;
     private static long lastMapUpdate = 0;
     static Logger decisionTreeLog = LoggerFactory.getLogger("decisionTree");
@@ -336,22 +337,29 @@ public class EvalDataCleanseService {
                     String freqLoc = getFrequentLoc(user, masterCollection, appObject);
                     String frequency = getFrequency(user, appObject);
                     String network = getNetwork(appObject);
+                    if( appname != null &&
+                            dayofweek != null &&
+                            timeOfDay != null &&
+                            dataUsage != null &&
+                            freqLoc != null &&
+                            frequency != null &&
+                            network != null)
+                    {
+                        BasicDBObject newObject = new BasicDBObject();
+                        newObject.put("appName", appname);
+                        newObject.put("network", network);
+                        newObject.put("datausage", dataUsage);
+                        newObject.put("dayOfTheWeek", dayofweek);
+                        newObject.put("timeOfTheDay", timeOfDay);
+                        newObject.put("demographic", demo);
+                        newObject.put("frequency", frequency);
+                        newObject.put("frequentLocation", freqLoc);
 
-                    BasicDBObject newObject = new BasicDBObject();
-                    newObject.put("appName", appname);
-                    newObject.put("network", network);
-                    newObject.put("datausage", dataUsage);
-                    newObject.put("dayOfTheWeek", dayofweek);
-                    newObject.put("timeOfTheDay", timeOfDay);
-                    newObject.put("demographic", demo);
-                    newObject.put("frequency", frequency);
-                    newObject.put("frequentLocation", freqLoc);
+                        boolean result = calculateResult(newObject);
+                        newObject.put("class", result);
 
-                    boolean result = calculateResult(newObject);
-                    newObject.put("class", result);
-
-                    trainingCollection.insert(newObject);
-
+                        trainingCollection.insert(newObject);
+                    }
                 }
             }
         }catch(Exception e) {
@@ -404,31 +412,39 @@ public class EvalDataCleanseService {
                 decisionTreeLog.debug("Getting Network");
                 String network = getNetwork(appObject);
                 decisionTreeLog.debug("Network = "+network);
+                if(appname != null &&
+                        dayofweek != null &&
+                        timeOfDay != null &&
+                        dataUsage != null &&
+                        freqLoc != null &&
+                        frequency != null &&
+                        network != null)
+                {
+                    BasicDBObject newObject = new BasicDBObject();
+                    JSONObject realTimeApp = new JSONObject();
+                    newObject.put("appName", appname);
+                    realTimeApp.put("appName", appname);
+                    newObject.put("network", network);
+                    realTimeApp.put("network", network);
+                    newObject.put("datausage", dataUsage);
+                    realTimeApp.put("datausage", dataUsage);
+                    newObject.put("dayOfTheWeek", dayofweek);
+                    realTimeApp.put("dayOfTheWeek", dayofweek);
+                    newObject.put("timeOfTheDay", timeOfDay);
+                    realTimeApp.put("timeOfTheDay", timeOfDay);
+                    newObject.put("demographic", demo);
+                    realTimeApp.put("demographic", demo);
+                    newObject.put("frequency", frequency);
+                    realTimeApp.put("frequency", frequency);
+                    newObject.put("frequentLocation", freqLoc);
+                    realTimeApp.put("frequentLocation", freqLoc);
 
-                BasicDBObject newObject = new BasicDBObject();
-                JSONObject realTimeApp = new JSONObject();
-                newObject.put("appName", appname);
-                realTimeApp.put("appName", appname);
-                newObject.put("network", network);
-                realTimeApp.put("network", network);
-                newObject.put("datausage", dataUsage);
-                realTimeApp.put("datausage", dataUsage);
-                newObject.put("dayOfTheWeek", dayofweek);
-                realTimeApp.put("dayOfTheWeek", dayofweek);
-                newObject.put("timeOfTheDay", timeOfDay);
-                realTimeApp.put("timeOfTheDay", timeOfDay);
-                newObject.put("demographic", demo);
-                realTimeApp.put("demographic", demo);
-                newObject.put("frequency", frequency);
-                realTimeApp.put("frequency", frequency);
-                newObject.put("frequentLocation", freqLoc);
-                realTimeApp.put("frequentLocation", freqLoc);
-
-//                boolean result = calculateResult(newObject);
-//                newObject.put("class", result);
-//
-//                trainingCollection.insert(newObject);
-                realTimeArray.put(realTimeApp);
+                    //                boolean result = calculateResult(newObject);
+                    //                newObject.put("class", result);
+                    //
+                    //                trainingCollection.insert(newObject);
+                    realTimeArray.put(realTimeApp);
+                }
             }
             
             realTimeRecord.put("realtimedata",realTimeArray);
@@ -438,6 +454,4 @@ public class EvalDataCleanseService {
         }
         return realTimeRecord;
     }
-
-
 }
