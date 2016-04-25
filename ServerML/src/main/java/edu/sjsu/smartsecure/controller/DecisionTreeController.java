@@ -17,10 +17,14 @@ import java.util.List;
  */
 @SpringBootApplication
 public class DecisionTreeController {
+    static {
+        System.setProperty("LOG_DIR", Thread.currentThread().getContextClassLoader().getResource(".").getPath());
+    }
 
     static Logger general = LoggerFactory.getLogger(DecisionTreeController.class);
     static Logger decisionTreeLog = LoggerFactory.getLogger("decisionTree");
     public static void main(String[] args) {
+
         //TODO: can move the training data part to a separate thread to train data every 24hrs
         try {
             EvalDataCleanseService evalDataCleanseService = new EvalDataCleanseService();

@@ -49,4 +49,20 @@ public class TestOutlierDetectorService {
 //    }
 
 
+    @Test
+    public void testTruncateResult() {
+        List<String> result = new ArrayList<String>();
+        result.add("Safe");
+        result.add("Hi");
+        result.add("Hello");
+        result.add("Hi");
+        result.add("Safe");
+        OutlierDetectionService outlierDetectionService = new OutlierDetectionService();
+        result = outlierDetectionService.truncateResultList(result);
+        Assert.assertEquals(2, result.size());
+        Assert.assertEquals("Hi", result.get(0));
+        Assert.assertEquals("Hello", result.get(1));
+    }
+
+
 }

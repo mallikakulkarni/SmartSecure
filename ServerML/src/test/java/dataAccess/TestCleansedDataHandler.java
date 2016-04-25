@@ -19,8 +19,8 @@ public class TestCleansedDataHandler {
     @Test
     public void testInsertIntoNewCleansedCollection() {
         CleansedDataHandler cleansedDataHandler = new CleansedDataHandler();
-        List<Integer> result = new ArrayList<Integer>();
-        result.add(-1);
+        List<String> result = new ArrayList<String>();
+        result.add("Safe");
         JSONObject jsonObject = getJSONObject();
         JSONArray jsonArray = new JSONArray();
         jsonArray.put(0, jsonObject);

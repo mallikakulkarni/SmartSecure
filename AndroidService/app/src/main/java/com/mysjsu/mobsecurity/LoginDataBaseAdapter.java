@@ -14,14 +14,14 @@ import android.util.Log;
 
 public class LoginDataBaseAdapter {
     static final String DATABASE_NAME = "mobsec.db";
-    static final int DATABASE_VERSION = 8;
+    static final int DATABASE_VERSION = 9;
     public static final int NAME_COLUMN = 1;
     // TODO: Create public field for each column in your table.
     // SQL Statement to create a new database.
     static final String DATABASE_CREATE = "create table " + "LOGIN" +
             "( " + "ID" + " integer primary key autoincrement," + "USERNAME  text,PASSWORD text, CONTACT text," +
             " GENDER text, EMAIL text, ADDRESS1 text, LATLON1 text, ADDRESS2 text, LATLON2 text, ADDRESS3 text, LATLON3 text, " +
-            "ADDRESS4 text, LATLON4 text, ADDRESS5 text, LATLON5 text); ";
+            "ADDRESS4 text, LATLON4 text, ADDRESS5 text, LATLON5 text, INCORRPASS integer); ";
     // Variable to hold the database instance
     public SQLiteDatabase db;
     // Context of the application using the database.
@@ -55,6 +55,7 @@ public class LoginDataBaseAdapter {
         newValues.put("EMAIL", u.email);
         newValues.put("GENDER", u.gender);
         newValues.put("CONTACT", u.emergContact);
+        newValues.put("INCORRPASS", u.inCorrPass);
         for (int i = 1; i <= 5; i++) {
             newValues.put("ADDRESS" + i, u.address[i - 1]);
             newValues.put("LATLON" + i, u.latLon[i - 1].toString());
@@ -87,6 +88,7 @@ public class LoginDataBaseAdapter {
         String userName = cursor.getString(cursor.getColumnIndex("USERNAME"));
         String[] address = new String[5];
         String[] latlon = new String[5];
+        int incorrectPswd=cursor.getInt(cursor.getColumnIndex("INCORRPASS"));
         String androidId = Settings.Secure.getString(context.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
         for (int i = 1; i <= 5; i++) {
@@ -94,6 +96,7 @@ public class LoginDataBaseAdapter {
             latlon[i - 1] = cursor.getString(cursor.getColumnIndex("LATLON" + i));
         }
         UserDBObj u = new UserDBObj(androidId,userName, password, contact, gender, email, address, latlon);
+        u.inCorrPass=incorrectPswd;
         cursor.close();
         return u;
     }
@@ -109,10 +112,19 @@ public class LoginDataBaseAdapter {
 //        updatedValues.put("EMAIL", u.email);
         updatedValues.put("GENDER", u.gender);
         updatedValues.put("CONTACT", u.emergContact);
+        updatedValues.put("INCORRPASS",u.inCorrPass);
         for (int i = 1; i <= 5; i++) {
             updatedValues.put("ADDRESS" + i, u.address[i - 1]);
             updatedValues.put("LATLON" + i, u.latLon[i - 1].toString());
         }
+        String where = "EMAIL = ?";
+        db.update("LOGIN", updatedValues, where, new String[]{u.email});
+    }
+
+    public void updateIncorrPassEntry(UserDBObj u) {
+        ContentValues updatedValues = new ContentValues();
+        updatedValues.put("INCORRPASS",u.inCorrPass);
+        // Assign values for each row.1
         String where = "EMAIL = ?";
         db.update("LOGIN", updatedValues, where, new String[]{u.email});
     }

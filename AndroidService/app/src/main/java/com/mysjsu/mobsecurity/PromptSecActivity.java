@@ -17,6 +17,7 @@ public class PromptSecActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         final Activity act = this;
         super.onCreate(savedInstanceState);
+
         PromptSecCallback cb = new PromptSecCallback() {
             @Override
             public void call(boolean res) {
@@ -33,17 +34,11 @@ public class PromptSecActivity extends Activity {
         };
         Intent intnt = getIntent();
         String msg = intnt.getStringExtra("msg");
-        TextView msgT = (TextView) findViewById(R.id.msg);
 
-        if (msg != null && !msg.isEmpty()) {
-            msgT.setText(msg);
-        } else {
-            msgT.setText("");
-        }
         UserDataUtil userDataUtil = new UserDataUtil(this);
         // Get user name and email from extras passed from GoogleLoginActivity and update UI
         final String emailid = userDataUtil.getEmail(this);
-        PromptSecKey ps = new PromptSecKey(emailid, this, cb);
+        PromptSecKey ps = new PromptSecKey(emailid, this, cb,msg);
         ps.authenticate();
     }
 }

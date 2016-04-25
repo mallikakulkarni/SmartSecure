@@ -65,8 +65,15 @@ public class UserDBObj {
     String emergContact;
     String gender;
     String email;
+
+    public int getInCorrPass() {
+        return inCorrPass;
+    }
+
+    int inCorrPass;
     String[] address;
     UserLocation[] latLon;
+
 
 
     public UserDBObj(String _id, String un, String pass, String cont, String occ, String em,
@@ -82,5 +89,6 @@ public class UserDBObj {
         for (int i = 0; i < latLonStr.length; i++) {
             this.latLon[i] = new UserLocation(latLonStr[i]);
         }
+        this.inCorrPass = 0;
     }
 }

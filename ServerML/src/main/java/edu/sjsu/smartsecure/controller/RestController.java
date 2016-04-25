@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.util.List;
+
 /**
  * Created by mallika on 4/8/16.
  */
@@ -31,12 +33,10 @@ public class RestController {
             EvalDataCleanseService evalDataCleanseService = new EvalDataCleanseService();
             jsonObject = evalDataCleanseService.cleanRealTimeData(jsonObject);
             OutlierDetectionService outlierDetectionService = new OutlierDetectionService();
-            JSONObject resultObject = outlierDetectionService.getSafeUnsafeResult(jsonObject);
+            List<String> resultObject = outlierDetectionService.getSafeUnsafeResult(jsonObject);
             return resultObject.toString();
         } catch (Exception e) {
-            JSONObject js = new JSONObject();
-            js.put("id" , 10000);
-            return js.toString();
+            return "Safe";
         }
     }
 

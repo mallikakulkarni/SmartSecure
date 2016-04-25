@@ -36,21 +36,21 @@ public class DecisionTree {
         this.root = root;
     }
 
-    public List<Integer> processTestData(JSONObject jObject) {
+    public List<String> processTestData(JSONObject jObject) {
         JSONArray jsonArray = (JSONArray) jObject.get("realtimedata");
         Iterator<?> iterator = jsonArray.iterator();
-        List<Integer> list = new ArrayList<Integer>();
+        List<String> list = new ArrayList<String>();
         while (iterator.hasNext()) {
             JSONObject jsonObject = (JSONObject) iterator.next();
             decisionTreeLog.debug("Incoming JsonObject "+jsonObject);
             decisionTreeLog.debug("Starting DT Traversal");
-            int result = traverseDecisionTreeForResult(root, jsonObject);
+            String result = traverseDecisionTreeForResult(root, jsonObject);
             list.add(result);
         }
         return list;
     }
 
-    private int traverseDecisionTreeForResult(Node node, JSONObject jsonObject) {
+    private String traverseDecisionTreeForResult(Node node, JSONObject jsonObject) {
         String nodeId = node.getNodeId();
         decisionTreeLog.debug("Node "+nodeId);
         String inputValue = jsonObject.get(nodeId).toString();
@@ -63,11 +63,49 @@ public class DecisionTree {
                 break;
             }
         }
+        if (i == attributes.size()) {
+            return "Safe";
+        }
         Node child = node.getChildren().get(i);
         decisionTreeLog.debug("Going to child "+child.getNodeId());
         if (child.getResult() != null) {
             decisionTreeLog.debug("Getting Result "+child.getResult());
+            return getResultMessage(child);
         }
-        return child.getResult() != null ? child.getResult() : traverseDecisionTreeForResult(child, jsonObject);
+        return traverseDecisionTreeForResult(child, jsonObject);
+    }
+
+    private String getResultMessage(Node node) {
+        if (node.getResult() == -1) {
+            return "Safe";
+        }
+        String result = "";
+        switch (node.getResult()) {
+            case 1:
+                result = "Warning: Other users don't trust the " +node.getCorrespondingAttribute() + " app";
+                break;
+            case 2:
+                result = "Warning: You are on an unsecure Wi-fi network";
+                break;
+            case 3:
+                result = "Warning: Data Usage is very high";
+                break;
+            case 4:
+                result = "Alert: You have used your phone at an unusual time.";
+                break;
+            case 5:
+                result = "Alert: You have used your phone at an unusual time.";
+                break;
+            case 6:
+                result = "Safe";
+                break;
+            case 7:
+                result = "Warning: The usage statistics for all apps is very high";
+                break;
+            case 8:
+                result = "Alert: You are in an unknown location.";
+                break;
+        }
+        return result;
     }
 }

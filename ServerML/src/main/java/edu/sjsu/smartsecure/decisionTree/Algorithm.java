@@ -173,15 +173,7 @@ public class Algorithm {
     }
 
     private static Integer getIntegerValueOfParentNode(String parentId) {
-        if (parentId.equals("Outlook")) {
-            return 100;
-        } else if (parentId.equals("temperature")) {
-            return 200;
-        } else if (parentId.equals("humidity")) {
-            return 300;
-        } else if (parentId.equals("wind")) {
-            return 400;
-        } else if (parentId.equals("appName")) {
+        if (parentId.equals("appName")) {
             return 1;
         } else if (parentId.equals("network")) {
             return 2;

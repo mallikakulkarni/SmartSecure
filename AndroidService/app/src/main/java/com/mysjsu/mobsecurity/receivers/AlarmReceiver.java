@@ -7,7 +7,6 @@ import android.provider.Settings;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.mysjsu.mobsecurity.CreateUserAsyncTask;
 import com.mysjsu.mobsecurity.CreateUserTestDataAsyncTask;
 import com.mysjsu.mobsecurity.GetFeedbackAsyncTask;
 import com.mysjsu.mobsecurity.LoginDataBaseAdapter;
@@ -31,7 +30,6 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     UserData user = null;
     String fileName = "mobSec.json";
-    CreateUserAsyncTask createUserAsyncTask;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -44,7 +42,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         calendar.setTimeInMillis(System.currentTimeMillis());
         int hourOfDay = calendar.get(Calendar.HOUR);
         // TODO making it write every hour. Uncomment to write every day
-//        calendar.set(Calendar.HOUR, 0);
+//      calendar.set(Calendar.HOUR, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
@@ -70,18 +68,16 @@ public class AlarmReceiver extends BroadcastReceiver {
             long prevStartTime = user.getStatsStartTime();
             long newStartTime = calendar.getTimeInMillis();
             if (prevStartTime != newStartTime) {
-                // Day changed. Write daily object to mongodb
-//                Log.i("SmrtSec", "Writing to Mongolab");
-////                createUserAsyncTask = new CreateUserAsyncTask();
-////                createUserAsyncTask.execute(gson.toJson(user));
                 user = new UserData(android_id, email, userDB.getOccupation(), userDB.getUserName
                         ());
                 user.setStatsStartTime(newStartTime);
+
             } else {
                 previousUserData = new UserData(user);
             }
         }
         userDataUtil.getStats(user, hourOfDay, userDB.getOccupation(), userDB.getUserName());
+        user.setIncorrectPswdAttemptCount(userDB.getInCorrPass());
         UserData diff = userDataUtil.getChangedUserData(previousUserData, user);
         if (diff != null) {
             // The data changed in last 30 secs.

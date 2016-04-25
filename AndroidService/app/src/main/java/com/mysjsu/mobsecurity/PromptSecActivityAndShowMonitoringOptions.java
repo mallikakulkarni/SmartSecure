@@ -21,7 +21,9 @@ public class PromptSecActivityAndShowMonitoringOptions extends Activity {
             public void call(boolean res) {
                 if (res) {
                     Toast.makeText(PromptSecActivityAndShowMonitoringOptions.this, "Authenticated!", Toast.LENGTH_SHORT).show();
+                    act.finish();
                     Intent intent = new Intent(PromptSecActivityAndShowMonitoringOptions.this, MonitoringActivity.class);
+
                     startActivity(intent);
                 } else {
                     Toast.makeText(PromptSecActivityAndShowMonitoringOptions.this, "Incorrect Password", Toast.LENGTH_SHORT).show();
