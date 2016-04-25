@@ -3,11 +3,14 @@ package com.mysjsu.mobsecurity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.location.LocationManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
 
 /**
  * Created by Poornima on 12/6/15.
@@ -72,39 +75,63 @@ public class PromptSecKey {
                                 String p = userInput.getText().toString();
                                 isPasswordCorrect = p.equals(user.password);
                                 attempts++;
-                                if (attempts < 3) {
+                                if (attempts <= 3) {
                                     if (!isPasswordCorrect) {
-                                        Toast.makeText(context, "Incorrect password!", Toast
-                                                .LENGTH_SHORT)
-                                                .show();
+                                        if (attempts == 3) {
+                                            Toast.makeText(context, "Too many incorrect password " +
+                                                    "attempts" +
+                                                    " ", Toast
+                                                    .LENGTH_SHORT)
+                                                    .show();
+                                        } else {
+                                            Toast.makeText(context, "Incorrect password!", Toast
+                                                    .LENGTH_SHORT)
+                                                    .show();
+                                        }
                                         alertDialog.dismiss();
                                         user.inCorrPass++;
                                         loginDataBaseAdapter.updateIncorrPassEntry(user);
-                                        authenticate();
+                                        if (attempts < 3)
+                                            authenticate();
                                     } else {
+                                        if (message.contains("location")) {
+                                            LocationManager locationManager = (LocationManager)
+                                                    context.getSystemService(Context
+                                                            .LOCATION_SERVICE);
+                                            int i;
+                                            int j = 0;
+                                            for (i = 0; i < user.address.length; i++) {
+                                                if (user.address[i] == null || user.address[i]
+                                                        .isEmpty()) {
+                                                    if (user.address[i].startsWith("Preferred")
+                                                            && j != 0) {
+                                                        j = i;
+                                                    }
+                                                    break;
+                                                }
+                                            }
+                                            if (i >= user.address.length) {
+                                                i = j;// recycling preferred locations
+                                            }
+                                            android.location.Location l = locationManager
+                                                    .getLastKnownLocation(LocationManager
+                                                            .NETWORK_PROVIDER);
+                                            float lat = UserDataUtil.round(l.getLatitude());
+                                            float lon = UserDataUtil.round(l.getLongitude());
+                                            String ll = lat + "," + lon;
+                                            user.address[i] = "Preferred Address " + (i - 1);
+                                            user.latLon[i] = new UserLocation(ll);
+                                            Gson gson = new Gson();
+                                            CreateMainUserAsyncTask createMainUserAsyncTask = new
+                                                    CreateMainUserAsyncTask();
+                                            user.password = SignUPActivity.md5(user.password);
+                                            createMainUserAsyncTask.execute(gson.toJson(user));
+                                        }
                                         alertDialog.dismiss();
+                                        loginDataBaseAdapter.updateEntry(user, false);
                                         loginDataBaseAdapter.close();
                                         callback.call(true);
                                     }
-
-                                } else {
-                                    if (!isPasswordCorrect) {
-                                        Toast.makeText(context, "Too many incorrect password " +
-                                                "attempts" +
-                                                " ", Toast
-                                                .LENGTH_SHORT)
-                                                .show();
-                                        alertDialog.dismiss();
-                                        user.inCorrPass++;
-                                        loginDataBaseAdapter.updateIncorrPassEntry(user);
-                                        loginDataBaseAdapter.close();
-                                        // TODO send mail alert
-                                    } else {
-                                        alertDialog.dismiss();
-                                        loginDataBaseAdapter.close();
-                                        callback.call(true);
-                                    }
-
                                 }
                             }
                         });
