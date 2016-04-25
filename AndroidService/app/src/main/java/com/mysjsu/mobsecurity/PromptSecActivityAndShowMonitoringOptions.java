@@ -10,7 +10,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 public class PromptSecActivityAndShowMonitoringOptions extends Activity {
-    private static final String TAG = "PromptSecActivity";
+    private static final String TAG = "PromptSecActivityAndShowMonitoringOptions";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
