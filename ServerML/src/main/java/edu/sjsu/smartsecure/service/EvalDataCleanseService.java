@@ -15,8 +15,8 @@ public class EvalDataCleanseService {
 
     private String uri = "mongodb://smartsecureteam:SJSU2016@ds015909.mlab.com:15909/smartsecure";
     private String mastertableCollection = "MasterUserTable";
-   // private String newCleansedCollection = "TrainingData";
-   private String newCleansedCollection = "trainingtestdata";
+    private String newCleansedCollection = "TrainingData";
+   //private String newCleansedCollection = "trainingtestdata";
     private static HashMap<String, HashMap<String, Integer>> UserAppFreq;
     private static long lastMapUpdate = 0;
     static Logger decisionTreeLog = LoggerFactory.getLogger("decisionTree");
@@ -111,6 +111,7 @@ public class EvalDataCleanseService {
     private static String getDayofWeek(DBObject obj) throws Exception{
         try {
             Long lastime = (Long)obj.get("lastAccessedTimeStamp");
+            lastime-= 7*60*60*1000; //correcting time to PST
             Date dateVal = new Date(lastime.longValue());
             int day = dateVal.getDay();
             String dayOfWeek = null;
@@ -132,6 +133,7 @@ public class EvalDataCleanseService {
     private static String getTimeOfDay(DBObject obj) throws Exception{
         try {
             Long lastime = (Long)obj.get("lastAccessedTimeStamp");
+            lastime-= 7*60*60*1000; //correcting time to PST
             Date dateVal = new Date(lastime.longValue());
             int hours = dateVal.getHours();
             String timeOfDay = null;
