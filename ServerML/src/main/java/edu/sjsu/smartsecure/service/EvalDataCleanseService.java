@@ -241,9 +241,9 @@ public class EvalDataCleanseService {
                 AppFrequency.put(appName, new Integer(1));
             }else {
                 int val = frequency.intValue();
-                if(val <= 5 ){freq = "low";}
-                else if(val > 5 && val<= 10){freq = "medium";}
-                else if(val >10){freq = "high";}
+                if(val <= 20 ){freq = "low";}
+                else if(val > 20 && val<= 50){freq = "medium";}
+                else if(val >50){freq = "high";}
                 val+=1;
                 AppFrequency.remove(appName);
                 AppFrequency.put(appName, new Integer(val));
