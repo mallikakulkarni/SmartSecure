@@ -38,21 +38,22 @@ public class Algorithm {
     }
 
     private static Node buildDecisionTree(double informationGain, List<String> columnHeaders, long totalRecords) {
-        String childId = getNode(informationGain, columnHeaders, totalRecords, null, null);
+        String childId = getNode(new ArrayList<String>(), informationGain, columnHeaders, totalRecords, null, null);
         Node child = new Node(childId);
         child.setAttributes(decisionTreeHandler.getForks(childId));
         return child;
     }
 
-    private static Node buildDecisionTreeChild(double informationGain, List<String> columnHeaders, long totalRecords, List<String> conditions, List<String> values) {
-        String childId = getNode(informationGain, columnHeaders, totalRecords, conditions, values);
+    private static Node buildDecisionTreeChild(List<String> usedColumns, double informationGain, List<String> columnHeaders, long totalRecords, List<String> conditions, List<String> values) {
+        String childId = getNode(usedColumns, informationGain, columnHeaders, totalRecords, conditions, values);
         Node child = new Node(childId);
         child.setAttributes(decisionTreeHandler.getForks(childId));
         return child;
     }
 
     private static void getChildren(Node node, List<String> conditions, List<String> columnHeaders, List<String> values) {
-        decisionTreeLog.debug("Calculating children of "+node.getNodeId());
+        List<String> usedColumns = new ArrayList<>();
+        decisionTreeLog.debug("Calculating children of " + node.getNodeId());
         List<String> attributes = node.getAttributes();
         for (int i = 0; i < attributes.size(); i++) {
             values.add(attributes.get(i));
@@ -65,7 +66,7 @@ public class Algorithm {
             } else {
                 if (columnHeaders.size() == 0) {
                     float probability = safeRecords/totalRecords;
-                    if (probability > 0.8) {
+                    if (probability > 0.5) {
                         setSafeChild(node, attributes, i);
                     } else {
                         setUnsafeChild(node, attributes, i);
@@ -78,16 +79,17 @@ public class Algorithm {
                     decisionTreeLog.debug("UnSafe Records " + resultMap.get("unsafe"));
                     double informationGain = getInformationGain(resultMap);
                     decisionTreeLog.debug("Information Gain " + informationGain);
-                    Node child = buildDecisionTreeChild(informationGain, columnHeaders, totalRecords, conditions, values);
+                    Node child = buildDecisionTreeChild(usedColumns, informationGain, columnHeaders, totalRecords, conditions, values);
                     node.getChildren().add(i, child);
                     decisionTreeLog.debug("Added child " + child.getNodeId() + "to Node" + node.getNodeId());
                     child.setCorrespondingAttribute(attributes.get(i));
                     List<String> newColumnHeaders = new ArrayList<String>(columnHeaders);
-                    columnHeaders.remove(child.getNodeId());
+                    newColumnHeaders.remove(child.getNodeId());
+                    usedColumns.add(child.getNodeId());
                     List<String> newConditions = new ArrayList<String>(conditions);
                     newConditions.add(child.getNodeId());
                     List<String> newValues = new ArrayList<String>(values);
-                    getChildren(child, newConditions, columnHeaders, newValues);
+                    getChildren(child, newConditions, newColumnHeaders, newValues);
                 }
             }
             values.remove(values.size() - 1);
@@ -126,9 +128,12 @@ public class Algorithm {
         return informationGain;
     }
 
-    private static String getNode(double informationGain, List<String> attributes, Long totalRecordCount, List<String> conditions, List<String> values) {
+    private static String getNode(List<String> usedColumns, double informationGain, List<String> attributes, Long totalRecordCount, List<String> conditions, List<String> values) {
         Map<String, Double> entropyMap = new HashMap<String, Double>();
         for (String attribute : attributes) {
+            if (usedColumns.contains(attribute)) {
+                continue;
+            }
             double entropy = calculateEntropy(attribute, totalRecordCount, conditions, values);
             double gain = informationGain - entropy;
             decisionTreeLog.debug(attribute + " entropy " + entropy + ", gain" + gain);
