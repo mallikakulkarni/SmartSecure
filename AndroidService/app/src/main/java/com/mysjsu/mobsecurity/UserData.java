@@ -172,9 +172,9 @@ class App {
     public boolean equals(Object o) {
         App newApp = (App) o;
         if (lastAccessedTimeStamp == newApp.lastAccessedTimeStamp &&
-                appAccessedDuration == newApp.appAccessedDuration /*&&
-                totalRxBytes == newApp.totalRxBytes &&
-                totalTxBytes == newApp.totalRxBytes*/) {
+                appAccessedDuration == newApp.appAccessedDuration &&
+                newApp.totalRxBytes - totalRxBytes < 10000 &&
+                newApp.totalTxBytes - totalTxBytes < 10000) {
             return true;
         }
         return false;
