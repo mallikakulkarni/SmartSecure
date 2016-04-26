@@ -59,42 +59,59 @@ public class Algorithm {
             long totalRecords = decisionTreeHandler.getTotalRecordCountForChild(conditions, values);
             long safeRecords = decisionTreeHandler.getSafeRecordCountForChild(conditions, values, true);
             if (safeRecords == totalRecords) {
-                Node child = new Node(node.getNodeId()+"safe");
-                child.setResult(-1);
-                node.getChildren().add(i, child);
-                child.setCorrespondingAttribute(attributes.get(i));
-                child.setColumn(node.getNodeId());
-                decisionTreeLog.debug("All safe records, Adding safe path to " + attributes.get(i));
-                decisionTreeLog.debug("Adding result " +child.getResult());
+                setSafeChild(node, attributes, i);
             } else if (safeRecords == 0) {
-                Node child = new Node(node.getNodeId()+"unsafe");
-                child.setResult(getIntegerValueOfParentNode(node.getNodeId()));
-                node.getChildren().add(i, child);
-                child.setCorrespondingAttribute(attributes.get(i));
-                child.setColumn(node.getNodeId());
-                decisionTreeLog.debug("All unsafe records, Adding unsafe path to " + attributes.get(i));
-                decisionTreeLog.debug("Adding result " +child.getResult());
+                setUnsafeChild(node, attributes, i);
             } else {
-                Map<String, Long> resultMap = decisionTreeHandler.getCountsOfSafeAndUnsafeData(conditions, values);
-                decisionTreeLog.debug("Attribute " + attributes.get(i));
-                decisionTreeLog.debug("Total Records " + resultMap.get("Total"));
-                decisionTreeLog.debug("Safe Records " + resultMap.get("safe"));
-                decisionTreeLog.debug("UnSafe Records " + resultMap.get("unsafe"));
-                double informationGain = getInformationGain(resultMap);
-                decisionTreeLog.debug("Information Gain " + informationGain);
-                Node child = buildDecisionTreeChild(informationGain, columnHeaders, totalRecords, conditions, values);
-                node.getChildren().add(i, child);
-                decisionTreeLog.debug("Added child " + child.getNodeId() + "to Node" +node.getNodeId());
-                child.setCorrespondingAttribute(attributes.get(i));
-                List<String> newColumnHeaders = new ArrayList<String>(columnHeaders);
-                columnHeaders.remove(child.getNodeId());
-                List<String> newConditions = new ArrayList<String>(conditions);
-                newConditions.add(child.getNodeId());
-                List<String> newValues = new ArrayList<String>(values);
-                getChildren(child, newConditions, newColumnHeaders, newValues);
+                if (columnHeaders.size() == 0) {
+                    float probability = safeRecords/totalRecords;
+                    if (probability > 0.8) {
+                        setSafeChild(node, attributes, i);
+                    } else {
+                        setUnsafeChild(node, attributes, i);
+                    }
+                } else {
+                    Map<String, Long> resultMap = decisionTreeHandler.getCountsOfSafeAndUnsafeData(conditions, values);
+                    decisionTreeLog.debug("Attribute " + attributes.get(i));
+                    decisionTreeLog.debug("Total Records " + resultMap.get("Total"));
+                    decisionTreeLog.debug("Safe Records " + resultMap.get("safe"));
+                    decisionTreeLog.debug("UnSafe Records " + resultMap.get("unsafe"));
+                    double informationGain = getInformationGain(resultMap);
+                    decisionTreeLog.debug("Information Gain " + informationGain);
+                    Node child = buildDecisionTreeChild(informationGain, columnHeaders, totalRecords, conditions, values);
+                    node.getChildren().add(i, child);
+                    decisionTreeLog.debug("Added child " + child.getNodeId() + "to Node" + node.getNodeId());
+                    child.setCorrespondingAttribute(attributes.get(i));
+                    List<String> newColumnHeaders = new ArrayList<String>(columnHeaders);
+                    columnHeaders.remove(child.getNodeId());
+                    List<String> newConditions = new ArrayList<String>(conditions);
+                    newConditions.add(child.getNodeId());
+                    List<String> newValues = new ArrayList<String>(values);
+                    getChildren(child, newConditions, columnHeaders, newValues);
+                }
             }
             values.remove(values.size() - 1);
         }
+    }
+
+    private static void setUnsafeChild(Node node, List<String> attributes, int i) {
+        Node child = new Node(node.getNodeId()+"unsafe");
+        child.setResult(getIntegerValueOfParentNode(node.getNodeId()));
+        node.getChildren().add(i, child);
+        child.setCorrespondingAttribute(attributes.get(i));
+        child.setColumn(node.getNodeId());
+        decisionTreeLog.debug("All unsafe records, Adding unsafe path to " + attributes.get(i));
+        decisionTreeLog.debug("Adding result " +child.getResult());
+    }
+
+    private static void setSafeChild(Node node, List<String> attributes, int i) {
+        Node child = new Node(node.getNodeId()+"safe");
+        child.setResult(-1);
+        node.getChildren().add(i, child);
+        child.setCorrespondingAttribute(attributes.get(i));
+        child.setColumn(node.getNodeId());
+        decisionTreeLog.debug("All safe records, Adding safe path to " + attributes.get(i));
+        decisionTreeLog.debug("Adding result " +child.getResult());
     }
 
 

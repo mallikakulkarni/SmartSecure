@@ -18,6 +18,7 @@ import java.util.List;
 @SpringBootApplication
 public class DecisionTreeController {
     static {
+        System.out.println("" + Thread.currentThread().getContextClassLoader().getResource(".").getPath());
         System.setProperty("LOG_DIR", Thread.currentThread().getContextClassLoader().getResource(".").getPath());
     }
 
