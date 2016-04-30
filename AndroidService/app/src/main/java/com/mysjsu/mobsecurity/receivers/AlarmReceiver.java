@@ -3,6 +3,7 @@ package com.mysjsu.mobsecurity.receivers;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.provider.Settings;
 import android.util.Log;
 
@@ -90,8 +91,11 @@ public class AlarmReceiver extends BroadcastReceiver {
                 createUserTestAsyncTask.execute(gson.toJson(utd));
                 GetFeedbackAsyncTask getFeedbackAsyncTask = new
                         GetFeedbackAsyncTask(context);
-                getFeedbackAsyncTask.execute(gson.toJson(utd));
+                AsyncTask<String, Void, Boolean> asyncTask = getFeedbackAsyncTask
+                        .execute(gson.toJson(utd));
             }
+        } else {
+            Log.i("SmrtSec", "Data NOT Changed.");
         }
         String json = gson.toJson(user);
         FileOutputStream fos = null;
@@ -104,6 +108,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         }
         loginDataBaseAdapter.close();
 
-        Log.i("JSON", json);
+//        Log.i("JSON", json);
     }
 }

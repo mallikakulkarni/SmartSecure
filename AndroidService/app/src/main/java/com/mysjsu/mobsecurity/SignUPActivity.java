@@ -221,7 +221,11 @@ public class SignUPActivity extends AppCompatActivity {
                                     latLon[i].setText(latLonStr[i]);
                                 } else {
                                     latLonStr[i] = "0,0";
+                                    latLon[i].setText(latLonStr[i]);
                                 }
+                            } else {
+                                latLonStr[i] = "0,0";
+                                latLon[i].setText(latLonStr[i]);
                             }
                         }
                         editTextOldPass.setText("");
@@ -263,8 +267,8 @@ public class SignUPActivity extends AppCompatActivity {
                             UserDBObj mainUserDbObject = new UserDBObj(androidId, userName,
                                     password, emergenCon, gender, emailid, homeAddress, latLonStr);
                             loginDataBaseAdapter.insertEntry(mainUserDbObject);
-                            
-                            mainUserDbObject.password=md5(mainUserDbObject.password);
+
+                            mainUserDbObject.password = md5(mainUserDbObject.password);
                             createMainUserAsyncTask.execute(gson.toJson(mainUserDbObject));
                             Toast.makeText(getApplicationContext(), "Account Successfully Created" +
                                     " ", Toast.LENGTH_LONG).show();
@@ -275,7 +279,7 @@ public class SignUPActivity extends AppCompatActivity {
                                         latLonStr);
                                 loginDataBaseAdapter.updateEntry(mainUserDbObject, true);
 
-                                mainUserDbObject.password=md5(mainUserDbObject.password);
+                                mainUserDbObject.password = md5(mainUserDbObject.password);
                                 createMainUserAsyncTask.execute(gson.toJson(mainUserDbObject));
 
                                 Toast.makeText(getApplicationContext(), "Password Successfully " +
@@ -286,7 +290,7 @@ public class SignUPActivity extends AppCompatActivity {
                                         latLonStr);
                                 loginDataBaseAdapter.updateEntry(mainUserDbObject, false);
 
-                                mainUserDbObject.password=md5(mainUserDbObject.password);
+                                mainUserDbObject.password = md5(mainUserDbObject.password);
                                 createMainUserAsyncTask.execute(gson.toJson(mainUserDbObject));
                                 Toast.makeText(getApplicationContext(), "Account Successfully " +
                                         "Updated ", Toast.LENGTH_LONG).show();

@@ -7,16 +7,19 @@ package com.mysjsu.mobsecurity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class PromptSecActivity extends Activity {
     private static final String TAG = "PromptSecActivity";
+    PromptSecKey ps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         final Activity act = this;
         super.onCreate(savedInstanceState);
+        Intent intnt = getIntent();
 
         PromptSecCallback cb = new PromptSecCallback() {
             @Override
@@ -26,19 +29,28 @@ public class PromptSecActivity extends Activity {
                             .show();
                     act.finish();
                     act.onBackPressed();
+
                 } else {
                     Toast.makeText(PromptSecActivity.this, "Incorrect Password", Toast
                             .LENGTH_SHORT).show();
                 }
             }
         };
-        Intent intnt = getIntent();
         String msg = intnt.getStringExtra("msg");
 
         UserDataUtil userDataUtil = new UserDataUtil(this);
         // Get user name and email from extras passed from GoogleLoginActivity and update UI
         final String emailid = userDataUtil.getEmail(this);
-        PromptSecKey ps = new PromptSecKey(emailid, this, cb,msg);
+        ps = new PromptSecKey(emailid, this, cb, msg);
         ps.authenticate();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (isFinishing()) {
+            ps.alertDialog.dismiss();
+            Log.d("PSA", "destroy");
+        }
+        super.onDestroy();
     }
 }

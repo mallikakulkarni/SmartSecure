@@ -36,7 +36,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Email id"
-            android:visibility="invisible">
+            >
 
             <requestFocus />
         </TextView>
@@ -156,7 +156,7 @@
             android:id="@+id/editTextOldPassword"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:hint="Old Secret Key"
+            android:hint="Secret Key"
             android:inputType="numberPassword"
             android:visibility="invisible" />
 
@@ -164,7 +164,7 @@
             android:id="@+id/editTextPassword"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:hint="Secret Key"
+            android:hint="New Secret Key"
             android:inputType="numberPassword" />
 
         <EditText

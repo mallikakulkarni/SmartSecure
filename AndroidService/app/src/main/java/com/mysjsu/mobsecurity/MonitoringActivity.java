@@ -57,6 +57,7 @@ public class MonitoringActivity extends AppCompatActivity {
 
         manager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), DeviceBootReceiver.interval, pendingIntent);
         Toast.makeText(this, "SmartSecurity Set", Toast.LENGTH_SHORT).show();
+        onBackPressed();
     }
 
     public void cancel() {
@@ -69,5 +70,6 @@ public class MonitoringActivity extends AppCompatActivity {
         AlarmManager manager = (AlarmManager) MonitoringActivity.this.getSystemService(Context.ALARM_SERVICE);
         manager.cancel(pendingIntent);
         Toast.makeText(this, "SmartSecurity Canceled", Toast.LENGTH_SHORT).show();
+        onBackPressed();
     }
 }

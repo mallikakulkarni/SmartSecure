@@ -26,10 +26,13 @@ public class GetFeedbackAsyncTask extends AsyncTask<String, Void, Boolean> {
         this.context = context;
     }
 
-    static Map<Integer, String> msgs = new HashMap<Integer, String>();
+    boolean warning;
+    String resultMessage;
 
     @Override
     protected Boolean doInBackground(String... arg0) {
+        warning = false;
+        resultMessage = null;
         try {
             Log.i("message:", "reaching GetFeedbackAsyncTask Task");
 
@@ -65,16 +68,13 @@ public class GetFeedbackAsyncTask extends AsyncTask<String, Void, Boolean> {
                 br.close();
                 Log.d("DECTREE_REQ", userJson);
                 Log.d("DECTREE_RESP", responseStrBuilder.toString());
-                String resultMessage;
-                resultMessage=responseStrBuilder.toString();
+                resultMessage = responseStrBuilder.toString();
 
-                if (resultMessage != null){
-                    if(resultMessage.contains("Alert")){
+                if (resultMessage != null) {
+                    if (resultMessage.contains("Alert")) {
                         getSecuritykey(resultMessage);
-                    }
-                    else if(resultMessage.contains("Warning")){
-                        Toast.makeText(new Activity(), resultMessage, Toast.LENGTH_SHORT).show();
-
+                    } else if (resultMessage.contains("Warning")) {
+                        warning = true;
                     }
                 }
                 Log.i("message:", "response : success, code is" + responseCode + " message is " +
@@ -86,32 +86,25 @@ public class GetFeedbackAsyncTask extends AsyncTask<String, Void, Boolean> {
             }
 
         } catch (Exception e) {
-            Log.i("message:", "Exception occured " + e.toString());
+            Log.e("message:", "Exception occured " + e.toString());
             return false;
         }
+    }
 
+    @Override
+    protected void onPostExecute(Boolean aBoolean) {
+        if (warning && resultMessage != null && !resultMessage.isEmpty()) {
+            Toast.makeText(context, resultMessage, Toast.LENGTH_SHORT).show();
+        }
+        super.onPostExecute(aBoolean);
     }
 
     void getSecuritykey(String msg) {
-        PromptSecCallback cb = new PromptSecCallback() {
-            @Override
-            public void call(boolean res) {
-                if (res) {
-                    Toast.makeText(new Activity(), "Authenticated!", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(new Activity(), "Incorrect Password.. Should send an email",
-                            Toast.LENGTH_SHORT).show();
-                    // Send mail
-                }
-            }
-        };
-
         Intent intent1 = new Intent("android.intent.category.LAUNCHER");
         intent1.setClassName("com.mysjsu.mobsecurity", "com.mysjsu.mobsecurity.PromptSecActivity");
         intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent1.putExtra("msg", msg);
         context.startActivity(intent1);
-
     }
 
 }
