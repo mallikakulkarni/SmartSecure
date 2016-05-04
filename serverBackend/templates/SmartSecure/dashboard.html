@@ -1,0 +1,701 @@
+{% extends "base_dashboard.html" %}
+{% load prop %}
+{% block extra_head %}
+
+<link href="/static/login2_css/animate.min.css" rel="stylesheet">
+<link href="/static/login2_css/custom.css" rel="stylesheet">
+<link href="/static/login2_css/green.css" rel="stylesheet">
+<link href="/static/dashboard_css/floatexamples.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="/static/dashboard_css/jquery-jvectormap-2.0.3.css" />
+
+<script src="/static/js/jquery-2.2.2.min.js"></script>
+<script src="/static/js/nprogress.js"></script>
+
+<script src="/static/js/bootstrap.min.js"></script>
+
+<script type="text/javascript" src="/static/js/highcharts.js"></script>
+<script type="text/javascript" src="/static/js/modules/exporting.js"></script>
+<script type="text/javascript" src="/static/js/grid.js"></script>
+
+<!-- daterangepicker -->
+<script type="text/javascript" src="/static/js/moment.min.js"></script>
+<!-- <script type="text/javascript" src="/static/js/daterangepicker.js"></script> -->
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+  <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<!-- <script type="text/javascript" src="/static/js/jquery-ui-timepicker-addon.js"></script> -->
+
+
+<link rel="stylesheet" type="text/css" href="/static/css/matrix_chart.css" media="screen, tv, projection" />
+
+<script type="text/javascript">
+
+jQuery(function($) {
+    // Asynchronously Load the map API 
+    var script = document.createElement('script');
+    script.src = "http://maps.googleapis.com/maps/api/js?sensor=false&callback=initialize";
+    document.body.appendChild(script);
+});
+
+function initialize() {
+    var map;
+    var bounds = new google.maps.LatLngBounds();
+    var mapOptions = {
+        mapTypeId: 'roadmap'
+    };
+                    
+    // Display a map on the page
+    map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+    map.setTilt(45);
+        
+    // Multiple Markers
+
+    var markers = [];
+    {% for loc in locs %}
+      var str = "{{loc}}";
+      var marks = str.split(";");
+      markers.push(marks);
+      console.log(marks);
+    {% endfor %}
+
+    <!-- var markers = [ -->
+    <!--     ['London Eye, London', 51.503454,-0.119562], -->
+    <!--     ['Palace of Westminster, London', 51.499633,-0.124755] -->
+    <!-- ]; -->
+                        
+    // Info Window Content
+    var infoWindowContent = [];
+    {% for loc in locs %}
+      var str = "{{loc}}";
+      var marks = str.split(";");
+      infoWindowContent.push(
+        ['<div class="info_content">' +
+        '<h3>' + marks[0] + '</h3>' +
+        '<p><b>LastSeen: ' + marks[3] + '</b></p>' +        '</div>']
+        );
+    {% endfor %}
+        
+    // Display multiple markers on a map
+    var infoWindow = new google.maps.InfoWindow(), marker, i;
+    
+    // Loop through our array of markers & place each one on the map  
+    for( i = 0; i < markers.length; i++ ) {
+        var position = new google.maps.LatLng(markers[i][1], markers[i][2]);
+        bounds.extend(position);
+        marker = new google.maps.Marker({
+            position: position,
+            map: map,
+            title: markers[i][0]
+        });
+        
+        // Allow each marker to have an info window    
+        google.maps.event.addListener(marker, 'click', (function(marker, i) {
+            return function() {
+                infoWindow.setContent(infoWindowContent[i][0]);
+                infoWindow.open(map, marker);
+            }
+        })(marker, i));
+
+        // Automatically center the map fitting all markers on the screen
+        map.fitBounds(bounds);
+    }
+
+    // Override our map zoom level once our fitBounds function runs (Make sure it only runs once)
+    var boundsListener = google.maps.event.addListener((map), 'bounds_changed', function(event) {
+        this.setZoom(10);
+        google.maps.event.removeListener(boundsListener);
+    });
+    
+}
+
+var chart;
+$(document).ready(function() {
+  $('#id_date').datepicker({ maxDate: "+0D" });
+  $('.disable_click').click(function(e) {
+    e.preventDefault();
+  });
+
+  var ss = "{{apps}}";
+
+  // define the options
+  var options = {
+
+    chart: {
+      renderTo: 'graph-container',
+      margin: [0,0,0,0]
+    },
+
+    title: {
+      text: 'App Usage'
+    },
+
+    credits: {
+      enabled: false
+    },
+    <!-- subtitle: { -->
+    <!--   text: '{{testcase}}' -->
+    <!-- }, -->
+    xAxis: {
+      categories: ss.split(","),
+      crosshair: true,
+         labels: {
+                rotation: -45,
+                style: {
+                    fontSize: "12px",
+                    <!-- fontFamily: 'Verdana, Helvetica, Arial, sans-serif' -->
+                }
+            }
+    },
+
+    yAxis: [{ // Primary yAxis
+      labels: {
+        formatter: function() {
+          return this.value;  
+        }
+      },
+      title: {
+        text: 'Time (Min)'
+      },
+      opposite: true
+    }, { // Secondary yAxis
+      gridLineWidth: 0,
+      title: {
+        text: 'Network Used (MBs)'
+      },
+      labels: {
+        formatter: function() {
+          return this.value;
+        }
+      }
+
+    }],
+
+    legend: {
+      layout: 'vertical',
+      align: 'left',
+      x: 10,
+      verticalAlign: 'top',   
+      y: 10,
+      floating: true,
+      backgroundColor: '#FFFFFF'
+    },
+
+    tooltip: {
+      backgroundColor: '#FCFFC5',
+      borderColor: 'black',   
+      shared: true,
+      crosshairs: true
+    },
+
+
+    plotOptions: {
+      series: {
+        cursor: 'pointer',
+        point: {
+          events: {
+            click: function() {
+              hs.htmlExpand(null, {
+                pageOrigin: { 
+                  x: this.pageX,
+                  y: this.pageY
+                },
+                headingText: this.series.name,
+                maincontentText: Highcharts.dateFormat('%A, %b %e, %Y', this.x) +':<br/> '+
+                  this.y +' ',
+                width: 300
+              });
+            }
+          }
+        },
+        marker: {
+          lineWidth: 1
+        }
+      }
+    },
+    series: [
+      {
+        name: 'duration',
+        lineWidth: 2,
+        dataLabels: {
+          enabled: true,
+          rotation: -90,
+          color: '#FFFFFF',
+          align: 'right',
+          format: '{point.y:.1f}', // one decimal
+          y: 10, // 10 pixels down from the top
+            style: {
+              fontSize: '13px',
+              fontFamily: 'Verdana, sans-serif'
+              }
+         },
+         type: 'column',
+         tooltip: {
+                valueSuffix: ' Minute'
+            }
+
+         
+      },
+      {
+        name: 'Total',
+        lineWidth: 2,
+        type: 'spline',
+        yAxis: 1,
+        tooltip: {
+                valueSuffix: ' MB'
+            }
+      },
+      {
+        name: 'Received',
+        lineWidth: 2,
+        type: 'spline',
+        yAxis: 1,
+        tooltip: {
+                valueSuffix: ' MB'
+            }
+      },
+
+      {
+        name: 'Transmitted',
+        lineWidth: 2,
+        type: 'spline',
+        yAxis: 1,
+        tooltip: {
+                valueSuffix: ' MB'
+            }
+      }
+    ]
+
+  };
+
+{% if access_chart %}
+  options.series[0].data = {{access_chart}};
+  options.series[1].data = {{total}};
+  options.series[2].data = {{received}};
+  options.series[3].data = {{transmitted}};
+
+  chart = new Highcharts.Chart(options);
+
+{% endif %}
+
+});
+
+</script>
+
+ <!-- Doughnut Chart -->
+  <script>
+    $('document').ready(function() {
+      var options = {
+        legend: false,
+        responsive: false
+      };
+      var nn = "{{network_names}}";
+      var network_names = nn.split(",");
+
+      new Chart(document.getElementById("canvas1"), {
+        type: 'doughnut',
+        tooltipFillColor: "rgba(51, 51, 51, 0.55)",
+        data: {
+          labels: network_names,
+          datasets: [{
+            data: {{network_used_percent}},
+            backgroundColor: [
+              "#9B59B6",
+              "#E74C3C",
+              "#26B99A",
+              "#BDC3C7",
+              "#3498DB"
+            ],
+            hoverBackgroundColor: [
+              "#B370CF",
+              "#E95E4F",
+              "#36CAAB",
+              "#CFD4D8",
+              "#49A9EA"
+            ]
+          }]
+        },
+        options: options
+      });
+    });
+  </script>
+
+ <!-- Doughnut Chart -->
+  <script>
+    $('document').ready(function() {
+      var options = {
+        legend: false,
+        responsive: false
+      };
+
+      new Chart(document.getElementById("canvas2"), {
+        type: 'doughnut',
+        tooltipFillColor: "rgba(51, 51, 51, 0.55)",
+        data: {
+          labels: [
+          "received",
+          "transmit"
+          ],
+          datasets: [{
+            data: {{total_data_numbers}},
+            backgroundColor: [
+              "#26B99A",
+              "#9B59B6",
+              "#E74C3C",
+              "#3498DB"
+            ],
+            hoverBackgroundColor: [
+              "#36CAAB",
+              "#B370CF",
+              "#E95E4F",
+              "#49A9EA"
+            ]
+          }]
+        },
+        options: options
+      });
+    });
+  </script>
+
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container body">
+
+    <div class="main_container">
+      <!-- top navigation -->
+      <div class="top_nav">
+
+        <div class="nav_menu">
+
+            <ul class="nav navbar-nav navbar-right">
+              <li class="">
+                 <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                  <img src="/static/images/user.png" alt="" />{{user}}
+                  <span class=" fa fa-angle-down"></span>
+                </a>
+                <ul class="dropdown-menu dropdown-usermenu animated fadeInDown pull-right">
+                  <li><a href="/help"><i class="fa fa-help pull-right"></i> Help </a>
+                  <li><a href="/about"><i class="fa fa-about pull-right"></i> About </a>
+
+                  <li><a href="/change_pin"><i class="fa fa-key pull-right"></i> Change Pin</a>
+                  <li><a href="/logout"><i class="fa fa-sign-out pull-right"></i> Log Out</a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          <!-- </nav> -->
+        </div>
+
+      </div>
+      <!-- /top navigation -->
+
+
+      <!-- page content -->
+      <div class="right_col" role="main">
+
+        <!-- top tiles -->
+        <div class="row tile_count">
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top"><i class="fa fa-user"></i> Total Used Apps</span>
+              <div class="count green">{{ data|get_item:'total_apps' }}</div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top"><i class="fa fa-clock-o"></i> Total Time spent</span>
+              <div class="count-small">{{ data| get_item:'total_time_spent_on_apps' }}</div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top"><i class="fa fa-user"></i> Total Data Usage (MB)</span>
+              <div class="count green">{{ data|get_item:'total_data_usage'}} </div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top"><i class="fa fa-user"></i> Avg Data Usage (MB)</span>
+              <div class="count green">{{ data|get_item:'avg_data_usage'}} </div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top"><i class="fa fa-user"></i> Incorrect Password Attempts</span>
+              <div class="count red">{{ data|get_item:'incorrectPswdAttemptCount'}}</div>
+            </div>
+          </div>
+          <div class="animated flipInY col-md-2 col-sm-4 col-xs-4 tile_stats_count">
+            <div class="left"></div>
+            <div class="right">
+              <span class="count_top"><i class="fa fa-user"></i> Wifi Networks Used</span>
+              <div class="count">{{ total_times_wifi_used }} times</div>
+            </div>
+          </div>
+
+        </div>
+        <!-- /top tiles -->
+
+        <div class="row">
+          <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="dashboard_graph">
+
+              <div class="row x_title">
+                <div class="col-md-6">
+                  <h3>App Usage <small></small></h3>
+                </div>
+                <div class="col-md-6">
+                  <div id="reportrange" class="pull-right" style="background: #fff; cursor: pointer; ">
+                    <form action="/dashboard/" method="post">
+                      {% csrf_token %}
+                      {{date_form.as_table}}
+                      <input class="btn submit" type="image" src="/static/images/refresh.png" width="56" height="48" />
+                      <!-- <input class="btn btn-default submit" type="submit" value="Refresh" /> -->
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-8 col-sm-8 col-xs-12">
+                <div style="width: 100%;">
+                  <div id="graph-container" style="width: 100%; height: 100%; border-width: 0;"></div>
+                </div>
+              </div>
+              <div class="col-md-4 col-sm-4 col-xs-12">
+                <div id="map_wrapper">
+                  <div id="map_canvas" class="mapping"></div>
+                </div>
+              </div>
+              <!--  -->
+
+              <div class="clearfix"></div>
+            </div>
+          </div>
+
+        </div>
+        <br />
+
+        <div class="row">
+
+
+          <div class="col-md-4 col-sm-4 col-xs-12">
+            <div class="x_panel tile fixed_height_320">
+              <div class="x_title">
+                <h2>Wifi Used</h2>
+                <table class="table left_align">
+                  <tr>
+                    <th> Name </th>
+                    <th> Secured </th>
+                  </tr>
+                  {% for wifi in wifis %}
+                  <tr>
+                    <td style="border-bottom:1pt solid #DCDCDC;"> {{ wifi|get_wifi_prop:'wifi' }} </td>
+                    <td style="border-bottom:1pt solid #DCDCDC;"> {{ wifi|get_wifi_prop:'isSecured' }}</td>
+                  </tr>
+                  {% endfor %}
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-sm-4 col-xs-12">
+            <div class="x_panel tile fixed_height_320 overflow_hidden">
+              <div class="x_title">
+                <h2>Network Usage</h2>
+                <ul class="nav navbar-right panel_toolbox">
+                  <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                  </li>
+                  <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                    <ul class="dropdown-menu" role="menu">
+                      <li><a href="#">Settings 1</a>
+                      </li>
+                      <li><a href="#">Settings 2</a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li><a class="close-link"><i class="fa fa-close"></i></a>
+                  </li>
+                </ul>
+                <div class="clearfix"></div>
+              </div>
+              <div class="x_content">
+                <table class="" style="width:100%">
+                  <tr>
+                    <th style="width:37%;">
+                      <p>Top 5</p>
+                    </th>
+                    <th>
+                      <div class="col-lg-9 col-md-7 col-sm-7 col-xs-7">
+                        <p class="">Network</p>
+                      </div>
+                      <div class="col-lg-3 col-md-5 col-sm-5 col-xs-5">
+                        <p class="">Usage</p>
+                      </div>
+                    </th>
+                  </tr>
+                  <tr>
+                    <td>
+                      <canvas id="canvas1" height="140" width="140" style="margin: 15px 10px 10px 0"></canvas>
+                    </td>
+                    <td>
+                      <table class="tile_info">
+                        {% for key, val in network_used.items %}
+                        <tr>
+                          <td>
+                            <p><i class="fa fa-square blue"></i>{{key}}</p>
+                          </td>
+                          <td>{{val}}%</td>
+                        </tr>
+                        {% endfor %}
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-sm-4 col-xs-12">
+            <div class="x_panel tile fixed_height_320 overflow_hidden">
+              <div class="x_title">
+                <h2>Received/Transmitted</h2>
+                <ul class="nav navbar-right panel_toolbox">
+                  <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                  </li>
+                  <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                    <ul class="dropdown-menu" role="menu">
+                      <li><a href="#">Settings 1</a>
+                      </li>
+                      <li><a href="#">Settings 2</a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li><a class="close-link"><i class="fa fa-close"></i></a>
+                  </li>
+                </ul>
+                <div class="clearfix"></div>
+              </div>
+              <div class="x_content">
+                <table class="" style="width:100%">
+                  <tr>
+                    <th style="width:37%;">
+                      <p> </p>
+                    </th>
+                    <th>
+                      <div class="col-lg-9 col-md-10 col-sm-10 col-xs-10">
+                        <p class="">Data</p>
+                      </div>
+                      <div class="col-lg-3 col-md-2 col-sm-2 col-xs-2">
+                        <p class="" align="left">Usage</p>
+                      </div>
+                    </th>
+                  </tr>
+                  <tr>
+                    <td>
+                      <canvas id="canvas2" height="140" width="140" style="margin: 15px 10px 10px 0"></canvas>
+                    </td>
+                    <td>
+                      <table class="tile_info">
+                        {% for key, val in total_data.items %}
+                        <tr>
+                          <td>
+                            {% if key == "received" %}
+                            <p><i class="fa fa-square green"></i>{{key}}</p>
+                            {% else %}
+                            <p><i class="fa fa-square purple"></i>{{key}}</p>
+                            {% endif %}
+                          </td>
+                          <td>{{val}}%</td>
+                        </tr>
+                        {% endfor %}
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </div>
+
+
+
+          <!-- <div class="col-md-4 col-sm-4 col-xs-12"> -->
+          <!--   <div class="x_panel tile fixed_height_320"> -->
+          <!--     <div class="x_title"> -->
+          <!--       <h2>Quick Settings</h2> -->
+          <!--       <ul class="nav navbar-right panel_toolbox"> -->
+          <!--         <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a> -->
+          <!--         </li> -->
+          <!--         <li class="dropdown"> -->
+          <!--           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a> -->
+          <!--           <ul class="dropdown-menu" role="menu"> -->
+          <!--             <li><a href="#">Settings 1</a> -->
+          <!--             </li> -->
+          <!--             <li><a href="#">Settings 2</a> -->
+          <!--             </li> -->
+          <!--           </ul> -->
+          <!--         </li> -->
+          <!--         <li><a class="close-link"><i class="fa fa-close"></i></a> -->
+          <!--         </li> -->
+          <!--       </ul> -->
+          <!--       <div class="clearfix"></div> -->
+          <!--     </div> -->
+          <!--     <div class="x_content"> -->
+          <!--       <div class="dashboard-widget-content"> -->
+          <!--         <\!-- <ul class="quick-list"> -->
+          <!--           <li><i class="fa fa-calendar-o"></i><a href="#">Settings</a> -->
+          <!--           </li> -->
+          <!--           <li><i class="fa fa-bars"></i><a href="#">Subscription</a> -->
+          <!--           </li> -->
+          <!--           <li><i class="fa fa-bar-chart"></i><a href="#">Auto Renewal</a> </li> -->
+          <!--           <li><i class="fa fa-line-chart"></i><a href="#">Achievements</a> -->
+          <!--           </li> -->
+          <!--           <li><i class="fa fa-bar-chart"></i><a href="#">Auto Renewal</a> </li> -->
+          <!--           <li><i class="fa fa-line-chart"></i><a href="#">Achievements</a> -->
+          <!--           </li> -->
+          <!--           <li><i class="fa fa-area-chart"></i><a href="#">Logout</a> -->
+          <!--           </li> -->
+          <!--         </ul> -\-> -->
+
+          <!--         <div class="sidebar-widget"> -->
+          <!--           <h4>Profile Completion</h4> -->
+          <!--           <canvas width="150" height="80" id="foo" class="" style="width: 160px; height: 100px;"></canvas> -->
+          <!--           <div class="goal-wrapper"> -->
+          <!--             <span class="gauge-value pull-left">$</span> -->
+          <!--             <span id="gauge-text" class="gauge-value pull-left">3,200</span> -->
+          <!--             <span id="goal-text" class="goal-value pull-right">$5,000</span> -->
+          <!--           </div> -->
+          <!--         </div> -->
+          <!--       </div> -->
+          <!--     </div> -->
+          <!--   </div> -->
+          <!-- </div> -->
+
+        </div>
+
+      </div>
+      <!-- /page content -->
+
+       <footer>
+         <div class="">
+           <p class="pull-left">©2016 All Rights Reserved. SmartSecure Privacy and Terms
+           </p>
+           <p class="pull-right">
+           <span class="lead"> <i class="fa fa-lock"></i> <a href="/logout">Logout</a> </span>
+           </p>
+         </div>
+         <div class="clearfix"></div>
+       </footer>
+    </div>
+
+  </div>
+
+{% endblock %}

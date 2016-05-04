@@ -1,0 +1,176 @@
+
+#chartfieldset {
+    width: 100%;
+}
+
+#chartfieldset #id_User {
+   margin: 0px;
+   width: 100px;
+   height: 2em;
+   border: 1px solid #111;
+   border-radius: 4px;
+   overflow: hidden;
+   background: 90% / 20% no-repeat #ddd;
+}
+
+
+form input, form select, form textarea {
+        padding: 5px;
+        color: #333333;
+        border: 1px solid #ddd;
+        border-right:1px solid #ccc;
+        border-bottom:1px solid #ccc;
+        background-color:#fff;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 13px;
+}
+
+form input.formbutton {
+        color: #ffffff;
+        font-weight: bold;
+        padding: 6px 8px;
+        font-size: 12px;
+        font-family: Arial, Helvetica, sans-serif;
+        text-decoration: none;
+        text-transform: uppercase;
+        text-shadow:-1px -1px #CE5709;
+        background: #0066FF url('/media/images/frontpage-link.png') repeat-x scroll top left;
+        border: none;
+        width: auto;
+        overflow: visible;
+}
+
+/* fieldset form input.formbutton { */
+/*         margin-left: 150px; */
+/* } */
+
+form.searchform p { 
+        margin: 5px 0;
+}
+
+.session_chart_input  {
+    min-width: 100%;
+}
+
+.chart_input_col
+{
+    float: left;
+    width: 25%;
+}
+
+.chart_input_last_column{
+    float: right;
+    width: 25%;
+}
+
+.chart_input_col_20
+{
+    float: left;
+    width: 20%;
+}
+
+
+.chart_input_col_16
+{
+    float: left;
+    width: 16%;
+}
+
+.chart_input_col_10
+{
+    float: left;
+    width: 10%;
+}
+
+.chart_input_col_8
+{
+    float: left;
+    width: 8%;
+}
+
+.chart_input_col_6
+{
+    float: left;
+    width: 6%;
+}
+
+.chart_input_col_75
+{
+    float: left;
+    width: 75%;
+}
+
+.chart_input_col_60
+{
+    float: left;
+    width: 60%;
+}
+
+.chart_input_row{
+    // border: 1px solid green; 
+    height: auto;
+    overflow: auto;
+}
+
+#session_chart_field_set {
+    width: 100%;
+}
+
+#session_chart_field_set #id_User {
+   margin: 0px;
+   width: 100px;
+   height: 2em;
+   border: 1px solid #111;
+   border-radius: 4px;
+   overflow: hidden;
+   background: 90% / 20% no-repeat #ddd;
+}
+
+#session_chart_field_set #id_From {
+   margin: 0px;
+   width: 120px;
+   height: 1.2em;
+   border: 1px solid #111;
+   border-radius: 4px;
+   overflow: hidden;
+   background: 90% / 20% no-repeat #ddd;
+}
+
+#session_chart_field_set #id_To {
+   margin: 0px;
+   width: 120px;
+   height: 1.2em;
+   border: 1px solid #111;
+   border-radius: 4px;
+   overflow: hidden;
+   background: 90% / 20% no-repeat #ddd;
+}
+
+#load_charts {
+   width: 200px;
+   border: 1px solid #111;
+   border-radius: 4px;
+   background: 90% / 20% no-repeat #ddd;
+}
+
+.load_chart_section fieldset{ 
+   border: 0px;   
+}
+
+.chart-error {
+    color:#555;
+    border-radius:10px;
+    font-family:Tahoma,Geneva,Arial,sans-serif;font-size:11px;
+    padding:10px 10px 10px 36px;
+    margin:10px;
+    font-weight:bold;
+    /* text-transform:uppercase; */
+    background:#ffecec url('/static/img/error.png') no-repeat 10px 50%;
+    border:1px solid #f5aca6;
+}
+.error_header {
+    color: red;
+    font-weight:bold;
+    text-transform:uppercase;
+}
+

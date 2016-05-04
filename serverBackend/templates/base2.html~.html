@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+{% load bootstrap_toolkit %}
+{% load staticfiles %}
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <!-- Meta, title, CSS, favicons, etc. -->
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title> SmartSecure | </title>
+  <meta name="description" content="SmartSecure">
+  <meta name="author" content="Tania Chanda">
+
+  <!-- Bootstrap core CSS -->
+
+  <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/static/other_css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.css">
+  <link rel="stylesheet" href="/static/bootstrap/css/bootstrap-responsive.css">
+  <link rel="stylesheet" href="/static/other_css/demo.css">
+  <link rel="stylesheet" href="/static/other_css/header-basic.css">
+  <link rel="stylesheet" href="/static/other_css/footer-distributed-with-address-and-phones.css">
+  <link href='http://fonts.googleapis.com/css?family=Cookie' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+
+  <script src="{% static "js/jquery-2.2.2.min.js" %}"></script>
+
+  {% block extra_head %}{% endblock %}
+
+</head>
+
+<body>
+
+<header class="header-basic">
+
+            <div class="header-limiter">
+
+                <h1><a href="#">Smart<span>Secure</span></a></h1>
+
+                <nav>
+                    <a href="#">Home</a>
+                    
+                  
+                    <a href="#">About</a>
+                 
+                    <a href="#">Contact</a>
+                </nav>
+            </div>
+
+</header>
+    {% bootstrap_messages %}
+
+    {% block content %}Empty page{% endblock %}
+
+    
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+</body>
+</html>
