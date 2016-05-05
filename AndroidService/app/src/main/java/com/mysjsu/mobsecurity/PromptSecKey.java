@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.location.LocationManager;
+import android.os.AsyncTask;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -11,6 +13,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Poornima on 12/6/15.
@@ -72,17 +76,21 @@ public class PromptSecKey {
                                     callback.call(false);
                                     return;
                                 }
+
                                 String p = userInput.getText().toString();
                                 isPasswordCorrect = p.equals(user.password);
                                 attempts++;
                                 if (attempts <= 3) {
                                     if (!isPasswordCorrect) {
                                         if (attempts == 3) {
+                                            alertDialog.dismiss();
                                             Toast.makeText(context, "Too many incorrect password " +
                                                     "attempts" +
                                                     " ", Toast
                                                     .LENGTH_SHORT)
                                                     .show();
+                                            // TODO lock
+                                            return;
                                         } else {
                                             Toast.makeText(context, "Incorrect password!", Toast
                                                     .LENGTH_SHORT)

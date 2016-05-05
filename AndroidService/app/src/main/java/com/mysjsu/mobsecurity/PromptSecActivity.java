@@ -27,13 +27,12 @@ public class PromptSecActivity extends Activity {
                 if (res) {
                     Toast.makeText(PromptSecActivity.this, "Authenticated!", Toast.LENGTH_SHORT)
                             .show();
-                    act.finish();
-                    act.onBackPressed();
-
                 } else {
                     Toast.makeText(PromptSecActivity.this, "Incorrect Password", Toast
                             .LENGTH_SHORT).show();
                 }
+                act.finish();
+                act.onBackPressed();
             }
         };
         String msg = intnt.getStringExtra("msg");

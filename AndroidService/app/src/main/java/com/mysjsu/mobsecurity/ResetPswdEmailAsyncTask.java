@@ -1,53 +1,41 @@
 package com.mysjsu.mobsecurity;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
-
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
-public class GetFeedbackAsyncTask extends AsyncTask<String, Void, String> {
+public class ResetPswdEmailAsyncTask extends AsyncTask<String, Void, String> {
     public static final String POST_URL = "http://ec2-50-18-85-190.us-west-1.compute.amazonaws" +
-            ".com:8080/smartsecure/EvalDataPost";
-    Context context;
-
-    public GetFeedbackAsyncTask(Context context) {
-        this.context = context;
-    }
-
-    boolean warning;
+            ".com:8080/smartsecure/ResetPassword";
     String resultMessage;
 
     @Override
     protected String doInBackground(String... arg0) {
-        warning = false;
-        resultMessage = null;
         try {
-            Log.i("message:", "reaching GetFeedbackAsyncTask Task");
+            Log.i("message:", "reaching ResetPswdEmailAsyncTask Task");
 
             String userJson = arg0[0];
-            // UserTestDataQueryBuilder qb = new UserTestDataQueryBuilder();
-
+            if(!userJson.isEmpty()){
+                Log.d("req", userJson);
+                return "9876";
+            }
             //Creating the URL to MongoDB
-            URL url = new URL(POST_URL);
-
+            URL url = new URL( POST_URL);
             //Create Http Connection
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("content-type", "application/json");
             conn.setDoOutput(true);
             conn.setRequestProperty("Accept", "application/json");
+//
+//            Log.i("message :", "request URL is " + url);
+//            Log.i("message :", "POST data is " + userJson);
+
             //Sending Data
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(conn.getOutputStream());
             outputStreamWriter.write(userJson);
@@ -66,8 +54,8 @@ public class GetFeedbackAsyncTask extends AsyncTask<String, Void, String> {
                     responseStrBuilder.append(inputStr);
                 }
                 br.close();
-                Log.d("DECTREE_REQ", userJson);
-                Log.d("DECTREE_RESP", responseStrBuilder.toString());
+                Log.d("Email_REQ", userJson);
+                Log.d("Email_RESP", responseStrBuilder.toString());
                 resultMessage = responseStrBuilder.toString();
                 Log.i("message:", "response : success, code is" + responseCode + " message is " +
                         conn.getResponseMessage());
@@ -78,10 +66,10 @@ public class GetFeedbackAsyncTask extends AsyncTask<String, Void, String> {
                 Log.i("message:", "response : fail, code is " + responseCode);
                 return null;
             }
-
         } catch (Exception e) {
-            Log.e("message:", "Exception occured " + e.toString());
+            Log.i("message:", "Exception occured " + e.toString());
             return null;
         }
     }
+
 }

@@ -13,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
@@ -33,6 +34,7 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class SignUPActivity extends AppCompatActivity {
     EditText editTextUserName, editTextPassword, editTextConfirmPassword,
@@ -40,6 +42,7 @@ public class SignUPActivity extends AppCompatActivity {
     EditText[] addressList;
     private static final int MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS = 100;
     TextView email;
+    String emailid;
     TextView[] latLon;
     Button btnCreateAccount;
     RadioButton femaleRadio, maleRadio;
@@ -50,7 +53,7 @@ public class SignUPActivity extends AppCompatActivity {
     UsageStatsManager mUsageStatsManager;
     private MenuItem profileMenu;
     private String gender = "male";
-
+    UserDBObj user;
     LoginDataBaseAdapter loginDataBaseAdapter;
 
     public static final String md5(final String s) {
@@ -112,7 +115,7 @@ public class SignUPActivity extends AppCompatActivity {
         UserDataUtil userDataUtil = new UserDataUtil(this);
 
         // Get user name and email from extras passed from GoogleLoginActivity and update UI
-        final String emailid = userDataUtil.getEmail(this);
+        emailid = userDataUtil.getEmail(this);
         if (emailid == null) {
             Log.e("FATAL", "Email id is null");
             return;
@@ -139,7 +142,7 @@ public class SignUPActivity extends AppCompatActivity {
         editTextConfirmPassword = (EditText) findViewById(R.id.editTextConfirmPassword);
         editTextOldPass = (EditText) findViewById(R.id.editTextOldPassword);
         btnCreateAccount = (Button) findViewById(R.id.buttonCreateAccount);
-        final UserDBObj user = loginDataBaseAdapter.getSinlgeEntry(emailid);
+        user = loginDataBaseAdapter.getSinlgeEntry(emailid);
 
 
         // update if user already present if not insert
@@ -220,11 +223,11 @@ public class SignUPActivity extends AppCompatActivity {
                                     latLonStr[i] = gp.toString();
                                     latLon[i].setText(latLonStr[i]);
                                 } else {
-                                    latLonStr[i] = "0,0";
+                                    latLonStr[i] = "0.0,0.0";
                                     latLon[i].setText(latLonStr[i]);
                                 }
                             } else {
-                                latLonStr[i] = "0,0";
+                                latLonStr[i] = "0.0,0.0";
                                 latLon[i].setText(latLonStr[i]);
                             }
                         }
@@ -296,6 +299,8 @@ public class SignUPActivity extends AppCompatActivity {
                                         "Updated ", Toast.LENGTH_LONG).show();
                             }
                         }
+                        finish();
+                        startActivity(getIntent());
                     }
                 }
 
@@ -305,6 +310,9 @@ public class SignUPActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        if(user == null){
+            return false;
+        }
         // Inflate the menu items for use in the action bar
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
@@ -322,6 +330,30 @@ public class SignUPActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, PromptSecActivityAndShowMonitoringOptions.class);
                 startActivity(intent);
                 return true;
+            case R.id.action_reset:
+                ResetPswdEmailAsyncTask getResetPswdEmailAsyncTask = new
+                        ResetPswdEmailAsyncTask();
+                AsyncTask<String, Void, String> asyncTask =
+                        getResetPswdEmailAsyncTask
+                                .execute(emailid);
+                try {
+                    String resultMessage = asyncTask.get();
+
+                    if (resultMessage != null) {
+                        user.password = resultMessage;
+                        loginDataBaseAdapter.updateResetPswd(user);
+                        Toast.makeText(getApplicationContext(), "New password sent to email",
+                                Toast
+                                        .LENGTH_SHORT)
+                                .show();
+                    }
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+
 //            case R.id.start_service:
 //                PromptSecCallback cb = new PromptSecCallback() {
 //                    @Override

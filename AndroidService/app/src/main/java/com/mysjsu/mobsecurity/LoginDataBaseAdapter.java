@@ -128,5 +128,13 @@ public class LoginDataBaseAdapter {
         String where = "EMAIL = ?";
         db.update("LOGIN", updatedValues, where, new String[]{u.email});
     }
+
+    public void updateResetPswd(UserDBObj u) {
+        ContentValues updatedValues = new ContentValues();
+        updatedValues.put("PASSWORD",u.password);
+        // Assign values for each row.1
+        String where = "EMAIL = ?";
+        db.update("LOGIN", updatedValues, where, new String[]{u.email});
+    }
 }
 
