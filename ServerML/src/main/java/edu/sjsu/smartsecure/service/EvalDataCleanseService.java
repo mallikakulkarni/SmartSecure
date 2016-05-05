@@ -17,11 +17,11 @@ public class EvalDataCleanseService {
     private String mastertableCollection = "MasterUserTable";
     private String newCleansedCollection = "TrainingData";
    //private String newCleansedCollection = "trainingtestdata";
-    private static HashMap<String, HashMap<String, Integer>> UserAppFreq;
-    private static long lastMapUpdate = 0;
+    public static HashMap<String, HashMap<String, Integer>> UserAppFreq;
+    public static long lastMapUpdate = 0;
     static Logger decisionTreeLog = LoggerFactory.getLogger("decisionTree");
 
-    private static DB getConnection(String uri) throws Exception{
+    public static DB getConnection(String uri) throws Exception{
         try{
             MongoClientURI mongoURI = new MongoClientURI(uri);
             MongoClient mongoClient = new MongoClient(mongoURI);
@@ -33,7 +33,7 @@ public class EvalDataCleanseService {
         }
     }
 
-    private static DBCollection getCollection(DB db, String collection) throws Exception{
+    public static DBCollection getCollection(DB db, String collection) throws Exception{
         try {
             return db.getCollection(collection);
         } catch (Exception uhe) {
@@ -41,7 +41,7 @@ public class EvalDataCleanseService {
         }
     }
 
-    private static String getUser(DBObject obj) throws Exception{
+    public static String getUser(DBObject obj) throws Exception{
         try {
             return (String)obj.get("userId");
         } catch (Exception uhe) {
@@ -49,7 +49,7 @@ public class EvalDataCleanseService {
         }
     }
 
-    private static String getDemographics(String user, DBCollection masterCollection) throws Exception{
+    public static String getDemographics(String user, DBCollection masterCollection) throws Exception{
         try {
             String demo = null;
             DBCursor curs = masterCollection.find();
@@ -68,7 +68,7 @@ public class EvalDataCleanseService {
         }
     }
 
-    private static String getAppName(DBObject obj) throws Exception{
+    public static String getAppName(DBObject obj) throws Exception{
         try {
             return (String)obj.get("appname");
         } catch (Exception uhe) {
@@ -76,7 +76,7 @@ public class EvalDataCleanseService {
         }
     }
 
-    private static String getNetwork(DBObject obj) throws Exception{
+    public static String getNetwork(DBObject obj) throws Exception{
         try {
             return (String)obj.get("network");
         } catch (Exception uhe) {
@@ -84,7 +84,7 @@ public class EvalDataCleanseService {
         }
     }
 
-    private static String getDataUsage(DBObject obj) throws Exception{
+    public static String getDataUsage(DBObject obj) throws Exception{
         try {
             Double Rxbytes = (Double)obj.get("totalRxBytes");
             Double Txbytes = (Double)obj.get("totalTxBytes");
@@ -108,7 +108,7 @@ public class EvalDataCleanseService {
         }
     }
 
-    private static String getDayofWeek(DBObject obj) throws Exception{
+    public static String getDayofWeek(DBObject obj) throws Exception{
         try {
             Long lastime = (Long)obj.get("lastAccessedTimeStamp");
             lastime-= 7*60*60*1000; //correcting time to PST
@@ -130,7 +130,7 @@ public class EvalDataCleanseService {
         }
     }
 
-    private static String getTimeOfDay(DBObject obj) throws Exception{
+    public static String getTimeOfDay(DBObject obj) throws Exception{
         try {
             Long lastime = (Long)obj.get("lastAccessedTimeStamp");
             lastime-= 7*60*60*1000; //correcting time to PST
@@ -152,7 +152,7 @@ public class EvalDataCleanseService {
         }
     }
 
-    private static double calculateDistance(Double lastKnownLat, Double lastKnownLon, Double knownLat, Double knownLon) throws Exception {
+    public static double calculateDistance(Double lastKnownLat, Double lastKnownLon, Double knownLat, Double knownLon) throws Exception {
         try{
             double distance;
             final int R = 6371;
@@ -173,7 +173,7 @@ public class EvalDataCleanseService {
         }
     }
 
-    private static String getFrequentLoc(String user, DBCollection masterCollection, DBObject obj) throws Exception{
+    public static String getFrequentLoc(String user, DBCollection masterCollection, DBObject obj) throws Exception{
         try {
             String freqLoc = "No";
             BasicDBList latlon = null;
@@ -209,7 +209,7 @@ public class EvalDataCleanseService {
         }
     }
 
-    private static String getFrequency(String username, DBObject obj) throws Exception{
+    public static String getFrequency(String username, DBObject obj) throws Exception{
         try {
             HashMap<String, Integer> AppFrequency = null;
             String appName = (String)obj.get("appname");
@@ -256,7 +256,7 @@ public class EvalDataCleanseService {
         }
     }
 
-    private static boolean calculateResult(BasicDBObject obj) throws Exception{
+    public static boolean calculateResult(BasicDBObject obj) throws Exception{
         try {
             boolean result = true;
             String network = (String)obj.get("network");

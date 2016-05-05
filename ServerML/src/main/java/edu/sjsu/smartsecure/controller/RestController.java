@@ -4,6 +4,7 @@ import edu.sjsu.smartsecure.decisionTree.DecisionTree;
 import edu.sjsu.smartsecure.service.EvalDataCleanseService;
 import edu.sjsu.smartsecure.service.FeedBackService;
 import edu.sjsu.smartsecure.service.OutlierDetectionService;
+import edu.sjsu.smartsecure.service.PasswordService;
 import org.json.JSONObject;
 import org.json.JSONString;
 import org.slf4j.Logger;
@@ -45,6 +46,14 @@ public class RestController {
         FeedBackService feedBackService = new FeedBackService();
         feedBackService.processFeedback(feedbackObject);
         return true;
+    }
+
+    @RequestMapping(value="/ResetPassword", method = RequestMethod.POST)
+    public String resetPassword(String email) {
+        decisionTreeLog.debug("Received email " + email + " for resetting password");
+        PasswordService passwordService = new PasswordService();
+        String passcode =  passwordService.resetPassCode(email);
+        return passcode;
     }
 
 }
