@@ -3,8 +3,10 @@ package com.mysjsu.mobsecurity.receivers;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.provider.Settings;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.mysjsu.mobsecurity.CreateUserTestDataAsyncTask;
@@ -22,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Poornima on 3/15/16.
@@ -90,8 +93,25 @@ public class AlarmReceiver extends BroadcastReceiver {
                 createUserTestAsyncTask.execute(gson.toJson(utd));
                 GetFeedbackAsyncTask getFeedbackAsyncTask = new
                         GetFeedbackAsyncTask(context);
-                getFeedbackAsyncTask.execute(gson.toJson(utd));
+                AsyncTask<String, Void, String> asyncTask = getFeedbackAsyncTask
+                        .execute(gson.toJson(utd));
+                try {
+                    String resultMessage = asyncTask.get();
+                    if (resultMessage != null) {
+                        if (resultMessage.contains("Alert")) {
+                            getSecuritykey(resultMessage, context);
+                        } else if (resultMessage.contains("Warning")) {
+                            Toast.makeText(context, resultMessage, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
             }
+        } else {
+            Log.i("SmrtSec", "Data NOT Changed.");
         }
         String json = gson.toJson(user);
         FileOutputStream fos = null;
@@ -104,6 +124,14 @@ public class AlarmReceiver extends BroadcastReceiver {
         }
         loginDataBaseAdapter.close();
 
-        Log.i("JSON", json);
+//        Log.i("JSON", json);
+    }
+
+    void getSecuritykey(String msg, Context context) {
+        Intent intent1 = new Intent("android.intent.category.LAUNCHER");
+        intent1.setClassName("com.mysjsu.mobsecurity", "com.mysjsu.mobsecurity.PromptSecActivity");
+        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent1.putExtra("msg", msg);
+        context.startActivity(intent1);
     }
 }

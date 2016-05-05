@@ -1,0 +1,8 @@
+from django.conf.urls import patterns, url
+from SmartSecure import views
+
+urlpatterns = patterns('',
+                       url(r'^$', 'SmartSecure.views.index', name='index'),
+                       url(r'^about/$', 'SmartSecure.views.about', name='about'),   
+                       url(r'^dashboard/$', 'SmartSecure.views.dashboard', name='dashboard')
+                       )

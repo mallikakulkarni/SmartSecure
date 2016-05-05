@@ -1,0 +1,126 @@
+{% extends "base2.html" %}
+
+{% block extra_head %}
+
+<link href="/static/login2_css/animate.min.css" rel="stylesheet">
+  <!-- Custom styling plus plugins -->
+<link href="/static/login2_css/custom.css" rel="stylesheet">
+<link href="/static/login2_css/icheck/flat/green.css" rel="stylesheet">
+
+<style type="text/css">
+/*form {
+display: inline;
+}*/
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<a class="hiddenanchor" id="toregister"></a>
+<a class="hiddenanchor" id="tologin"></a>
+<div id="wrapper">
+      <div id="login" class="animate form">
+        <section class="about_content">
+          <form>
+          <h1>About SmartSecure</h1>
+
+          <span class="text-warning">
+            <b> Special Thanks: We are deeply indebted to Professor Xiao Su, Professor Dan Harkey and Professor Chandrasekar Vupalapatti for their invaluable comments and assistance in the preparation of this project. </b>
+          </span>
+          <br />
+          <span class="text-info">
+            In this project, we aimed to build a composite framework or app for Android phones, that will watch user behavior, read patterns and be able to flag suspicious activity. Our approach is to use machine learning and data analytics to record how the users use their phone, the apps most used, the geographical locations the users likely visits and to flag any activity that is deemed to be outside normal. The scope of this project also includes checking the authenticity of Wi-Fi / Bluetooth connections. The outcome is a secure unified app or framework that actively protects and monitors the device and data in multiple ways. 
+          </span>
+          <span class="text-primary left_align">
+            The high–level architecture of this project consists of the SmartSecure app (the frontend and app backend), the Django server and the database.
+
+            Mobile Component
+            Frontend: SmartSecure’s frontend is a limited number of screens that allow the user to and change various settings. The UI also includes the popup notifications and security questions that the app generates when it detects abnormal activity on the phone.
+            
+            <br />
+
+            App backend: The backend accepts the user behavior model from the server. It performs the following tasks:
+            
+            <br />
+            
+            o Works in the background to collect user data
+            <br />
+            
+            o Stores the data in its own local database
+            <br />
+            
+            o Compares it against the model
+            <br />
+            
+            o Evolves the model as per new statistics
+            <br />
+
+            o Pushes the collected data to the server at regular time intervals
+            <br />
+
+            o An Android service that runs continuously to monitor data such as the app usage data, Wi-Fi connectivity details and location data.
+            <br />
+
+            o A synchronization service that sends data to and receives data from the cloud server at regular intervals
+            <br />
+
+            o A database to temporarily store collected data and permanently store the model received from the cloud server
+            <br />
+
+            o A comparison service to compare incoming data with the model.
+            <br />
+
+            o A rules based engine to generate proper notifications
+            <br />
+
+            SmartSecure database: We are using MongoDb for SmartSecure’s data store.
+            <br />
+
+            Web component
+            <br />
+
+            The server follows the MVC pattern. It has APIs for the user as well as SmartSecure. It interfaces with MongoLabr on the backend.The serveris deployed on an AWS EC2 instances. 
+            <br />
+
+            Frontend : The frontend will comprise webpages to show a dashboard with multiple charts to display app usage statistics
+            <br />
+
+            Backend : We are using Django framework to interface with Python APIs for our data processing needs. The backend is written in Python and data is passed among components as JSON.
+          </span>
+          </form>
+
+          <p class="change_link">New to site?
+          <a href="/register" class="to_register"> Create Account </a>
+          </p>
+          <div class="clearfix"></div>
+          <br />
+          <div class="clearfix"></div>
+          <div class="separator">
+            
+            <p class="change_link">Already a member ?
+            <a href="/login"> Log in </a>
+            </p>
+            <div class="clearfix"></div>
+            <br />
+            <div>
+              <p>©2016 All Rights Reserved. SmartSecure Privacy and Terms</p>
+            </div>
+          </div>
+        </section>
+        <!-- content -->
+      </div>
+</div>
+
+
+<!-- Javascript -->
+        <!-- <script src="static/js/jquery-2.2.2.min.js"></script>
+        <script src="static/bootstrap/js/bootstrap.min.js"></script>
+        <script src="static/js/jquery.backstretch.min.js"></script>
+        <script src="static/js/scripts.js"></script> -->
+        
+        <!--[if lt IE 10]>
+            <script src="assets/js/placeholder.js"></script>
+        <![endif]-->
+{% endblock %}

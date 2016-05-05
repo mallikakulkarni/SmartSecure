@@ -1,0 +1,75 @@
+{% extends "base2.html" %}
+
+{% block extra_head %}
+
+<link href="/static/login2_css/animate.min.css" rel="stylesheet">
+  <!-- Custom styling plus plugins -->
+<link href="/static/login2_css/custom.css" rel="stylesheet">
+<link href="/static/login2_css/icheck/flat/green.css" rel="stylesheet">
+
+<style type="text/css">
+/*form {
+display: inline;
+}*/
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<a class="hiddenanchor" id="toregister"></a>
+<a class="hiddenanchor" id="tologin"></a>
+<div id="wrapper">
+      <div id="login" class="animate form">
+        <section class="login_content">
+          <form action="/register{{ redirect }}" method="post">
+            <h1>Register to SmartSecure</h1>
+
+            {% csrf_token %}
+
+            <div>
+              <input id="id_full_name" name="full_name" type="text" class="form-control" placeholder="Full Name" required="" />
+            </div>
+            <div>
+              <input id="id_phone_number" name="phone_number" type="phone" class="form-control" placeholder="Phone Number" required="" />
+            </div>
+              <br />
+
+            <div>
+              <input id="id_user_name" name="user_name" type="email" class="form-control" placeholder="Email" required="" />
+            </div>
+            <div>
+              <input id="id_password" name="password" type="password" class="form-control" placeholder="Password" required="" />
+            </div>
+
+            <div>
+              <input class="btn btn-default submit" type="submit" value="Register" />
+            </div>
+            <div class="clearfix"></div>
+            <div class="separator">
+
+              <div class="clearfix"></div>
+              <br />
+              <div>
+                <p>©2016 All Rights Reserved. SmartSecure Privacy and Terms</p>
+              </div>
+            </div>
+          </form>
+          <!-- form -->
+        </section>
+        <!-- content -->
+      </div>
+</div>
+
+
+<!-- Javascript -->
+        <!-- <script src="static/js/jquery-2.2.2.min.js"></script>
+        <script src="static/bootstrap/js/bootstrap.min.js"></script>
+        <script src="static/js/jquery.backstretch.min.js"></script>
+        <script src="static/js/scripts.js"></script> -->
+        
+        <!--[if lt IE 10]>
+            <script src="assets/js/placeholder.js"></script>
+        <![endif]-->
+{% endblock %}

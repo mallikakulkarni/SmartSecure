@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+{% load bootstrap_toolkit %}
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SmartSecure</title>
+    <meta name="description" content="SmartSecure">
+    <meta name="author" content="Tania Chanda">
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap-responsive.css">
+    <link rel="stylesheet" href="/static/other_css/demo.css">
+    <link rel="stylesheet" href="/static/other_css/footer-distributed-with-address-and-phones.css">
+    <link rel="stylesheet" href="/static/other_css/demo2.css">
+    <link rel="stylesheet" href="/static/other_css/header-basic.css">
+    <link href='http://fonts.googleapis.com/css?family=Cookie' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+
+    <link href="http://fonts.googleapis.com/css?family=Cookie" rel="stylesheet" type="text/css">
+    <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+
+    <style type="text/css">
+        body {
+            background: white;
+            padding-top: 60px;
+        }
+    </style>
+    <script src="{% static "js/jquery-2.2.2.min.js" %}"></script>
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+
+<header class="header-basic">
+
+            <div class="header-limiter">
+
+                <h1><a href="#">Company<span>logo</span></a></h1>
+
+                <nav>
+                    <a href="#">Home</a>
+                    
+                  
+                    <a href="#">About</a>
+                 
+                    <a href="#">Contact</a>
+                </nav>
+            </div>
+
+</header>
+
+
+<div class="container">
+
+    {% bootstrap_messages %}
+
+    {% block content %}Empty page{% endblock %}
+
+<!--     <p><hr></p> -->
+
+    <!-- <footer class="row">
+
+    </footer> -->
+    <footer class="footer-distributed">
+
+            <div class="footer-left">
+
+                <h3>Smart<span>Secure</span></h3>
+
+                <p class="footer-links">
+                    <a href="#">Home</a>
+                    ·
+                    <a href="#">About</a>
+                    ·
+                    <a href="#">Faq</a>
+                    ·
+                    <a href="#">Contact</a>
+                </p>
+
+                <p class="footer-company-name">SmartSecure &copy; 2015</p>
+            </div>
+
+            <div class="footer-center">
+
+                <div>
+                    <i class="fa fa-map-marker"></i>
+                    <p><span>1 Washington Square</span> San Jose, CA</p>
+                </div>
+
+                <div>
+                    <i class="fa fa-phone"></i>
+                    <p>+1 650 305 9007</p>
+                </div>
+
+
+            </div>
+
+            <div class="footer-right">
+
+                <p class="footer-company-about">
+                    <span>About the company</span>
+                    Lorem ipsum dolor sit amet, consectateur adispicing elit. Fusce euismod convallis velit, eu auctor lacus vehicula sit amet.
+                </p>
+
+             <!--    <div class="footer-icons">
+
+                    <a href="#"><i class="fa fa-facebook"></i></a>
+                    <a href="#"><i class="fa fa-twitter"></i></a>
+                    <a href="#"><i class="fa fa-linkedin"></i></a>
+                    <a href="#"><i class="fa fa-github"></i></a>
+
+                </div> -->
+
+            </div>
+
+        </footer>
+
+</div> <!-- container -->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+</body>
+</html>

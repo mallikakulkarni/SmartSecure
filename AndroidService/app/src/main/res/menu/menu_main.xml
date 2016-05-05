@@ -5,6 +5,11 @@
         android:title="Monitoring"
         android:enabled="true"
         />
+    <item
+        android:id="@+id/action_reset"
+        android:title="Reset password"
+        android:enabled="true"
+        />
 
     <!--<item-->
         <!--android:id="@+id/start_service"-->

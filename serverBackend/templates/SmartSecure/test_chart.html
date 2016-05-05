@@ -1,0 +1,428 @@
+{% extends "verdi_base.html" %}
+{% load staticfiles %}
+{% load url from future %}
+
+{% load show_prop %}
+{% block title %} Execution Manager Charts {% endblock %}
+{% block extra_head %}
+<script type="text/javascript" src="/static/js/highcharts.js"></script>
+<script type="text/javascript" src="/static/js/modules/exporting.js"></script>
+{% if not is_verdi %}
+<script type="text/javascript" src="/static/js/grid.js"></script>
+{% endif %}
+
+<link rel="stylesheet" type="text/css" href="/static/css/table.css" media="screen, tv, projection" />
+<link rel="stylesheet" type="text/css" href="/static/css/matrix_chart.css" media="screen, tv, projection" />
+
+<script type="text/javascript" src="/static/js/jquery-ui-timepicker-addon.js"></script>
+<script type="text/javascript">
+  
+$(function() {
+  $('#id_From').datetimepicker({ maxDate: "+0D" });
+  $('#id_To').datetimepicker({ maxDate: "+0D" });  
+  $('label[for=id_Days]').css({'font-weight': 'bold', 'color': 'green', 'float': 'none'});
+  $('label[for=id_From]').css({'font-weight': 'bold', 'float': 'none'});
+  $('label[for=id_To]').css({'font-weight': 'bold', 'float': 'none'});
+  $('label[for=id_Limit]').css({'font-weight': 'bold', 'color': 'green', 'float': 'none'});
+  $('label[for=id_Field]').css({'font-weight': 'bold', 'float': 'none'});
+});
+
+
+var chart;
+$(document).ready(function() {
+  $('.disable_click').click(function(e) {
+    e.preventDefault();
+  });
+  
+  $('#id_Days').change(function() {
+    $(this).closest("form").submit();
+  });
+
+  $('#id_Limit').change(function() {
+    $(this).closest("form").submit();
+  });
+
+  $('#id_From').change(function() {
+    $('#id_Days').val(0);
+  });
+
+  $('#id_To').change(function() {
+    $('#id_Days').val(0);
+  });
+
+  var ss = "{{sessions}}";
+  
+
+  // define the options
+  var options = {
+    
+    chart: {
+      renderTo: 'graph-container'
+    },
+    
+    title: {
+      text: '{{testcase}}'
+    },
+    
+    credits: {
+      enabled: false
+    },
+
+    <!-- subtitle: { -->
+    <!--   text: '{{testcase}}' -->
+    <!-- }, -->
+    
+    xAxis: {
+      categories: ss.split(","),
+      crosshair: true,
+         labels: {
+                rotation: -45,
+                style: {
+                    fontSize: "12px",
+                    <!-- fontFamily: 'Verdana, Helvetica, Arial, sans-serif' -->
+                }
+            }
+    },
+
+    yAxis: [{ // Primary yAxis
+      labels: {
+	formatter: function() {
+	  return this.value;
+	}
+      },
+      title: {
+	text: 'INDEX'
+      },
+      opposite: true      
+    }, { // Secondary yAxis
+      gridLineWidth: 0,
+      title: {
+	text: ''
+      },
+      labels: {
+	formatter: function() {
+	  return this.value;
+	}
+      }
+      
+    }, { // Tertiary yAxis
+      gridLineWidth: 0,
+      title: {
+	text: ''
+      },
+      labels: {
+	formatter: function() {
+	  return this.value + ' %';
+	}
+      },
+      opposite: true
+    }],
+
+    legend: {
+      layout: 'vertical',
+      align: 'left',
+      x: 10,
+      verticalAlign: 'top',
+      y: 80,
+      floating: true,
+      backgroundColor: '#FFFFFF'
+    },
+
+    tooltip: {
+      backgroundColor: '#FCFFC5',
+      borderColor: 'black',
+      shared: true,
+      crosshairs: true
+    },
+    
+
+    plotOptions: {
+      series: {
+    	cursor: 'pointer',
+    	point: {
+    	  events: {
+    	    click: function() {
+    	      hs.htmlExpand(null, {
+    		pageOrigin: {
+    		  x: this.pageX, 
+    		  y: this.pageY
+    		},
+    		headingText: this.series.name,
+    		maincontentText: Highcharts.dateFormat('%A, %b %e, %Y', this.x) +':<br/> '+ 
+    		  this.y +' ',
+    		width: 300
+    	      });
+    	    }
+    	  }
+    	},
+    	marker: {
+    	  lineWidth: 1
+    	}
+      }
+    },
+    
+    series: [
+      {% for key,v in alldata.items %} 
+      {
+    	name: '{% mdesc mdict key %}' ,
+    	lineWidth: 2,
+    	marker: { radius: 5 },
+	{% yindex mdict key %}
+	type: '{% mtype mdict key %}'
+      },
+      {% endfor %}
+    ]
+
+  };
+    
+{% if alldata %}
+  {% for k,v in alldata.items %}
+  console.log("{{k}}");
+  console.log("{{v}}");
+  var str = "{{v}}";
+  var arr = str.split(';');
+  var stuff = [];
+  for(i=0; i<arr.length; i++) {
+    // alert(i);
+    var j = arr[i].split(',');
+    var session = j[0];
+    var data = parseFloat(j[1]);
+    console.log(session);
+    console.log(data);
+    stuff.push([ session, data]);
+  }
+  // alert(stuff);
+  options.series[{{ forloop.counter0 }}].data = stuff;
+  {% endfor %}
+
+  chart = new Highcharts.Chart(options);
+
+{% endif %}
+  
+});
+
+</script>
+
+{% endblock %}
+
+{% block crumbs %}
+    <ul id="crumbs">
+      <li><a href="/eman/">Home</a></li>
+      <li><a href="/eman/{{project}}">{{project}}</a></li>
+      <li><a href="/eman/{{project}}/{{config}}">{{config}}</a></li>
+      <li><a href="/eman/{{project}}/{{config}}/{{session}}">{{session}}</a></li>
+      <li><a href="/eman/{{project}}/{{config}}/{{session}}/?build={{build}}">{{build}}</a></li>
+      <li><a href="/eman/{{project}}/{{config}}/{{session}}/{{build}}/{{testcase}}" class="disable_click">{{testcase}}</a></li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+<!-- 3. Add the container -->
+<span style="font-weight: bold; font-size: 1.2em;"> Displaying {{scope_type}} Trend: </span> <span style="color:#3333CC;font-size: 1.2em;"> {{scope_name}}  <input class="button-small button-secondary" type="button" id="show_test_history" onclick="location.href='/eman/test_history/{{result_id}}/'" value="Show History"> </span>
+<br>
+
+{% for k,v in error_dict.items %}
+   <div class="chart-error"><span class="error_header"> Error: </span> {{v}} </div>
+{% endfor %}
+
+<div id="graph-container" style="width: 800px; height: 550px; margin: 0 auto"></div>
+
+<div class="load_chart_section">
+<fieldset>
+<select id="load_charts" style="float:right">
+  {% for option in saved_charts %}
+  <option value="{{option}}">{{option}}</option>
+  {% endfor %}
+</select> 
+</fieldset>
+</div>
+
+
+<center>
+</br>
+<div id="chartfieldset">
+<fieldset>
+  <legend style="color:gray; font-size: 1.5em;" align="center"> Trend Charts </legend>
+  <form action="/eman/test_trend_chart/{{result_id}}/" method="post">{% csrf_token %}
+
+    <div class="chart_input_row">
+
+      <div class="chart_input_col">
+	{{ form.non_field_errors }}
+	<div class="fieldWrapper" style="float:right">
+	  {{ form.Days.errors }}
+	  <label for="{{ form.Days.id_for_label }}">Days: </label>
+	  {{ form.Days }}
+	</div>
+      </div>
+
+      <div class="chart_input_col">
+	{{ form.non_field_errors }}
+	<div class="fieldWrapper" style="float:right">
+	  {{ form.Limit.errors }}
+	  <label for="{{ form.Limit.id_for_label }}">Limit: </label>
+	  {{ form.Limit }}
+	</div>
+      </div>
+
+      <!-- <div class="chart_input_col"> -->
+      <!-- 	<div class="fieldWrapper" > -->
+      <!-- 	  {{ form.User.errors }} -->
+      <!-- 	  <label for="{{ form.User.id_for_label }}">User: </label> -->
+      <!-- 	  {{ form.User }} -->
+      <!-- 	</div> -->
+      <!-- </div> -->
+
+      <div class="chart_input_last_col">
+	<div class="fieldWrapper" style="float:right">
+	  {{ form.chart_name.errors }}
+	  {{ form.chart_name }}
+	</div>
+      </div>
+    </div>
+
+    <div class="chart_input_row">
+      <div class="chart_input_col">
+	<br>
+	{{ form.non_field_errors }}
+	<div class="fieldWrapper" style="float:right">
+	  {{ form.From.errors }}
+	  <label for="{{ form.From.id_for_label }}">From: </label>
+	  {{ form.From }}
+	</div>
+      </div>
+
+      <div class="chart_input_col">
+	<br>
+	{{ form.non_field_errors }}
+	<div class="fieldWrapper" style="float:right">
+	  {{ form.To.errors }}
+	  <label for="{{ form.To.id_for_label }}">To: </label>
+	  {{ form.To }}
+	</div>
+      </div>
+      <div class="chart_input_col">
+	<div class="fieldWrapper">
+	  {{ form.Field.errors }}
+	  <label for="{{ form.Field.id_for_label }}">Fields: </label>
+	  {{ form.Field }}
+	</div>
+      </div>
+      <div class="chart_input_last_col">
+	<input type="submit" class="button-small button-green" style="float:left;" name="save_chart" value="Save Chart Input" />
+	<input type="submit" class="button-small button-red" style="float:center;" name="delete_chart" value="Delete Chart Input" />
+	<br>
+	<br>
+
+	<input type="submit" class="button-small button-blue" style="float:right;" name="refresh_chart" value="Refresh Chart" />
+      </div>
+    </div>
+
+    <!-- {{ form.as_table }} -->
+    <!-- <input type="submit" class="button-small button-blue" value="Refresh Chart" /> -->
+  </form>
+</fieldset>
+</div>
+<p/>
+<p/>
+<span style="color:green"> Green Fields are auto refresh fields. Graph will be automatically refresed for any change on the green fields. </span> 
+</center>
+<p/>
+
+<!-- LEGENDS -->
+</p>
+<span> <a href="#" class="legend_toggler"> Legend and Note </a> </span>
+<div class="legends" style="display:none;">
+<table class="paleblue">
+  <tr>
+    <td> <span style="color:green;"><b> Days </b> </span></td>
+    <td> Look back for specified number of days from now</td>
+  </tr>
+
+  <tr>
+    <td> <b> From </b> </td>
+    <td> Date from when the data is picked </td>
+  </tr>
+
+  <tr>
+    <td> <b> To </b> </td>
+    <td> Date till when the data is picked. Default: Time when page was loaded.</td>
+  </tr>
+
+  <tr>
+    <td> <span style="color:green;"><b> Limit </b> </span></td>
+    <td> Number of sessions to be plotted in the graph. </td>
+  </tr>
+  <tr>
+    <td> </td>
+    <td> Say we found 25 results for the selected time period and the limit is set to 10, then graph would display the last 10 sessions data.</td>
+  </tr>
+
+  <tr>
+    <td> <b> Field </b> </td>
+    <td> Default is run_time. Ctrl+Click for selecting multiple fields.</td>
+  </tr>
+
+  <tr>
+    <td>  </td>
+    <td> Note: If the field is not of type int or float, then it will be plotted as 0.</td>
+  </tr>
+
+  <tr>
+    <td> <b> Mouseover</b> </td>
+    <td> Mouseover to any point would display all the selected fields for that session.</td>
+  </tr>
+
+  <tr>
+    <td> <b> Disable field </b> </td>
+    <td> Top left corner of the graph has quick disable/enable of fields. </td>
+  </tr>
+
+  <tr>
+    <td> <b> Priority </b> </td>
+    <td> Days field takes priority over From and To dates. </td>
+  </tr>
+
+
+</table>
+</br>
+</p>
+</div>
+
+{% endblock %}
+{% block jscontent %}
+<script type="text/javascript">
+    $( document ).ready(function() {
+      $(".legend_toggler").click(function(e){
+        e.preventDefault();
+        $(".legends").toggle();
+      });
+
+    $("#load_charts").change(function() {
+    var option_value = this.value;
+    if ( option_value == "----" ) {
+      console.log("No saved chart option selection.");
+    } else {
+      window.location.href = "/eman/test_trend_chart/{{result_id}}/?saved_chart=" + option_value;
+    }
+    });
+    $("#load_charts").val("{{chart_name}}");
+    
+
+    $("#id_chart_name").keypress(function (e) {
+    var regex = new RegExp("^[a-zA-Z0-9._\b]*$");
+    var str = String.fromCharCode(!e.charCode ? e.which : e.charCode);
+    console.log(str);
+    if (regex.test(str)) {
+       return true;
+    }
+    e.preventDefault();
+    return false;
+    });
+
+    });
+
+
+</script>
+{% endblock %}
+

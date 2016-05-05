@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.location.LocationManager;
+import android.os.AsyncTask;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -11,6 +13,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Poornima on 12/6/15.
@@ -72,17 +76,21 @@ public class PromptSecKey {
                                     callback.call(false);
                                     return;
                                 }
+
                                 String p = userInput.getText().toString();
                                 isPasswordCorrect = p.equals(user.password);
                                 attempts++;
                                 if (attempts <= 3) {
                                     if (!isPasswordCorrect) {
                                         if (attempts == 3) {
+                                            alertDialog.dismiss();
                                             Toast.makeText(context, "Too many incorrect password " +
                                                     "attempts" +
                                                     " ", Toast
                                                     .LENGTH_SHORT)
                                                     .show();
+                                            // TODO lock
+                                            return;
                                         } else {
                                             Toast.makeText(context, "Incorrect password!", Toast
                                                     .LENGTH_SHORT)
@@ -98,34 +106,40 @@ public class PromptSecKey {
                                             LocationManager locationManager = (LocationManager)
                                                     context.getSystemService(Context
                                                             .LOCATION_SERVICE);
-                                            int i;
-                                            int j = 0;
-                                            for (i = 0; i < user.address.length; i++) {
-                                                if (user.address[i] == null || user.address[i]
-                                                        .isEmpty()) {
-                                                    if (user.address[i].startsWith("Preferred")
-                                                            && j != 0) {
-                                                        j = i;
-                                                    }
-                                                    break;
-                                                }
-                                            }
-                                            if (i >= user.address.length) {
-                                                i = j;// recycling preferred locations
-                                            }
                                             android.location.Location l = locationManager
                                                     .getLastKnownLocation(LocationManager
                                                             .NETWORK_PROVIDER);
                                             float lat = UserDataUtil.round(l.getLatitude());
                                             float lon = UserDataUtil.round(l.getLongitude());
                                             String ll = lat + "," + lon;
-                                            user.address[i] = "Preferred Address " + (i - 1);
-                                            user.latLon[i] = new UserLocation(ll);
-                                            Gson gson = new Gson();
-                                            CreateMainUserAsyncTask createMainUserAsyncTask = new
-                                                    CreateMainUserAsyncTask();
-                                            user.password = SignUPActivity.md5(user.password);
-                                            createMainUserAsyncTask.execute(gson.toJson(user));
+                                            int i;
+                                            int j = 0;
+                                            for (i = 0; i < user.address.length; i++) {
+                                                if (user.address[i] == null || user.address[i]
+                                                        .isEmpty()) {
+                                                    break;
+                                                } else if (ll.equals(user.latLon[i].toString())) {
+                                                    ll = null;
+                                                    break;
+                                                } else if (user.address[i].startsWith("Preferred")
+                                                        && j == 0) {
+                                                    j = i;
+                                                }
+
+                                            }
+                                            if (i >= user.address.length) {
+                                                i = j;// recycling preferred locations
+                                            }
+                                            if (ll != null) {
+                                                user.address[i] = "Preferred Address " + (i - 1);
+                                                user.latLon[i] = new UserLocation(ll);
+                                                Gson gson = new Gson();
+                                                CreateMainUserAsyncTask createMainUserAsyncTask =
+                                                        new
+                                                                CreateMainUserAsyncTask();
+                                                user.password = SignUPActivity.md5(user.password);
+                                                createMainUserAsyncTask.execute(gson.toJson(user));
+                                            }
                                         }
                                         alertDialog.dismiss();
                                         loginDataBaseAdapter.updateEntry(user, false);

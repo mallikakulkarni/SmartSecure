@@ -1,0 +1,110 @@
+var chart;
+$(document).ready(function() {
+  $('.disable_click').click(function(e) {
+    e.preventDefault();
+  });
+
+  var ss = "{{apps}}";
+
+  // define the options
+  var options = {
+
+    chart: {
+      renderTo: 'graph-container',
+      type: 'column'
+    },
+
+    title: {
+      text: 'App Usage'
+    },
+
+    credits: {
+      enabled: false
+    },
+    <!-- subtitle: { -->
+    <!--   text: '{{testcase}}' -->
+    <!-- }, -->
+    xAxis: {
+      categories: ss.split(","),
+      crosshair: true,
+         labels: {
+                rotation: -45,
+                style: {
+                    fontSize: "12px",
+                    <!-- fontFamily: 'Verdana, Helvetica, Arial, sans-serif' -->
+                }
+            }
+    },
+
+    yAxis: [{ // Primary yAxis
+      labels: {
+        formatter: function() {
+          return this.value;  
+        }
+      },
+      title: {
+        text: 'Time (sec)'
+      },
+      opposite: true
+    }],
+
+    legend: {
+      layout: 'vertical',
+      align: 'left',
+      x: 10,
+      verticalAlign: 'top',   
+      y: 80,
+      floating: true,
+      backgroundColor: '#FFFFFF'
+    },
+
+    tooltip: {
+      backgroundColor: '#FCFFC5',
+      borderColor: 'black',   
+      shared: true,
+      crosshairs: true
+    },
+
+
+    plotOptions: {
+      series: {
+        cursor: 'pointer',
+        point: {
+          events: {
+            click: function() {
+              hs.htmlExpand(null, {
+                pageOrigin: { 
+                  x: this.pageX,
+                  y: this.pageY
+                },
+                headingText: this.series.name,
+                maincontentText: Highcharts.dateFormat('%A, %b %e, %Y', this.x) +':<br/> '+
+                  this.y +' ',
+                width: 300
+              });
+            }
+          }
+        },
+        marker: {
+          lineWidth: 1
+        }
+      }
+    },
+    series: [
+      {
+        name: 'duration' ,
+        lineWidth: 2
+      },
+    ]
+
+  };
+
+{% if access_chart %}
+  options.series[0].data = {{access_chart}};
+
+  chart = new Highcharts.Chart(options);
+
+{% endif %}
+
+});
+
