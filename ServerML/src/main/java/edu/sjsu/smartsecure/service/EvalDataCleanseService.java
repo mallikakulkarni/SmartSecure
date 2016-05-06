@@ -194,8 +194,8 @@ public class EvalDataCleanseService {
             for( Iterator< Object > it = latlon.iterator(); it.hasNext(); )
             {
                 DBObject latlonObject = (DBObject)it.next();
-                Double knownLat = (Double)latlonObject.get("lat");
-                Double knownLon = (Double)latlonObject.get("lon");
+                Double knownLat = latlonObject.get("lat") == (Integer) 0 ? 0.0 : (Double)latlonObject.get("lat");
+                Double knownLon = latlonObject.get("lon") == (Integer) 0 ? 0.0 : (Double)latlonObject.get("lon");
 
                 double distance = calculateDistance(lastKnownLat, lastKnownLon, knownLat, knownLon);
                 if(distance < 1){
@@ -302,13 +302,16 @@ public class EvalDataCleanseService {
 
     public void cleanTrainData() throws Exception{
         try{
+            decisionTreeLog.debug("Inside cleanTrainData");
             DBCollection trainingCollection = getCollection(getConnection(uri), newCleansedCollection);
+            decisionTreeLog.debug("Connected to newCleansedCOllection");
             DBCursor cursor = trainingCollection.find();
+            decisionTreeLog.debug("Got cursor");
             while (cursor.hasNext()) {
                 trainingCollection.remove(cursor.next());
             }
-        }catch(Exception e){
-            e.printStackTrace();
+        } catch (Exception e) {
+            decisionTreeLog.debug("Exception occured in cleanTrainData");
         }
     }
 
@@ -316,17 +319,21 @@ public class EvalDataCleanseService {
         try{
             String collectionName = "smartsecuretest";
             DB db = getConnection(uri);
+            decisionTreeLog.debug("Connected to smartsecuretest");
             DBCollection collection = getCollection(db, collectionName);
             DBCollection masterCollection = getCollection(db, mastertableCollection);
             DBCollection trainingCollection = getCollection(db, newCleansedCollection);
 
 
             DBCursor curs = collection.find();
+            decisionTreeLog.debug("Into collection");
             Iterator<DBObject> fields = curs.iterator();
             while(fields.hasNext()){
                 DBObject curr = fields.next();
                 String user = getUser(curr);
+                decisionTreeLog.debug("Getting user");
                 String demo = getDemographics(user, masterCollection);
+                decisionTreeLog.debug("Getting demographic");
 
                 BasicDBList appList = (BasicDBList)curr.get("appTestList");
                 for( Iterator< Object > it = appList.iterator(); it.hasNext(); )
@@ -348,6 +355,7 @@ public class EvalDataCleanseService {
                             network != null)
                     {
                         BasicDBObject newObject = new BasicDBObject();
+                        decisionTreeLog.debug("Putting into basicdbobject");
                         newObject.put("appName", appname);
                         newObject.put("network", network);
                         newObject.put("datausage", dataUsage);
@@ -358,13 +366,16 @@ public class EvalDataCleanseService {
                         newObject.put("frequentLocation", freqLoc);
 
                         boolean result = calculateResult(newObject);
+                        decisionTreeLog.debug("result is "+result);
                         newObject.put("class", result);
 
                         trainingCollection.insert(newObject);
+                        decisionTreeLog.debug("Inserted");
                     }
                 }
             }
         }catch(Exception e) {
+            decisionTreeLog.debug("Exception accured in traindata");
             e.printStackTrace();
         }
     }
