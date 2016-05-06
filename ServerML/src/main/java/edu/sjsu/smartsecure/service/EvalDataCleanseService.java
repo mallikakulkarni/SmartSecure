@@ -86,6 +86,9 @@ public class EvalDataCleanseService {
 
     public static String getDataUsage(DBObject obj) throws Exception{
         try {
+            boolean type = obj.get("totalRxBytes") instanceof String;
+            String name = obj.get("totalRxBytes").getClass().getName();
+            decisionTreeLog.debug("Data TYpe of Data Usage " + type + " " + name);
             Double Rxbytes = (Double)obj.get("totalRxBytes");
             Double Txbytes = (Double)obj.get("totalTxBytes");
             Double dataVal = (Rxbytes + Txbytes)/(1024*1024);
@@ -104,6 +107,7 @@ public class EvalDataCleanseService {
             }
             return usage;
         } catch (Exception uhe) {
+            decisionTreeLog.debug(uhe.getMessage());
             return "low";
         }
     }
