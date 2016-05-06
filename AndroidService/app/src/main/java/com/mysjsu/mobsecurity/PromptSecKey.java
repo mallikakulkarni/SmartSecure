@@ -1,6 +1,8 @@
 package com.mysjsu.mobsecurity;
 
 import android.app.AlertDialog;
+import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.location.LocationManager;
@@ -13,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.mysjsu.mobsecurity.receivers.MyAdminReceiver;
 
 import java.util.concurrent.ExecutionException;
 
@@ -30,6 +33,8 @@ public class PromptSecKey {
     private boolean isPasswordCorrect;
     AlertDialog alertDialog;
     AlertDialog.Builder alertDialogBuilder;
+    private DevicePolicyManager mDevicePolicyManager;
+    private ComponentName mComponentName;
 
 
     public PromptSecKey(String emailId, Context context, PromptSecCallback callback) {
@@ -39,6 +44,9 @@ public class PromptSecKey {
         user = loginDataBaseAdapter.getSinlgeEntry(emailId);
         this.context = context;
         this.callback = callback;
+        mDevicePolicyManager = (DevicePolicyManager) context.getSystemService(
+                Context.DEVICE_POLICY_SERVICE);
+        mComponentName = new ComponentName(context, MyAdminReceiver.class);
     }
 
     public PromptSecKey(String emailId, Context context, PromptSecCallback callback, String
@@ -80,16 +88,21 @@ public class PromptSecKey {
                                 String p = userInput.getText().toString();
                                 isPasswordCorrect = p.equals(user.password);
                                 attempts++;
-                                if (attempts <= 3) {
+                                if (attempts <= 4) {
                                     if (!isPasswordCorrect) {
-                                        if (attempts == 3) {
+                                        if (attempts == 4) {
                                             alertDialog.dismiss();
                                             Toast.makeText(context, "Too many incorrect password " +
-                                                    "attempts" +
+                                                    "attempts." +
                                                     " ", Toast
                                                     .LENGTH_SHORT)
                                                     .show();
-                                            // TODO lock
+                                            boolean isAdmin = mDevicePolicyManager.isAdminActive(mComponentName);
+                                            alertDialog.dismiss();
+                                            callback.call(false);
+                                            if (isAdmin) {
+                                                mDevicePolicyManager.lockNow();
+                                            }
                                             return;
                                         } else {
                                             Toast.makeText(context, "Incorrect password!", Toast
@@ -99,7 +112,7 @@ public class PromptSecKey {
                                         alertDialog.dismiss();
                                         user.inCorrPass++;
                                         loginDataBaseAdapter.updateIncorrPassEntry(user);
-                                        if (attempts < 3)
+                                        if (attempts < 4)
                                             authenticate();
                                     } else {
                                         if (message.contains("location")) {
