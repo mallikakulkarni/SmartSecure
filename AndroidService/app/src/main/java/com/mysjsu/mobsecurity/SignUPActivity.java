@@ -6,7 +6,9 @@ package com.mysjsu.mobsecurity;
 
 import android.Manifest;
 import android.app.AppOpsManager;
+import android.app.admin.DevicePolicyManager;
 import android.app.usage.UsageStatsManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -29,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.mysjsu.mobsecurity.receivers.MyAdminReceiver;
 
 import java.io.IOException;
 import java.security.MessageDigest;
@@ -48,7 +51,10 @@ public class SignUPActivity extends AppCompatActivity {
     RadioButton femaleRadio, maleRadio;
     String userName, emergenCon, password, oldPassword, confirmPassword, androidId;
     String[] homeAddress, latLonStr;
-
+    private static final int ADMIN_INTENT = 15;
+    private static final String description = "Smart Secure Admin";
+    private ComponentName mComponentName;
+    private DevicePolicyManager mDevicePolicyManager;
     private static final String TAG = "SignUPActivity";
     UsageStatsManager mUsageStatsManager;
     private MenuItem profileMenu;
@@ -102,6 +108,9 @@ public class SignUPActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.signup);
+        mDevicePolicyManager = (DevicePolicyManager) getSystemService(
+                Context.DEVICE_POLICY_SERVICE);
+        mComponentName = new ComponentName(this, MyAdminReceiver.class);
         getPermission();
         mUsageStatsManager = (UsageStatsManager) this.getSystemService(Context.USAGE_STATS_SERVICE);
         // get Instance  of Database Adapter
@@ -310,7 +319,7 @@ public class SignUPActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if(user == null){
+        if (user == null) {
             return false;
         }
         // Inflate the menu items for use in the action bar
@@ -393,6 +402,13 @@ public class SignUPActivity extends AppCompatActivity {
             requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest
                     .permission.GET_ACCOUNTS}, MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS);
         }
+        boolean isAdmin = mDevicePolicyManager.isAdminActive(mComponentName);
+        if (!isAdmin) {
+            Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+            intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, mComponentName);
+            intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, description);
+            startActivityForResult(intent, ADMIN_INTENT);
+        }
     }
 
     @Override
@@ -402,6 +418,15 @@ public class SignUPActivity extends AppCompatActivity {
             case MY_PERMISSIONS_REQUEST_PACKAGE_USAGE_STATS:
                 getPermission();
                 break;
+            case ADMIN_INTENT: {
+                if (resultCode == RESULT_OK) {
+                    Toast.makeText(getApplicationContext(), "Registered As Admin", Toast
+                            .LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Failed to register as Admin", Toast
+                            .LENGTH_SHORT).show();
+                }
+            }
         }
     }
 

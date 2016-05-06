@@ -20,12 +20,8 @@ public class ResetPswdEmailAsyncTask extends AsyncTask<String, Void, String> {
             Log.i("message:", "reaching ResetPswdEmailAsyncTask Task");
 
             String userJson = arg0[0];
-            if(!userJson.isEmpty()){
-                Log.d("req", userJson);
-                return "9876";
-            }
             //Creating the URL to MongoDB
-            URL url = new URL( POST_URL);
+            URL url = new URL(POST_URL);
             //Create Http Connection
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
