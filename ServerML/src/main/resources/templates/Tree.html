@@ -94,10 +94,18 @@
         .tree li a:hover, .tree li a:hover+ul li a {
             background: #c8e4f8; color: #000; border: 1px solid #94a0b4;
         }
+
+        #myModal, .modal {
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div>Decision Tree</div>
+    <div id="myModal" class="modal">
+        <span th:onclick="'javascript:closeModal()'" class="close">X</span>
+        <p></p>
+    </div>
     <div class="tree">
         <ul>
             <li>
@@ -107,4 +115,15 @@
         </ul>
     </div>
 </body>
+<script th:inline="javascript">
+    function functiongetSafeAttrs(x) {
+        document.getElementById("myModal").style.display = "block";
+        document.getElementById("myModal").textContent = x;
+    }
+
+    function closeModal() {
+        document.getElementById("myModal").lastElementChild.style.display = "none";
+        document.getElementsByTagName("span").style.display = "none";
+    }
+</script>
 </html>

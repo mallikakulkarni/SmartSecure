@@ -2,24 +2,14 @@
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:layout="">
     <ul layout:fragment="menu">
         <li th:each="Child : ${Nodes}" th:remove="tag">
-            <li th:if="${Child.getSafeChildList() != null}">
-                <a href="#" th:text="${'Safe ' + Child.getColumn()}"></a>
-            </li>
-            <li th:if="${Child.getUnsafeChildList() != null}">
-                <a href="#" th:text="${'Unsafe ' + Child.getColumn()}"></a>
-                <!--<a th:if="${Child.getResult() != -1}" th:text="${Child.getColumn() + ' ' + Child.getCorrespondingAttribute() + ' - Unsafe'}"></a>-->
-                <!--<ul layout:include="@{./menuFragment} :: menu" th:with="Nodes=${Child.getChildren()}"></ul>-->
-            </li>
-            <li th:if="${Child.getSafeChildList() == null and Child.getUnsafeChildList() == null and Child.getChildren().size() == 0 and Child.getResult() == -1}">
-                <a href="#" th:text="${Child.getColumn() + ' ' + Child.getCorrespondingAttribute() + ' Safe'}"></a>
-            </li>
-            <li th:if="${Child.getSafeChildList() == null and Child.getUnsafeChildList() == null and Child.getChildren().size() == 0 and Child.getResult() != -1}">
-                <a href="#" th:text="${Child.getColumn() + ' ' + Child.getCorrespondingAttribute() + ' Unsafe'}"></a>
-            </li>
-            <li th:if="${Child.getChildren().size() > 0}">
-                <a href="#" th:text="${Child.getColumn() + ' ' + Child.getCorrespondingAttribute()}"></a>
-                <ul layout:include="@{./menuFragment} :: menu" th:with="Nodes=${Child.getChildren()}"></ul>
-            </li>
+        <li th:if="${Child.getResult() == null}">
+            <a th:text="${Child.getColumn() + ' ' + Child.getCorrespondingAttribute()}"></a>
+        </li>
+        <li th:if="${Child.getResult() != null}">
+            <a th:if="${Child.getResult() == -1}" th:text="${Child.getColumn() + ' ' Child.getCorrespondingAttribute() + ' - Safe'}"></a>
+            <a th:if="${Child.getResult() != -1}" th:text="${Child.getColumn() + ' 'Child.getCorrespondingAttribute() + ' - Unsafe'}"></a>
+        </li>
+        <ul layout:include="@{./menuFragment} :: menu" th:with="Nodes=${Child.getChildren()}"></ul>
         </li>
     </ul>
 </html>

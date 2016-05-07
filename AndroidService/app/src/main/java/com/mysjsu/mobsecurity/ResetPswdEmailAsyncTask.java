@@ -10,9 +10,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class ResetPswdEmailAsyncTask extends AsyncTask<String, Void, String> {
-    public static final String POST_URL = "http://ec2-50-18-85-190.us-west-1.compute.amazonaws" +
-            ".com:8080/smartsecure/ResetPassword";
+    public static final String POST_URL = "http://ec2-50-18-85-190.us-west-1.compute.amazonaws.com:8080/smartsecure/ResetPassword";
     String resultMessage;
+
 
     @Override
     protected String doInBackground(String... arg0) {
