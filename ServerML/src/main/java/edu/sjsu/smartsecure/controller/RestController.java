@@ -48,8 +48,8 @@ public class RestController {
         return true;
     }
 
-    @RequestMapping(value="/ResetPassword", method = RequestMethod.POST)
-    public String resetPassword(String email) {
+    @RequestMapping(value="/ResetPassword", method = RequestMethod.GET)
+    public String resetPassword(@RequestBody String email) {
         decisionTreeLog.debug("Received email " + email + " for resetting password");
         PasswordService passwordService = new PasswordService();
         String passcode =  passwordService.resetPassCode(email);

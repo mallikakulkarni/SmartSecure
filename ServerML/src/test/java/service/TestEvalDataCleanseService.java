@@ -78,6 +78,7 @@ public class TestEvalDataCleanseService {
         JSONObject jsonObject = getArray();
         DBObject dbObject = getDBObject(jsonObject);
         try {
+
             String dataUsage = evalDataCleanseService.getDataUsage(dbObject);
             Assert.assertEquals("medium", dataUsage);
         } catch (Exception e) {
@@ -177,7 +178,7 @@ public class TestEvalDataCleanseService {
         appList.put("lastKnownLong", -122.064);
         appList.put("network", "secure");
         appList.put("totalRxBytes", 5297149);
-        appList.put("totalTxBytes", 1531312);
+        appList.put("totalTxBytes", "1.531312e8");
         appList.put("wiFiName", "iFiW-Guest");
         appList.put("frequentLocation", "Yes");
         JSONArray jsonArray = new JSONArray();

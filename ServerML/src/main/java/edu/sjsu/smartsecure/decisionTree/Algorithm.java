@@ -59,6 +59,9 @@ public class Algorithm {
             values.add(attributes.get(i));
             long totalRecords = decisionTreeHandler.getTotalRecordCountForChild(conditions, values);
             long safeRecords = decisionTreeHandler.getSafeRecordCountForChild(conditions, values, true);
+            decisionTreeLog.debug("Attribute " + attributes.get(i));
+            decisionTreeLog.debug("Total Records " + totalRecords);
+            decisionTreeLog.debug("Safe Records " + safeRecords);
             if (safeRecords == totalRecords) {
                 setSafeChild(node, attributes, i);
             } else if (safeRecords == 0) {
@@ -82,6 +85,7 @@ public class Algorithm {
                     Node child = buildDecisionTreeChild(usedColumns, informationGain, columnHeaders, totalRecords, conditions, values);
                     node.getChildren().add(i, child);
                     decisionTreeLog.debug("Added child " + child.getNodeId() + "to Node" + node.getNodeId());
+                    child.setColumn(node.getNodeId());
                     child.setCorrespondingAttribute(attributes.get(i));
                     List<String> newColumnHeaders = new ArrayList<String>(columnHeaders);
                     newColumnHeaders.remove(child.getNodeId());
@@ -136,7 +140,7 @@ public class Algorithm {
             }
             double entropy = calculateEntropy(attribute, totalRecordCount, conditions, values);
             double gain = informationGain - entropy;
-            decisionTreeLog.debug(attribute + " entropy " + entropy + ", gain" + gain);
+            decisionTreeLog.debug(attribute + " entropy " + entropy + ", gain " + gain);
             entropyMap.put(attribute, gain);
         }
         return getHighestgain(entropyMap);

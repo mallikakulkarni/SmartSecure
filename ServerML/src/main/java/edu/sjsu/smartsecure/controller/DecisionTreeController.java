@@ -32,7 +32,7 @@ public class DecisionTreeController {
         try {
             EvalDataCleanseService evalDataCleanseService = new EvalDataCleanseService();
             //evalDataCleanseService.cleanTrainData();
-           //evalDataCleanseService.TrainData();
+            //evalDataCleanseService.TrainData();
 
         }catch(Exception e){
             e.printStackTrace();
@@ -49,6 +49,7 @@ public class DecisionTreeController {
         columnHeaders.add("frequentLocation");
         Algorithm.createDecisionTree(columnHeaders);
         DecisionTree decisionTree = DecisionTree.getDecisionTreeInstance();
+        //DecisionTree decisionTree = DecisionTree.dummyDecisionTree();
 //        decisionTree.setRoot(new Node("Parent"));
 //        Node child1 = new Node("child1");
 //        Node child2 = new Node("child2");
@@ -77,7 +78,7 @@ public class DecisionTreeController {
 //        children4.add(greatgrandchild3);
 //        grandchild3.setChildren(children4);
         decisionTreeLog.debug("Decision Tree created");
-        decisionTree.getAllAttributesOfDecisionTree();
+        //decisionTree.getAllAttributesOfDecisionTree();
         SpringApplication.run(DecisionTreeController.class);
     }
 }

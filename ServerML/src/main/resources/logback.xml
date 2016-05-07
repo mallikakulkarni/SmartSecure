@@ -29,6 +29,7 @@
         </rollingPolicy>
     </appender>
 
+
     <logger name="decisionTree" level="TRACE" additivity="false">
         <appender-ref ref="DT-FILE"/>
     </logger>

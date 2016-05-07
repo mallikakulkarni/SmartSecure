@@ -1,5 +1,8 @@
 package edu.sjsu.smartsecure.decisionTree;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +10,7 @@ import java.util.List;
  * Created by mallika on 3/27/16.
  */
 public class Node {
+    static Logger decisionTreeLog = LoggerFactory.getLogger("decisionTree");
     private String nodeId;
     private List<String> attributes;
     private List<Node> children;
@@ -14,6 +18,8 @@ public class Node {
     private Node parent;
     private String correspondingAttribute;
     private String column;
+    private List<String> safeChildList;
+    private List<String> unsafeChildList;
 
     public Node(String nodeId) {
         this.nodeId = nodeId;
@@ -21,7 +27,8 @@ public class Node {
         children = new ArrayList<Node>();
         result = null;
         parent = null;
-
+        safeChildList = null;
+        unsafeChildList = null;
     }
 
     public Node getParent() {
@@ -78,5 +85,32 @@ public class Node {
 
     public void setColumn(String column) {
         this.column = column;
+    }
+
+    public List<String> getSafeChildList() {
+        return safeChildList;
+    }
+
+    public void setSafeChildList(List<String> apps) {
+        this.safeChildList = apps;
+    }
+
+    public List<String> getUnsafeChildList() {
+        return unsafeChildList;
+    }
+
+    public void setUnsafeChildList(List<String> apps) {
+        this.unsafeChildList = apps;
+    }
+
+    public void printAttributes() {
+        decisionTreeLog.debug("nodeId: " + nodeId != null ? nodeId : "Empty");
+        decisionTreeLog.debug("result: " + result != null ? nodeId : "Empty");
+        decisionTreeLog.debug("parent: " + parent.getNodeId() != null ? nodeId : "Empty");
+        decisionTreeLog.debug("correspondingAttribute: " + correspondingAttribute != null ? nodeId : "Empty");
+        decisionTreeLog.debug("column: " + column != null ? nodeId : "Empty");
+        for (String attribute : attributes) {
+            decisionTreeLog.debug("attribute: " + attribute != null ? nodeId : "Empty");
+        }
     }
 }
