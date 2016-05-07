@@ -16,7 +16,7 @@ public class ViewController {
     @RequestMapping(value="/GetTree", method = RequestMethod.GET)
     public String getDecisionTreeVisualization(Model model) {
         DecisionTree decisionTree = DecisionTree.getDecisionTreeInstance();
-        decisionTree = decisionTree.cleanDecisionTreeForEasyView();
+        //decisionTree = decisionTree.cleanDecisionTreeForEasyView();
         model.addAttribute("DecisionTree", decisionTree);
         model.addAttribute("Root", decisionTree.getRoot().getNodeId());
         return "Tree";
