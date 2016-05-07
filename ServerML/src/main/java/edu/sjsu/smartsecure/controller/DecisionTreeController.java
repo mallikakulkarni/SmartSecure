@@ -47,9 +47,9 @@ public class DecisionTreeController {
         columnHeaders.add("demographic");
         columnHeaders.add("frequency");
         columnHeaders.add("frequentLocation");
-        Algorithm.createDecisionTree(columnHeaders);
-        DecisionTree decisionTree = DecisionTree.getDecisionTreeInstance();
-        //DecisionTree decisionTree = DecisionTree.dummyDecisionTree();
+        //Algorithm.createDecisionTree(columnHeaders);
+        //DecisionTree decisionTree = DecisionTree.getDecisionTreeInstance();
+        DecisionTree decisionTree = DecisionTree.dummyDecisionTree();
 //        decisionTree.setRoot(new Node("Parent"));
 //        Node child1 = new Node("child1");
 //        Node child2 = new Node("child2");

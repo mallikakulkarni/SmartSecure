@@ -89,8 +89,25 @@ public class EvalDataCleanseService {
             boolean type = obj.get("totalRxBytes") instanceof String;
             String name = obj.get("totalRxBytes").getClass().getName();
             decisionTreeLog.debug("Data TYpe of Data Usage " + type + " " + name);
-            Double Rxbytes = (Double)obj.get("totalRxBytes");
-            Double Txbytes = (Double)obj.get("totalTxBytes");
+
+            Object rxBytesObj = obj.get("totalRxBytes");
+            Object txBytesObj = obj.get("totalTxBytes");
+
+            Double Rxbytes = 0.0d;
+            Double Txbytes = 0.0d;
+
+            if (Number.class.isAssignableFrom(rxBytesObj.getClass())) {
+                Rxbytes = ((Number)rxBytesObj).doubleValue();
+            } else {
+                decisionTreeLog.debug("rxBytes cannot be converted to double. Type was " + rxBytesObj.getClass().getName());
+            }
+
+            if (Number.class.isAssignableFrom(txBytesObj.getClass())) {
+                Txbytes = ((Number)txBytesObj).doubleValue();
+            } else {
+                decisionTreeLog.debug("txBytes cannot be converted to double. Type was " + txBytesObj.getClass().getName());
+            }
+
             Double dataVal = (Rxbytes + Txbytes)/(1024*1024);
             String usage = "low";
             if(dataVal > 10)
@@ -107,7 +124,7 @@ public class EvalDataCleanseService {
             }
             return usage;
         } catch (Exception uhe) {
-            decisionTreeLog.debug(uhe.getMessage());
+            decisionTreeLog.debug("CastException", uhe.getMessage(), uhe);
             return "low";
         }
     }
