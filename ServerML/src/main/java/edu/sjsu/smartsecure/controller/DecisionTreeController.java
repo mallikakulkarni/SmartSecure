@@ -33,6 +33,7 @@ public class DecisionTreeController {
             EvalDataCleanseService evalDataCleanseService = new EvalDataCleanseService();
             //evalDataCleanseService.cleanTrainData();
             //evalDataCleanseService.TrainData();
+            //evalDataCleanseService.moveDataIntoTestData();
 
         }catch(Exception e){
             e.printStackTrace();

@@ -36,6 +36,13 @@ public class DecisionTree {
         this.root = root;
     }
 
+    public boolean processTestDataForTestData(JSONObject jsonObject) {
+        decisionTreeLog.debug("Incoming JsonObject "+jsonObject);
+        decisionTreeLog.debug("Starting DT Traversal");
+        boolean result = getDTResult(root, jsonObject);
+        return result;
+    }
+
     public List<String> processTestData(JSONObject jObject) {
         JSONArray jsonArray = (JSONArray) jObject.get("realtimedata");
         Iterator<?> iterator = jsonArray.iterator();
@@ -48,6 +55,31 @@ public class DecisionTree {
             list.add(result);
         }
         return list;
+    }
+
+    private boolean getDTResult(Node node, JSONObject jsonObject) {
+        String nodeId = node.getNodeId();
+        decisionTreeLog.debug("Node "+nodeId);
+        String inputValue = jsonObject.get(nodeId).toString();
+        decisionTreeLog.debug("Object Value "+inputValue);
+        List<String> attributes = node.getAttributes();
+        int i;
+        for (i = 0; i < attributes.size(); i++) {
+            System.out.println(attributes.get(i));
+            if (attributes.get(i) == null || attributes.get(i).equals(inputValue)) {
+                break;
+            }
+        }
+        if (i == attributes.size()) {
+            return true;
+        }
+        Node child = node.getChildren().get(i);
+        decisionTreeLog.debug("Going to child "+child.getNodeId());
+        if (child.getResult() != null) {
+            decisionTreeLog.debug("Getting Result "+child.getResult());
+            return child.getResult() == -1 ? true : false;
+        }
+        return getDTResult(child, jsonObject);
     }
 
     private String traverseDecisionTreeForResult(Node node, JSONObject jsonObject) {

@@ -1,5 +1,7 @@
 package edu.sjsu.smartsecure.service;
 
+import edu.sjsu.smartsecure.dataAccess.MongoFactory;
+import edu.sjsu.smartsecure.decisionTree.DecisionTree;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import com.mongodb.*;
@@ -481,11 +483,57 @@ public class EvalDataCleanseService {
                 }
             }
             
-            realTimeRecord.put("realtimedata",realTimeArray);
+            realTimeRecord.put("realtimedata", realTimeArray);
             decisionTreeLog.debug("Real Time Record " +realTimeRecord);
         }catch(Exception e) {
             e.printStackTrace();
         }
         return realTimeRecord;
+    }
+
+    public void moveDataIntoTestData() {
+        DBCollection trainingCollection = MongoFactory.getCollection("TrainingData");
+        DBCollection testData = MongoFactory.getCollection("TestData");
+        long count = trainingCollection.count();
+        try {
+            DBCursor cursor = trainingCollection.find().limit((int) count/3);
+            for (DBObject doc : cursor) {
+                testData.insert(doc);
+                trainingCollection.remove(doc);
+            }
+        } catch (Exception e) {
+            decisionTreeLog.debug(e + e.getMessage() + e.getStackTrace());
+        }
+    }
+
+    public void compareAgainstTrainingData() {
+        int count = 0;
+        DBCollection testData = MongoFactory.getCollection("TestData");
+        DecisionTree decisionTree = DecisionTree.getDecisionTreeInstance();
+        try {
+            DBCursor cursor = testData.find();
+            for (DBObject doc : cursor) {
+                boolean res = (Boolean) doc.get("class");
+                doc.removeField("class");
+                JSONObject json = asJSON(doc);
+                boolean result = decisionTree.processTestDataForTestData(json);
+                if (result != res) {
+                    count ++;
+                }
+            }
+        } catch (Exception e) {
+            decisionTreeLog.debug(e + e.getMessage() + e.getStackTrace());
+        }
+        long collCount = testData.count();
+        float accuracy = (1 - (count/collCount)) * 100;
+        decisionTreeLog.debug("Accuracy Of Decision Tree = "+accuracy);
+    }
+
+    private JSONObject asJSON(DBObject dbObject) {
+        JSONObject jsonObject = new JSONObject();
+        for (String key : dbObject.keySet()) {
+            jsonObject.put(key, dbObject.get(key));
+        }
+        return jsonObject;
     }
 }
