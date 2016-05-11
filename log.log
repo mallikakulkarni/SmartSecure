@@ -1,0 +1,90 @@
+fc2167c was PoornimaSanjeevi, 10 hours ago, message: Update README.md
+3d73f42 was PoornimaSanjeevi, 11 hours ago, message: mobile data fix
+322b04b was Mallika, 5 days ago, message: Reverted DT to earlier format
+7f8013b was Mallika, 5 days ago, message: Reverted The DT graphics
+dea14c5 was Mallika, 5 days ago, message: add back file
+c2b3df6 was Mallika, 5 days ago, message: Reset changes
+23d16ea was Mallika, 5 days ago, message: Resolved issue in EvalDataCleanseService
+9c347d8 was Mallika, 5 days ago, message: Merge branch 'master' of github.com:mallikakulkarni/SmartSecure
+ebd9e81 was Mallika, 5 days ago, message: Data usage debug
+0a50aa1 was PoornimaSanjeevi, 5 days ago, message: Locking android device
+8763849 was PoornimaSanjeevi, 6 days ago, message: Removing pin testing code
+b17e66a was Mallika, 5 days ago, message: Debug added to evalDatacleanse
+464ff65 was Mallika, 6 days ago, message: Context Singleton
+32b765c was Mallika, 6 days ago, message: Merge branch 'master' of github.com:mallikakulkarni/SmartSecure
+8939c56 was Mallika, 6 days ago, message: Password reset functionality
+00f292d was PoornimaSanjeevi, 7 days ago, message: Lat,Long bug Fix and forgot password option
+8f05571 was Tania Chanda, 8 days ago, message: Django Web Application
+18e8aed was Tania Chanda, 9 days ago, message: background image
+0d7df8a was PoornimaSanjeevi, 11 days ago, message: warning message display bug fix
+b860d89 was PoornimaSanjeevi, 2 weeks ago, message: Sending data small change in logic
+a12a702 was Mallika, 2 weeks ago, message: Merge branch 'master' of github.com:mallikakulkarni/SmartSecure
+2823a61 was Mallika, 2 weeks ago, message: Modified DT Algorithm
+4d4b059 was Apoorva, 2 weeks ago, message: Merge remote-tracking branch 'origin/master'
+efebb8b was Apoorva, 2 weeks ago, message: Fixed the bug for PST time
+5dc84b2 was Tania Chanda, 2 weeks ago, message: address issue fixed
+dc847de was Mallika, 2 weeks ago, message: Fixed DT REcusrsion
+cb3c2da was Apoorva, 2 weeks ago, message: Merge remote-tracking branch 'origin/master'
+fbfe600 was Apoorva, 2 weeks ago, message: Fixed the bug for PST time
+b58afc0 was PoornimaSanjeevi, 2 weeks ago, message: Removed background image
+7998d34 was PoornimaSanjeevi, 2 weeks ago, message: Updating preferred location to mongodb
+b16c5eb was Apoorva, 2 weeks ago, message: Merge branch 'master' of https://github.com/mallikakulkarni/SmartSecure
+a939cf0 was Apoorva, 2 weeks ago, message: Fixed a bug to avoid null records in training data
+8cd5d19 was Mallika, 2 weeks ago, message: Logback fixes
+8dd1bcb was Mallika, 2 weeks ago, message: use 1.7
+2abbfb4 was Mallika, 2 weeks ago, message: fix
+37d4b39 was Tania Chanda, 2 weeks ago, message: scolling fixed
+2fab53a was Tania Chanda, 2 weeks ago, message: app icon
+8f02307 was Tania Chanda, 2 weeks ago, message: Merge branch 'master' of https://github.com/mallikakulkarni/SmartSecure POPUP UI changed
+cbdf2c2 was Tania Chanda, 2 weeks ago, message: popup UI change
+9f70bdc was PoornimaSanjeevi, 2 weeks ago, message: Encryption and messages for alert and warning
+8f70ede was Tania Chanda, 2 weeks ago, message: UI background +
+176c335 was Tania Chanda, 2 weeks ago, message: UI changes
+d6b8842 was PoornimaSanjeevi, 3 weeks ago, message: Updating incorrect password attempt
+ad61470 was PoornimaSanjeevi, 3 weeks ago, message: Changed appname
+6571619 was Mallika, 3 weeks ago, message: Merge branch 'master' of github.com:mallikakulkarni/SmartSecure
+fab47e0 was Mallika, 3 weeks ago, message: Changed to String value for Decision Tree Output. Removed Duplicate values and Safe values
+bbb767c was PoornimaSanjeevi, 3 weeks ago, message: password 3 retries and email issue fix
+a3cbfdc was Tania Chanda, 3 weeks ago, message: making addesses mandetory
+20672d6 was Apoorva, 3 weeks ago, message: Merge branch 'master' of https://github.com/mallikakulkarni/SmartSecure
+5983ef7 was Apoorva, 3 weeks ago, message: Fixed a bug for Data Usage and tested
+af3e138 was Mallika, 3 weeks ago, message: Fixed error in insertion; Output for 1 test segment as expected. To Fix Data Usage Bug
+9d30cf7 was Mallika, 3 weeks ago, message: Additional logging
+18092bd was Mallika, 3 weeks ago, message: Merge branch 'master' of github.com:mallikakulkarni/SmartSecure
+a8e3ace was Mallika, 3 weeks ago, message: Added logging
+5eaa5a3 was Apoorva, 3 weeks ago, message: added support to calculate app frequency per user and fixed result to type boolean
+8e0fa7c was Mallika, 3 weeks ago, message: Reverted to Apoorva's Changes
+4ae51b0 was PoornimaSanjeevi, 3 weeks ago, message: Parsing the decision tree response object.
+c1be575 was Mallika, 3 weeks ago, message: Merge branch 'master' of github.com:mallikakulkarni/SmartSecure
+080f935 was Mallika, 3 weeks ago, message: Fixed error
+1200d23 was PoornimaSanjeevi, 3 weeks ago, message: Getting result from the decision tree
+dc871a8 was PoornimaSanjeevi, 3 weeks ago, message: Format changed for latitude and longitude.
+b641a9e was Mallika, 3 weeks ago, message: Test cases and functionality change
+7e2ddbd was Apoorva, 4 weeks ago, message: added support to store application frequency for every 24 hours
+dcf478b was Apoorva, 4 weeks ago, message: Added support to clean Traning data records before prerforming training
+1c7a695 was Apoorva, 4 weeks ago, message: Added data cleaning logic and created training data records
+e8de500 was PoornimaSanjeevi, 4 weeks ago, message: Fixed null app list getting updated to mongolab
+41d6cbb was PoornimaSanjeevi, 4 weeks ago, message: Handling geo-coding exception
+b53ac94 was PoornimaSanjeevi, 4 weeks ago, message: changes for test data mongolab
+2eaf3ba was Mallika, 4 weeks ago, message: Changes to decision tree for output and for a successful maven build
+95931f9 was Mallika, 4 weeks ago, message: Fixed mistake in DT algorithm
+bcabe89 was Mallika, 4 weeks ago, message: Merge branch 'master' of github.com:mallikakulkarni/SmartSecure
+517ecde was Mallika, 4 weeks ago, message: Template for tree
+a96e41e was PoornimaSanjeevi, 4 weeks ago, message: UserMainTable changes,data from UI
+23374b3 was Mallika, 4 weeks ago, message: View Decision Tree Basic Version Complete
+1824ffe was Mallika, 4 weeks ago, message: Spring server working with ICC data. Fixed annotations on controllers, produced skeleton view tree file
+a0a2d10 was PoornimaSanjeevi, 4 weeks ago, message: Added fields for inputting preferred addresses and geocoding it
+803b77a was Mallika, 4 weeks ago, message: Merge branch 'master' of github.com:mallikakulkarni/SmartSecure
+a2537c9 was Mallika, 4 weeks ago, message: Wrote the controller, Testing the feedback loop
+a94d1fb was PoornimaSanjeevi, 4 weeks ago, message: Gender field and Version changed
+b3feede was Mallika, 4 weeks ago, message: Wrote the outlier detection module with test data verification and evaluation data result with true/false values
+3613a81 was Mallika, 5 weeks ago, message: Decision Tree First Draft Complete
+c22effd was Mallika, 5 weeks ago, message: Found root Node of decision tree, now determing further attributes
+387eb02 was Mallika, 5 weeks ago, message: Merge branch 'master' of github.com:mallikakulkarni/SmartSecure
+9620ed3 was Mallika, 5 weeks ago, message: Started decision tree
+09503df was PoornimaSanjeevi, 5 weeks ago, message: Added UI for user data
+17d8a21 was Mallika, 5 weeks ago, message: Started working on the data access part for cleansing of data
+ab3545b was Mallika, 5 weeks ago, message: Merge branch 'master' of github.com:mallikakulkarni/SmartSecure
+30a9bf7 was Mallika, 5 weeks ago, message: The class heirarchy for decisiontree
+b3ae88e was PoornimaSanjeevi, 6 weeks ago, message: Collecting user data and pushing to mongodb
+797ec2e was Mallika, 6 weeks ago, message: Added the two Android and Java Server folders together

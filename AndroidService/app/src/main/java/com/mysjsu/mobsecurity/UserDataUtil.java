@@ -107,7 +107,7 @@ public class UserDataUtil {
             }
             WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
             String currentSSID = wifiInfo.getSSID().replace("\"", "");
-            if (currentSSID.equals("0x")) {
+            if (currentSSID.equals("0x") || currentSSID.equals("<unknown ssid>")) {
                 currentSSID = "mobile";
             }
 
